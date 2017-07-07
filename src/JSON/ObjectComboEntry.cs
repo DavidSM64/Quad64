@@ -1,0 +1,43 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+
+namespace Quad64.src.JSON
+{
+    class ObjectComboEntry
+    {
+        string name = "";
+        ModelCombo modelCombo;
+        uint behavior = 0;
+
+        public string Name { get { return name; } set { name = value; } }
+        public byte ModelID { get { return modelCombo.ModelID; } }
+        public uint ModelSegmentAddress { get { return modelCombo.SegmentAddress; } }
+        public uint Behavior { get { return behavior; } }
+
+        public ObjectComboEntry(string name, byte modelId, uint modelSegAddress, uint behavior)
+        {
+            this.name = name;
+            this.modelCombo = new ModelCombo(modelId, modelSegAddress);
+            this.behavior = behavior;
+        }
+        
+        private string bp1, bp2, bp3, bp4;
+        public string BP1_NAME { get { return bp1; } set { bp1 = value; } }
+        public string BP2_NAME { get { return bp2; } set { bp2 = value; } }
+        public string BP3_NAME { get { return bp3; } set { bp3 = value; } }
+        public string BP4_NAME { get { return bp4; } set { bp4 = value; } }
+
+        private string bp1_desc, bp2_desc, bp3_desc, bp4_desc;
+        public string BP1_DESCRIPTION { get { return bp1_desc; } set { bp1_desc = value; } }
+        public string BP2_DESCRIPTION { get { return bp2_desc; } set { bp2_desc = value; } }
+        public string BP3_DESCRIPTION { get { return bp3_desc; } set { bp3_desc = value; } }
+        public string BP4_DESCRIPTION { get { return bp4_desc; } set { bp4_desc = value; } }
+
+        public override string ToString()
+        {
+            return name + " = ["+ modelCombo.ToString() + ", 0x"+behavior.ToString("X8")+"]";
+        }
+    }
+}
