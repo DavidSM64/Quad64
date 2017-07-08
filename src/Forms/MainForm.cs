@@ -42,6 +42,8 @@ namespace Quad64
         public MainForm()
         {
             InitializeComponent();
+            OpenTK.Toolkit.Init();
+            glControl1.CreateControl();
             SettingsFile.LoadGlobalSettings("default");
             glControl1.MouseWheel += new MouseEventHandler(glControl1_Wheel);
             ProjMatrix = Matrix4.CreatePerspectiveFieldOfView(FOV, (float)glControl1.Width/(float)glControl1.Height, 100f, 100000f);
