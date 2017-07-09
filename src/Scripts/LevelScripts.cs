@@ -530,8 +530,9 @@ namespace Quad64.Scripts
                 newObj.HideProperty(Object3D.FLAGS.BPARAM_3);
                 newObj.HideProperty(Object3D.FLAGS.BPARAM_4);
                 newObj.ModelID = entryData[5];
-                newObj.setPresetID((ushort)(data[0] & 0x1FF));
-                newObj.yRot = (short)((data[0] >> 4) * 22.5f);
+                ushort firstAndSecond = (ushort)bytesToInt(data, 0, 2);
+                newObj.setPresetID((ushort)(firstAndSecond & 0x1FF));
+                newObj.yRot = (short)((firstAndSecond >> 9) * 2.8125);
                 newObj.xPos = (short)bytesToInt(data, 2, 2);
                 newObj.yPos = (short)bytesToInt(data, 4, 2);
                 newObj.zPos = (short)bytesToInt(data, 6, 2);

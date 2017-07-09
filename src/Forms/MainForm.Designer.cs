@@ -28,10 +28,10 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.TreeNode treeNode1 = new System.Windows.Forms.TreeNode("3D Objects");
-            System.Windows.Forms.TreeNode treeNode2 = new System.Windows.Forms.TreeNode("Macro 3D Objects");
-            System.Windows.Forms.TreeNode treeNode3 = new System.Windows.Forms.TreeNode("Special 3D Objects");
-            System.Windows.Forms.TreeNode treeNode4 = new System.Windows.Forms.TreeNode("Warps");
+            System.Windows.Forms.TreeNode treeNode5 = new System.Windows.Forms.TreeNode("3D Objects");
+            System.Windows.Forms.TreeNode treeNode6 = new System.Windows.Forms.TreeNode("Macro 3D Objects");
+            System.Windows.Forms.TreeNode treeNode7 = new System.Windows.Forms.TreeNode("Special 3D Objects");
+            System.Windows.Forms.TreeNode treeNode8 = new System.Windows.Forms.TreeNode("Warps");
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -479,22 +479,22 @@
             this.treeView1.ItemHeight = 16;
             this.treeView1.Location = new System.Drawing.Point(1, 1);
             this.treeView1.Name = "treeView1";
-            treeNode1.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
-            treeNode1.Name = "objects";
-            treeNode1.Text = "3D Objects";
-            treeNode2.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(192)))));
-            treeNode2.Name = "Node0";
-            treeNode2.Text = "Macro 3D Objects";
-            treeNode3.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
-            treeNode3.Name = "special3DNode";
-            treeNode3.Text = "Special 3D Objects";
-            treeNode4.Name = "warps";
-            treeNode4.Text = "Warps";
+            treeNode5.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
+            treeNode5.Name = "objects";
+            treeNode5.Text = "3D Objects";
+            treeNode6.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(192)))));
+            treeNode6.Name = "Node0";
+            treeNode6.Text = "Macro 3D Objects";
+            treeNode7.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
+            treeNode7.Name = "special3DNode";
+            treeNode7.Text = "Special 3D Objects";
+            treeNode8.Name = "warps";
+            treeNode8.Text = "Warps";
             this.treeView1.Nodes.AddRange(new System.Windows.Forms.TreeNode[] {
-            treeNode1,
-            treeNode2,
-            treeNode3,
-            treeNode4});
+            treeNode5,
+            treeNode6,
+            treeNode7,
+            treeNode8});
             this.treeView1.Size = new System.Drawing.Size(217, 206);
             this.treeView1.TabIndex = 0;
             this.treeView1.TabStop = false;
@@ -942,7 +942,8 @@
             this.MinimumSize = new System.Drawing.Size(820, 522);
             this.Name = "MainForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Quad64 v0.1";
+            this.Text = "Quad64 v0.1.1";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
             this.Shown += new System.EventHandler(this.Form1_Shown);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Form1_KeyDown);
             this.menuStrip1.ResumeLayout(false);

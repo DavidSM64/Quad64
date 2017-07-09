@@ -8,6 +8,18 @@ namespace Quad64.src
 {
     class Prompts
     {
+        public static DialogResult ShowShouldSaveDialog()
+        {
+            if (Globals.needToSave)
+            {
+                DialogResult result = MessageBox.Show("You have unsaved changes, would you like to save the ROM?", "Save ROM?", MessageBoxButtons.YesNoCancel);
+                if (result == DialogResult.Yes)
+                    ROM.Instance.saveFileAs(ROM.Instance.Filepath, ROM.Instance.Endian);
+                return result;
+            }
+            return DialogResult.None;
+        }
+
         public static string ShowInputDialog(string text, string title)
         {
             Form prompt = new Form()

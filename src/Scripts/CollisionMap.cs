@@ -59,7 +59,7 @@ namespace Quad64.src.Scripts
 
         public void AddTriangle(uint a, uint b, uint c)
         {
-            if(triangles.Count > 0)
+            if (triangles.Count > 0)
                 triangles[triangles.Count - 1].AddTriangle(a, b, c);
         }
 
@@ -104,7 +104,7 @@ namespace Quad64.src.Scripts
         public short dropToGround(Vector3 pos)
         {
             List<float> found = new List<float>();
-            for (int i = 0; i < triangles.Count; i ++)
+            for (int i = 0; i < triangles.Count; i++)
             {
                 CollisionTriangleList list = triangles[i];
                 for (int j = 0; j < list.indices.Length; j += 3)
@@ -123,7 +123,7 @@ namespace Quad64.src.Scripts
                 return (short)pos.Y;
 
             float highestY = -0x2000;
-           // Console.WriteLine("Found " + found.Count + " triangles under position");
+            // Console.WriteLine("Found " + found.Count + " triangles under position");
             for (int i = 0; i < found.Count; i++)
             {
                 if (found[i] > highestY)
@@ -144,7 +144,7 @@ namespace Quad64.src.Scripts
                 verts,
                 BufferUsageHint.StaticDraw
                 );
-            
+
             for (int i = 0; i < triangles.Count; i++)
             {
                 triangles[i].buildList();
@@ -163,7 +163,7 @@ namespace Quad64.src.Scripts
         {
             GL.PushMatrix();
             GL.EnableClientState(ArrayCap.VertexArray);
-            if(drawAsBlack) // Used as part of color picking
+            if (drawAsBlack) // Used as part of color picking
                 GL.BlendFunc(BlendingFactorSrc.Zero, BlendingFactorDest.Zero);
             for (int i = 0; i < triangles.Count; i++)
             {
@@ -172,16 +172,47 @@ namespace Quad64.src.Scripts
                 GL.BindTexture(TextureTarget.Texture2D, l.texture.ID);
                 GL.BindBuffer(BufferTarget.ArrayBuffer, vbo);
                 GL.VertexPointer(3, VertexPointerType.Float, 0, IntPtr.Zero);
-                GL.BindBuffer(BufferTarget.ElementArrayBuffer, l.ibo);
-                if (!Globals.doWireframe)
-                    GL.DrawElements(PrimitiveType.Triangles, l.indices.Length,
-                        DrawElementsType.UnsignedInt, IntPtr.Zero);
+                if (Globals.doWireframe)
+                    GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line);
                 else
-                    GL.DrawElements(PrimitiveType.Lines, l.indices.Length,
-                        DrawElementsType.UnsignedInt, IntPtr.Zero);
+                    GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
+
+                GL.BindBuffer(BufferTarget.ElementArrayBuffer, l.ibo);
+                GL.DrawElements(PrimitiveType.Triangles, l.indices.Length,
+                    DrawElementsType.UnsignedInt, IntPtr.Zero);
+
+                if (Globals.doWireframe)
+                    GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
             }
             if (drawAsBlack)
                 GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
+            GL.DisableClientState(ArrayCap.VertexArray);
+            GL.PopMatrix();
+
+            if (!drawAsBlack && !Globals.doWireframe)
+                drawCollisionMapOutline();
+        }
+
+        public void drawCollisionMapOutline()
+        {
+            GL.PushMatrix();
+            GL.EnableClientState(ArrayCap.VertexArray);
+            GL.BlendFunc(BlendingFactorSrc.Zero, BlendingFactorDest.Zero);
+            for (int i = 0; i < triangles.Count; i++)
+            {
+                CollisionTriangleList l = triangles[i];
+                //if (m.vertices == null || m.indices == null) return;
+                GL.BindTexture(TextureTarget.Texture2D, l.texture.ID);
+                GL.BindBuffer(BufferTarget.ArrayBuffer, vbo);
+                GL.VertexPointer(3, VertexPointerType.Float, 0, IntPtr.Zero);
+                GL.BindBuffer(BufferTarget.ElementArrayBuffer, l.ibo);
+                GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line);
+                GL.BindBuffer(BufferTarget.ElementArrayBuffer, l.ibo);
+                GL.DrawElements(PrimitiveType.Triangles, l.indices.Length,
+                    DrawElementsType.UnsignedInt, IntPtr.Zero);
+                GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
+            }
+            GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
             GL.DisableClientState(ArrayCap.VertexArray);
             GL.PopMatrix();
         }

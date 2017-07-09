@@ -41,6 +41,18 @@ namespace Quad64.src.TestROM
             }
             if (runProgram)
             {
+
+                if (Globals.needToSave && !Globals.autoSaveWhenClickEmulator)
+                {
+                    DialogResult saveResult = Prompts.ShowShouldSaveDialog();
+                    if (saveResult == DialogResult.Cancel)
+                        return;
+                }
+                else if (Globals.needToSave && Globals.autoSaveWhenClickEmulator)
+                {
+                    ROM.Instance.saveFileAs(ROM.Instance.Filepath, ROM.Instance.Endian);
+                }
+
                 Process p = new Process();
                 p.StartInfo.FileName = Globals.pathToEmulator;
                 p.StartInfo.Arguments = ROM.Instance.Filepath;

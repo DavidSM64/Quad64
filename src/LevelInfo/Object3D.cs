@@ -250,8 +250,8 @@ namespace Quad64
             }
             else if (Globals.list_selected == 1) // Macro Object
             {
-                //ushort presetNum = (ushort)(rom.readHalfwordUnsigned(romAddr) & 0x1FF);
-                ushort first = (ushort)(((int)(yRot / 22.5f) << 9) | (presetID & 0x1FF));
+                //Console.WriteLine("Preset ID = 0x" + presetID.ToString("X"));
+                ushort first = (ushort)((ushort)((yRot << 9) / 2.8125f) | (presetID & 0x1FF));
                 rom.writeHalfword(romAddr, first);
                 rom.writeHalfword(romAddr + 2, xPos);
                 rom.writeHalfword(romAddr + 4, yPos);
@@ -261,6 +261,7 @@ namespace Quad64
             }
             else if (Globals.list_selected == 2) // Special Object
             {
+                Console.WriteLine("Special Preset ID = 0x" + presetID.ToString("X"));
                 rom.writeHalfword(romAddr, presetID);
                 rom.writeHalfword(romAddr + 2, xPos);
                 rom.writeHalfword(romAddr + 4, yPos);

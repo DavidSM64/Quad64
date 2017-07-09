@@ -1,4 +1,5 @@
-﻿using Quad64.src.JSON;
+﻿using OpenTK.Graphics.OpenGL;
+using Quad64.src.JSON;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -13,14 +14,18 @@ namespace Quad64
         public static bool doWireframe = false;
         public static bool drawObjectModels = true;
         public static bool renderCollisionMap = false;
+        public static bool doBackfaceCulling = false;
 
         // Editor Options
         public static bool autoLoadROMOnStartup = false;
         public static string pathToAutoLoadROM = "";
-        public static bool useHexadecimal = true;
-        public static bool useSignedHex = true;
+        public static bool useHexadecimal = false;
+        public static bool useSignedHex = false;
+
+        // Advanced Options
         public static string pathToEmulator = "";
-        
+        public static bool autoSaveWhenClickEmulator = false;
+
         // Speed multipliers
         public static float camSpeedMultiplier = 1.0f;
         public static float objSpeedMultiplier = 1.0f;
@@ -28,6 +33,9 @@ namespace Quad64
         // TreeView selection
         public static int list_selected = -1;
         public static int item_selected = -1;
+
+        // Keeps track if the user needs to save their changes.
+        public static bool needToSave = false;
         
         // For the bounding boxes in the area
         public static Color ObjectColor = Color.Red;

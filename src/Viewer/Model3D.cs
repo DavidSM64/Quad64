@@ -174,15 +174,17 @@ namespace Quad64
                 GL.BindBuffer(BufferTarget.ArrayBuffer, m.colorBuf);
                 GL.ColorPointer(4, ColorPointerType.Float, 0, IntPtr.Zero);
                 GL.BindBuffer(BufferTarget.ElementArrayBuffer, m.ibo);
-                if(!Globals.doWireframe)
-                    GL.DrawElements(PrimitiveType.Triangles, m.indices.Length,
-                        DrawElementsType.UnsignedInt, IntPtr.Zero);
+                
+                if (Globals.doWireframe)
+                    GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line);
                 else
-                    GL.DrawElements(PrimitiveType.Lines, m.indices.Length,
-                        DrawElementsType.UnsignedInt, IntPtr.Zero);
-
-                // GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
-                // GL.BindBuffer(BufferTarget.ElementArrayBuffer, 0);
+                    GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
+                
+                GL.DrawElements(PrimitiveType.Triangles, m.indices.Length,
+                    DrawElementsType.UnsignedInt, IntPtr.Zero);
+                
+                if (Globals.doWireframe)
+                    GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
             }
 
             GL.DisableClientState(ArrayCap.VertexArray);

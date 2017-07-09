@@ -80,15 +80,22 @@ namespace Quad64.src.Scripts
             bool end = false;
             while (!end)
             {
+                if (off + 8 > data.Length)
+                    return;
                 byte[] cmd = rom.getSubArray(data, off, 8);
-                if(!Enum.IsDefined(typeof(CMD), (int)cmd[0]))
+                if (!Enum.IsDefined(typeof(CMD), (int)cmd[0]))
                 {
                     return;
                     //throw new Exception("UNDEFINED FAST3D COMMAND: 0x"+cmd[0].ToString("X2"));
                 }
+
                 //rom.printArray(cmd, 8);
                 switch ((CMD)cmd[0])
                 {
+                    case CMD.F3D_NOOP:
+                        if (bytesToInt(cmd, 0, 4) != 0)
+                            return;
+                        break;
                     case CMD.F3D_MOVEMEM:
                         switchTextureStatus(ref mdl, ref tempMaterial, true);
                         F3D_MOVEMEM(ref tempMaterial, ref lvl, cmd);
@@ -96,7 +103,8 @@ namespace Quad64.src.Scripts
                     case CMD.F3D_VTX:
                         switchTextureStatus(ref mdl, ref tempMaterial, false);
                         //if (tempMaterial.id != 0) return;
-                        F3D_VTX(vertices, ref lvl, cmd);
+                        if(!F3D_VTX(vertices, ref lvl, cmd))
+                            return;
                         break;
                     case CMD.F3D_DL:
                         F3D_DL(ref mdl, ref lvl, cmd);
@@ -158,7 +166,7 @@ namespace Quad64.src.Scripts
                             mdl.builder.AddTexture(
                                 TextureFormats.decodeTexture(
                                     temp.format,
-                                    rom.getDataFromSegmentAddress(
+                                    rom.getDataFromSegmentAddress_safe(
                                         temp.segOff,
                                         (uint)(temp.w * temp.h * 2)
                                     ),
@@ -192,13 +200,15 @@ namespace Quad64.src.Scripts
             }
         }
 
-        private static void F3D_VTX(F3D_Vertex[] vertices, ref Level lvl, byte[] cmd)
+        private static bool F3D_VTX(F3D_Vertex[] vertices, ref Level lvl, byte[] cmd)
         {
             ROM rom = ROM.Instance;
             int amount = ((cmd[2] << 8) | cmd[3]) / 0x10;
             byte seg = cmd[4];
             uint off = bytesToInt(cmd, 5, 3);
             // Console.WriteLine("04: Amt = " + amount + ", Seg = " + seg.ToString("X2")+", Off = "+off.ToString("X6"));
+            if (rom.getSegment(seg) == null)
+                return false;
             byte[] vData = rom.getSubArray(rom.getSegment(seg), off, (uint)amount * 0x10);
             for (int i = 0; i < amount; i++)
             {
@@ -213,6 +223,7 @@ namespace Quad64.src.Scripts
                 vertices[i].nz_b = vData[i * 0x10 + 14];
                 vertices[i].a = vData[i * 0x10 + 15];
             }
+            return true;
         }
 
         private static void F3D_DL(ref Model3D mdl, ref Level lvl, byte[] cmd)

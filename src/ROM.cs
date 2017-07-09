@@ -201,6 +201,7 @@ namespace Quad64
             bytes = File.ReadAllBytes(filename);
             checkROM();
             Globals.pathToAutoLoadROM = filepath;
+            Globals.needToSave = false;
             SettingsFile.SaveGlobalSettings("default");
         }
 
@@ -223,6 +224,7 @@ namespace Quad64
                 File.WriteAllBytes(filepath, bytes);
             }
             Globals.pathToAutoLoadROM = filepath;
+            Globals.needToSave = false;
             SettingsFile.SaveGlobalSettings("default");
         }
 
@@ -247,6 +249,7 @@ namespace Quad64
                 File.WriteAllBytes(filename, bytes);
                 endian = ROM_Endian.BIG;
             }
+            Globals.needToSave = false;
             filepath = filename;
             Globals.pathToAutoLoadROM = filepath;
             SettingsFile.SaveGlobalSettings("default");
@@ -310,13 +313,18 @@ namespace Quad64
         {
             byte seg = (byte)(segOffset >> 24);
             uint off = segOffset & 0x00FFFFFF;
-
-            return getSubArray_safe(segData[seg], off, size);
+            if(segData[seg] != null)
+                return getSubArray_safe(segData[seg], off, size);
+            else
+                return new byte[size];
         }
 
 
         public byte[] getSubArray_safe(byte[] arr, uint offset, uint size)
         {
+            if (arr == null)
+                return new byte[size];
+
             byte[] newArr = new byte[size];
             for (uint i = 0; i < size; i++)
             {

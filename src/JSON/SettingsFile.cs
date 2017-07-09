@@ -13,6 +13,7 @@ namespace Quad64.src.JSON
         {
             JObject s = new JObject();
             s["EnableWireframe"] = Globals.doWireframe.ToString();
+            s["EnableBackfaceCulling"] = Globals.doBackfaceCulling.ToString();
             s["DrawObjectModels"] = Globals.drawObjectModels.ToString();
             s["RenderCollisionMap"] = Globals.renderCollisionMap.ToString();
             s["AutoLoadROMFile"] = Globals.autoLoadROMOnStartup.ToString();
@@ -20,6 +21,7 @@ namespace Quad64.src.JSON
             s["EnableHex"] = Globals.useHexadecimal.ToString();
             s["SignedHex"] = Globals.useSignedHex.ToString();
             s["EmulatorPath"] = Globals.pathToEmulator;
+            s["AutoSaveOnLaunchROM"] = Globals.autoSaveWhenClickEmulator;
 
             string savePath = "./data/profiles/" + profileName + "/";
             Directory.CreateDirectory(savePath); // Create directory if it doesn't exist!
@@ -35,6 +37,8 @@ namespace Quad64.src.JSON
                 JObject o = JObject.Parse(json);
                 if (o["EnableWireframe"] != null)
                     Globals.doWireframe = bool.Parse(o["EnableWireframe"].ToString());
+                if (o["EnableBackfaceCulling"] != null)
+                    Globals.doBackfaceCulling = bool.Parse(o["EnableBackfaceCulling"].ToString());
                 if (o["DrawObjectModels"] != null)
                     Globals.drawObjectModels = bool.Parse(o["DrawObjectModels"].ToString());
                 if (o["RenderCollisionMap"] != null)
@@ -49,6 +53,8 @@ namespace Quad64.src.JSON
                     Globals.useSignedHex = bool.Parse(o["SignedHex"].ToString());
                 if(o["EmulatorPath"] != null)
                     Globals.pathToEmulator = o["EmulatorPath"].ToString();
+                if (o["AutoSaveOnLaunchROM"] != null)
+                    Globals.autoSaveWhenClickEmulator = bool.Parse(o["AutoSaveOnLaunchROM"].ToString());
             }
         }
     }

@@ -1,4 +1,5 @@
-﻿using Quad64.src.JSON;
+﻿using OpenTK.Graphics.OpenGL;
+using Quad64.src.JSON;
 using Quad64.src.TestROM;
 using System;
 using System.Collections.Generic;
@@ -24,8 +25,9 @@ namespace Quad64.src.Forms
             AddAdvancedSettings();
         }
 
-        TextBox emuPathTextBox;
-        Button setEmuPathButton;
+        private TextBox emuPathTextBox;
+        private Button setEmuPathButton;
+        private CheckBox autoSaveWithEmulatorBox;
         private void AddAdvancedSettings()
         {
             int xOffset = 0, yOffset = 10, SeperatorWidth = Advanced.Width - 6;
@@ -34,6 +36,9 @@ namespace Quad64.src.Forms
             yOffset += 25;
             addButtonWithTextBox(Advanced, "Browse", Globals.pathToEmulator, true, xOffset, yOffset, Advanced.Width, 
                 ref emuPathTextBox, ref setEmuPathButton, OpenEmulatorPath_Click);
+            yOffset += 30;
+            Advanced.Controls.Add(newCheckBox("Automatically save ROM when launching emulator", xOffset, yOffset, Globals.autoSaveWhenClickEmulator));
+            autoSaveWithEmulatorBox = (CheckBox)Advanced.Controls[Advanced.Controls.Count - 1];
         }
 
         private void addButtonWithTextBox(TabPage page, string buttonText, string textBoxText, bool isTextBoxReadOnly, int x, int y, int screenWidth, ref TextBox box, ref Button button, EventHandler buttonClickEvent)
@@ -49,8 +54,8 @@ namespace Quad64.src.Forms
             LaunchROM.setEmulatorPath();
             emuPathTextBox.Text = Globals.pathToEmulator;
         }
-
-        private CheckBox enableWireframe, drawObjMdls, autoLoadROM;
+        
+        private CheckBox enableWireframe, enableBFculling, drawObjMdls, autoLoadROM;
         private ComboBox renderMap, useHex;
         private void AddBasicSettings()
         {
@@ -61,6 +66,9 @@ namespace Quad64.src.Forms
             yOffset += 25;
             Basic.Controls.Add(newCheckBox("Enable wireframe", xOffset, yOffset, Globals.doWireframe));
             enableWireframe = (CheckBox)Basic.Controls[Basic.Controls.Count - 1];
+            yOffset += 25;
+            Basic.Controls.Add(newCheckBox("Enable backface culling", xOffset, yOffset, Globals.doBackfaceCulling));
+            enableBFculling = (CheckBox)Basic.Controls[Basic.Controls.Count - 1];
             yOffset += 25;
             Basic.Controls.Add(newCheckBox("Draw Object Models", xOffset, yOffset, Globals.drawObjectModels));
             drawObjMdls = (CheckBox)Basic.Controls[Basic.Controls.Count - 1];
@@ -179,9 +187,16 @@ namespace Quad64.src.Forms
             Globals.doWireframe = enableWireframe.Checked;
             Globals.drawObjectModels = drawObjMdls.Checked;
             Globals.autoLoadROMOnStartup = autoLoadROM.Checked;
+            Globals.doBackfaceCulling = enableBFculling.Checked;
             Globals.renderCollisionMap = (renderMap.SelectedIndex == 1);
             Globals.useHexadecimal = (useHex.SelectedIndex != 0);
             Globals.useSignedHex = (useHex.SelectedIndex == 1);
+            Globals.autoSaveWhenClickEmulator = autoSaveWithEmulatorBox.Checked;
+
+            if (Globals.doBackfaceCulling)
+                GL.Enable(EnableCap.CullFace);
+            else
+                GL.Disable(EnableCap.CullFace);
         }
 
         private void saveButton_Click(object sender, EventArgs e)
