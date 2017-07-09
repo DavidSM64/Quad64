@@ -2925,6 +2925,153 @@
       "ModelID": "0x55",
       "ModelAddress": "0x0C000468",
       "Behavior": "0x13004538"
+    },
+    //TODO: Inaccurate 0x0C objects ModelAddress
+    {
+      "Name": "Beta Blarrg [MOP1]",
+      "ModelID": "0x54",
+      "ModelAddress": "0x0C000224",
+      "Behavior": "0x130023D0"
+    },
+    {
+      "Name": "Trampoline [MOP1]",
+      "ModelID": "0xB5",
+      "ModelAddress": "0x0C000000",
+      "Behavior": "0x13001608"
+    },
+    {
+      "Name": "Noteblock [MOP1]",
+      "ModelID": "0x7B",
+      "ModelAddress": "0x0301dbf8",
+      "Behavior": "0x13000174"
+    },
+    {
+      "Name": "Sandblock [MOP1]",
+      "ModelID": "0x99",
+      "ModelAddress": "0x030225e4",
+      "Behavior": "0x1300064C"
+    },
+    {
+      "Name": "Shrinkplatform [MOP1]",
+      "ModelID": "0x98",
+      "ModelAddress": "0x030212f4",
+      "Behavior": "0x13000624"
+    },
+    {
+      "Name": "Spring [MOP1]",
+      "ModelID": "0x92",
+      "ModelAddress": "0x0301fc98",
+      "Behavior": "0x130005B4"
+    },
+    {
+      "Name": "Shell 1 [MOP1]",
+      "ModelID": "0x9B",
+      "ModelAddress": "0x0f000adc",
+      "Behavior": "0x13004218"
+    },
+    {
+      "Name": "Shell 2 [MOP1]",
+      "ModelID": "0x9D",
+      "ModelAddress": "0x0f000b08",
+      "Behavior": "0x13004218"
+    },
+    {
+      "Name": "Emitter [MOP2]",
+      "ModelID": "0x00",
+      "ModelAddress": "0x00000000",
+      "Behavior": "0x130050B4",
+      "BP1_NAME": "Param 1",
+      "BP2_NAME": "Param 2",
+      "BP1_DESCRIPTION": "Spawn radius, Red - value",
+      "BP2_DESCRIPTION": "Green - value, Blue - value"
+    },
+    {
+      "Name": "Flipclock [MOP2]",
+      "ModelID": "0xF0",
+      "ModelAddress": "0x0302272c",
+      "Behavior": "0x130050D0"
+    },
+    {
+      "Name": "Jukebox [MOP2]",
+      "ModelID": "0x00",
+      "ModelAddress": "0x00000000",
+      "Behavior": "0x13005104",
+      "BP1_NAME": "First",
+      "BP2_NAME": "Last",
+      "BP1_DESCRIPTION": "First song in list",
+      "BP2_DESCRIPTION": "Last song in list"
+    },
+    {
+      "Name": "PSwitch [MOP2]",
+      "ModelID": "0xCF",
+      "ModelAddress": "0x0f0004cc",
+      "Behavior": "0x1300512C"
+    },
+    {
+      "Name": "Switch for Switchblocks [MOP2]",
+      "ModelID": "0xF2",
+      "ModelAddress": "0x03022708",
+      "Behavior": "0x13003AE0",
+      "BP2_NAME": "Color",
+      "BP2_DESCRIPTION": "0 for red\n1 for blue"
+    },
+    {
+      "Name": "Switchblock [MOP2]",
+      "ModelID": "0xF1",
+      "ModelAddress": "0x030226d4",
+      "Behavior": "0x13004EA0",
+      "BP2_NAME": "Color",
+      "BP2_DESCRIPTION": "0 for red/n2 for blue",
+      "BP1_NAME": "Start Color",
+      "BP1_DESCRIPTION": "0 to start red\n2 to start blue"
+    },
+    {
+      "Name": "Checkpoint Flag [MOP3]",
+      "ModelID": "0x2E",
+      "ModelAddress": "0x00606660",
+      "Behavior": "0x13000D50",
+      "BP2_NAME": "Flag",
+      "BP2_DESCRIPTION": "0 for regular flag\n1 for reset flag"
+    },
+    {
+      "Name": "Moving & Rotating Block [MOP3]",
+      "ModelID": "0x2D",
+      "ModelAddress": "0x00603670",
+      "Behavior": "0x13000D24",
+      "BP1_NAME": "Color",
+      "BP1_DESCRIPTION": "0 for blue\n1 for red",
+      "BP2_NAME": "PathID",
+      "BP2_DESCRIPTION": "Path ID (0, 1 and 2 are predefined)"
+    },
+    {
+      "Name": "Flipswitch Panel [MOP3]",
+      "ModelID": "0x2A",
+      "ModelAddress": "0x005f9fe0",
+      "Behavior": "0x130005D8"
+    },
+    {
+      "Name": "Flipswitch Panel Starspawner [MOP3]",
+      "ModelID": "0x00",
+      "ModelAddress": "0x00000000",
+      "Behavior": "0x130002A0",
+      "BP1_NAME": "Star #",
+      "BP1_DESCRIPTION": "Star number"
+    },
+    {
+      "Name": "Green Switchboard [MOP3]",
+      "ModelID": "0x2B",
+      "ModelAddress": "0x005fd8b0",
+      "Behavior": "0x13000CFC",
+      "BP1_NAME": "Direct 1",
+      "BP1_DESCRIPTION": "Maximum distance into direction1",
+      "BP2_NAME": "Direct 2",
+      "BP2_DESCRIPTION": "Maximum distance into direction2"
+    },
+    {
+      "Name": "Flipswap Platform [MOP3]",
+      "ModelID": "0x2F",
+      "ModelAddress": "0x005f9ac0",
+      "Behavior": "0x13000278"
     }
   ]
 }
