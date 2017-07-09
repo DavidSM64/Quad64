@@ -9,15 +9,20 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 
+using Gma.DataStructures.StringSearch;
+
 namespace Quad64.src.Forms
 {
     partial class SelectComboPreset : Form
     {
+        const int minSearchLength = 3;
+
         public bool ClickedSelect { get; set; }
         public ObjectComboEntry ReturnObjectCombo { get; set; }
         public PresetMacroEntry ReturnPresetMacro { get; set; }
 
         private Level level;
+        private ITrie<int> indexSearchTrie;
 
         // 0 = objects, 1 = macro objects, 2 = special (8), 3 = special (10), 4 = special (12)
         private int listType = -1; 
@@ -28,6 +33,7 @@ namespace Quad64.src.Forms
             this.listType = listType;
             listView1.Columns[0].Text = columnText;
             textBrush = new SolidBrush(columnTextColor);
+            indexSearchTrie = new SuffixTrie<int>(minSearchLength);
         }
 
         private void LoadSpecialList(List<PresetMacroEntry> specialList)
@@ -101,6 +107,9 @@ namespace Quad64.src.Forms
             
             if (listView1.Items.Count > 0)
             {
+                for (int i = 0; i < listView1.Items.Count; i++)
+                    indexSearchTrie.Add(listView1.Items[i].Text.ToLowerInvariant(), i);
+
                 listView1.Items[0].Selected = true;
                 listView1.Select();
             }
@@ -194,6 +203,17 @@ namespace Quad64.src.Forms
         {
             ClickedSelect = false;
             Close();
+        }
+
+        private void searchBox_TextChanged(object sender, EventArgs e)
+        {
+            var indices = indexSearchTrie.Retrieve(searchBox.Text.ToLowerInvariant());
+            if (indices.Any())
+            {
+                int index = indices.First();
+                listView1.Items[index].Selected = true;
+                listView1.EnsureVisible(index);
+            }
         }
     }
 }
