@@ -284,6 +284,11 @@ namespace Quad64
             GL.Enable(EnableCap.Texture2D);
             GL.Enable(EnableCap.AlphaTest);
             GL.AlphaFunc(AlphaFunction.Gequal, 0.5f);
+            
+            if (Globals.doBackfaceCulling)
+                GL.Enable(EnableCap.CullFace);
+            else
+                GL.Disable(EnableCap.CullFace);
         }
 
         private void glControl1_Resize(object sender, EventArgs e)
@@ -296,7 +301,9 @@ namespace Quad64
         
         private void loadROMToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            loadROM(false);
+            DialogResult saveResult = Prompts.ShowShouldSaveDialog();
+            if(saveResult != DialogResult.Cancel)
+                loadROM(false);
         }
 
         private void saveROMAsToolStripMenuItem_Click(object sender, EventArgs e)
@@ -526,16 +533,25 @@ namespace Quad64
             if (newLevel.changeLevel)
             {
                 //Console.WriteLine("Changing Level to " + newLevel.levelID);
-                level = new Level(newLevel.levelID, 1);
-                camera.setCameraMode(CameraMode.FLY, ref camMtx);
-                camera.setLevel(level);
-                LevelScripts.parse(ref level, 0x15, 0);
-                level.sortAndAddNoModelEntries();
-                level.CurrentAreaID = level.Areas[0].AreaID;
-                resetObjectVariables();
-                refreshObjectsInList();
-                glControl1.Invalidate();
-                updateAreaButtons();
+                Level testLevel = new Level(newLevel.levelID, 1);
+                LevelScripts.parse(ref testLevel, 0x15, 0);
+                if (testLevel.Areas.Count > 0)
+                {
+                    level = testLevel;
+                    camera.setCameraMode(CameraMode.FLY, ref camMtx);
+                    camera.setLevel(level);
+                    level.sortAndAddNoModelEntries();
+                    level.CurrentAreaID = level.Areas[0].AreaID;
+                    resetObjectVariables();
+                    refreshObjectsInList();
+                    glControl1.Invalidate();
+                    updateAreaButtons();
+                }
+                else
+                {
+                    ushort id = newLevel.levelID;
+                    MessageBox.Show("Error: No areas found in level ID: 0x" + id.ToString("X"));
+                }
             }
         }
 
@@ -679,6 +695,7 @@ namespace Quad64
                     ((WarpInstant)warp).updateROMData();
                 }
             }
+            Globals.needToSave = true;
         }
 
         // I never want CategorizedAlphabetical, so I change it back to Categorized if detected.
@@ -892,6 +909,7 @@ namespace Quad64
                     glControl1.Invalidate();
                     propertyGrid1.Refresh();
                     glControl1.Update(); // Needed after calling propertyGrid1.Refresh();
+                    Globals.needToSave = true;
                 }
             }
         }
@@ -929,6 +947,7 @@ namespace Quad64
                     propertyGrid1.Refresh();
                     glControl1.Update(); // Needed after calling propertyGrid1.Refresh();
                     moveObj_UpDown_lastMouseY = e.Y;
+                    Globals.needToSave = true;
                 }
             }
         }
@@ -996,6 +1015,7 @@ namespace Quad64
                     glControl1.Invalidate();
                     propertyGrid1.Refresh();
                     glControl1.Update(); // Needed after calling propertyGrid1.Refresh();
+                    Globals.needToSave = true;
                 }
             }
         }
@@ -1020,6 +1040,7 @@ namespace Quad64
                 glControl1.Invalidate();
                 propertyGrid1.Refresh();
                 glControl1.Update(); // Needed after calling propertyGrid1.Refresh();
+                Globals.needToSave = true;
             }
         }
 
@@ -1033,6 +1054,15 @@ namespace Quad64
             ToolStripMenuItem item = (ToolStripMenuItem)sender;
             ushort area = ushort.Parse(item.Text.Substring(item.Text.LastIndexOf(" ")+1));
             trySwitchArea(area);
+        }
+
+        private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (Globals.needToSave)
+            {
+                DialogResult saveResult = Prompts.ShowShouldSaveDialog();
+                e.Cancel = (saveResult == DialogResult.Cancel);
+            }
         }
 
         bool rotObj_Yaw_mouseDown = false;
@@ -1074,6 +1104,7 @@ namespace Quad64
                     propertyGrid1.Refresh();
                     glControl1.Update(); // Needed after calling propertyGrid1.Refresh();
                     rotObj_Yaw_lastMouseY = e.Y;
+                    Globals.needToSave = true;
                 }
             }
         }

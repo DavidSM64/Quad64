@@ -251,7 +251,7 @@ namespace Quad64
             else if (Globals.list_selected == 1) // Macro Object
             {
                 //Console.WriteLine("Preset ID = 0x" + presetID.ToString("X"));
-                ushort first = (ushort)((ushort)((yRot << 9) / 2.8125f) | (presetID & 0x1FF));
+                ushort first = (ushort)((((ushort)(yRot / 2.8125f) & 0x7F) << 9) | (presetID & 0x1FF));
                 rom.writeHalfword(romAddr, first);
                 rom.writeHalfword(romAddr + 2, xPos);
                 rom.writeHalfword(romAddr + 4, yPos);
