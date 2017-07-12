@@ -125,6 +125,11 @@
     <Compile Include="src\Scripts\ModelBuilder.cs" />
     <Compile Include="src\Scripts\TextureFormats.cs" />
     <Compile Include="src\TestROM\LaunchROM.cs" />
+    <Compile Include="src\Trie\ITrie.cs" />
+    <Compile Include="src\Trie\SuffixTrie.cs" />
+    <Compile Include="src\Trie\Trie.cs" />
+    <Compile Include="src\Trie\TrieNode.cs" />
+    <Compile Include="src\Trie\TrieNodeBase.cs" />
     <Compile Include="src\Viewer\BoundingBox.cs" />
     <Compile Include="src\Viewer\Camera.cs" />
     <Compile Include="src\Viewer\ContentPipe.cs" />
