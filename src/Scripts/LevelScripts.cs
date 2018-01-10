@@ -27,92 +27,254 @@ namespace Quad64.Scripts
             {
                 byte cmdLen = data[off + 1];
                 byte[] cmd = rom.getSubArray(data, off, cmdLen);
-               // rom.printArray(cmd, cmdLen);
+                //rom.printArray(cmd, cmdLen);
+                string desc = "Unknown command";
+                bool alreadyAdded = false;
                 switch (cmd[0])
                 {
                     case 0x00:
                     case 0x01:
-                        CMD_00(ref lvl, cmd, rom);
+                        CMD_00(ref lvl, ref desc, cmd, rom, seg, off);
+                        alreadyAdded = true;
                         break;
                     case 0x02:
                         endCmd = 2;
+                        desc = "End level script";
                         end = true;
                         break;
+                    case 0x03:
+                    case 0x04:
+                        desc = "Delay frames";
+                        break;
                     case 0x05:
-                        endCmd = CMD_05(ref lvl, cmd, seg, off);
+                        endCmd = CMD_05(ref lvl, ref desc, cmd, seg, off);
+                        alreadyAdded = true;
                         end = true;
                         break;
                     case 0x06:
-                        if (CMD_06(ref lvl, cmd) == 0x02)
+                        if (CMD_06(ref lvl, ref desc, cmd, seg, off) == 0x02)
                         {
                             end = true;
                             endCmd = 2;
                         }
+                        alreadyAdded = true;
                         break;
                     case 0x07:
                         end = true;
+                        desc = "Pop script stack and return back";
                         endCmd = 0x07;
                         break;
+                    case 0x08:
+                        desc = "Push script stack and a 16-bit parameter onto stack";
+                        break;
+                    case 0x09:
+                        desc = "Pops script stack and parameter";
+                        break;
+                    case 0x0A:
+                        desc = "Push next level command on script stack and param 0x00000000 onto stack";
+                        break;
+                    case 0x0B:
+                        CMD_0B(ref lvl, ref desc, cmd, seg, off);
+                        alreadyAdded = true;
+                        break;
                     case 0x0C:
-                        CMD_0C(ref lvl, cmd);
+                        CMD_0C(ref lvl, ref desc, cmd, seg, off);
+                        alreadyAdded = true;
+                        break;
+                    case 0x0D:
+                        CMD_0D(ref lvl, ref desc, cmd, seg, off);
+                        alreadyAdded = true;
+                        break;
+                    case 0x0E:
+                        CMD_0E(ref lvl, ref desc, cmd, seg, off);
+                        alreadyAdded = true;
+                        break;
+                    case 0x0F:
+                        desc = "Skip following 0x10 (Do nothing) commands";
+                        break;
+                    case 0x10:
+                        desc = "Do nothing";
+                        break;
+                    case 0x11:
+                        desc = "Call ASM function and set level accumulator (script_accum)";
+                        break;
+                    case 0x12:
+                        desc = "Call ASM function loop and set level accumulator (script_accum)";
+                        break;
+                    case 0x13:
+                        desc = "Set level accumulator (script_accum) as 0x" + bytesToInt(cmd, 2, 2).ToString("X4");
+                        break;
+                    case 0x14:
+                        desc = "Call PushPoolState() function";
+                        break;
+                    case 0x15:
+                        desc = "Call PopPoolState() function";
+                        break;
+                    case 0x16:
+                        desc = "Copy bytes from ROM (0x" + bytesToInt(cmd, 8, 4).ToString("X8") + " to 0x" + bytesToInt(cmd, 12, 4).ToString("X8") + ") to RAM address 0x" + bytesToInt(cmd, 4, 4).ToString("X8");
                         break;
                     case 0x17:
-                        CMD_17(ref lvl, cmd, rom);
+                        CMD_17(ref lvl, ref desc, cmd, rom);
                         break;
                     case 0x18:
                     case 0x1A:
-                        CMD_18(ref lvl, cmd, rom);
+                        CMD_18(ref lvl, ref desc, cmd, rom);
+                        break;
+                    case 0x19:
+                        desc = "Create Mario head demo (";
+                        switch (cmd[3])
+                        {
+                            case 1:
+                                desc += "No face";
+                                break;
+                            case 2:
+                                desc += "Regular face";
+                                break;
+                            case 3:
+                                desc += "Game over face";
+                                break;
+                        }
+                        desc += ")";
+                        break;
+                    case 0x1B:
+                        desc = "Start loading sequence";
+                        break;
+                    case 0x1C:
+                        desc = "Level & Memory cleanup";
+                        break;
+                    case 0x1D:
+                        desc = "End loading sequence";
+                        break;
+                    case 0x1E:
+                        desc = "Allocate space for level data from pool";
                         break;
                     case 0x1F:
                         //Globals.DEBUG_PLG = true;
-                        CMD_1F(ref lvl, cmd);
+                        CMD_1F(ref lvl, ref desc, cmd);
+                        break;
+                    case 0x20:
+                        desc = "End of area " + lvl.CurrentAreaID;
                         break;
                     case 0x21:
-                        CMD_21(ref lvl, cmd, rom);
+                        CMD_21(ref lvl, ref desc, cmd, rom);
                         break;
                     case 0x22:
                         //Globals.DEBUG_PLG = false;
-                        CMD_22(ref lvl, cmd, rom);
+                        CMD_22(ref lvl, ref desc, cmd, rom);
                         break;
                     case 0x24:
-                        CMD_24(ref lvl, cmd, rom, seg, off);
+                        CMD_24(ref lvl, ref desc, cmd, rom, seg, off);
+                        break;
+                    case 0x25:
+                        desc = "Setup Mario object";
                         break;
                     case 0x26:
-                        CMD_26(ref lvl, cmd, rom, seg, off);
+                        CMD_26(ref lvl, ref desc, cmd, rom, seg, off);
                         break;
                     case 0x27:
-                        CMD_27(ref lvl, cmd, rom, seg, off);
+                        CMD_27(ref lvl, ref desc, cmd, rom, seg, off);
                         break;
                     case 0x28:
-                        CMD_28(ref lvl, cmd, rom, seg, off);
+                        CMD_28(ref lvl, ref desc, cmd, rom, seg, off);
+                        break;
+                    case 0x2B:
+                        {
+                            desc = "Mario's default pos = (" + 
+                                (short)bytesToInt(cmd, 6, 2) + "," +
+                                (short)bytesToInt(cmd, 8, 2) + "," +
+                                (short)bytesToInt(cmd, 10, 2) + "), Y-Rot = " +
+                                (short)bytesToInt(cmd, 4, 2) + ", start in area " + cmd[2];
+                        }
                         break;
                     case 0x2E:
-                        CMD_2E(ref lvl, cmd, rom);
+                        CMD_2E(ref lvl, ref desc, cmd, rom);
+                        break;
+                    case 0x30:
+                        desc = "Show dialog message when level starts; dialog ID = 0x" + cmd[3].ToString("X2");
+                        break;
+                    case 0x31:
+                        switch (cmd[3])
+                        {
+                            case 0: desc = "Set default terrain to \"Normal\""; break;
+                            case 1: desc = "Set default terrain to \"Normal B\""; break;
+                            case 2: desc = "Set default terrain to \"Snow\""; break;
+                            case 3: desc = "Set default terrain to \"Sand\""; break;
+                            case 4: desc = "Set default terrain to \"Haunted House\""; break;
+                            case 5: desc = "Set default terrain to \"Water levels\""; break;
+                            case 6: desc = "Set default terrain to \"Slippery Slide\""; break;
+                        }
+                        break;
+                    case 0x32:
+                        desc = "Do nothing";
+                        break;
+                    case 0x33:
+                        if(cmd[2] == 0x01)
+                            desc = "Fade screen with color (R = " + cmd[4] + ", G = " + cmd[5] + ", B = " + cmd[6] + ", duration = " + cmd[3] + " frames)";
+                        else
+                            desc = "Disable screen fade";
+                        break;
+                    case 0x34:
+                        if(cmd[2] == 0x00)
+                            desc = "Cancel blackout";
+                        else
+                            desc = "Blackout screen";
+                        break;
+                    case 0x36:
+                        desc = "Set music (Seq = 0x" + cmd[5].ToString("X2") + ")";
+                        break;
+                    case 0x37:
+                        desc = "Set music (Seq = 0x" + cmd[3].ToString("X2") + ")";
                         break;
                     case 0x39:
-                        CMD_39(ref lvl, cmd, rom);
+                        CMD_39(ref lvl, ref desc, cmd, rom);
+                        break;
+                    case 0x3B:
+                        desc = "Add jet stream; Position = (" + (short)bytesToInt(cmd, 4, 2) + "," + 
+                            (short)bytesToInt(cmd, 6, 2) + "," + (short)bytesToInt(cmd, 8, 2) + 
+                            "), Intensity = " + (short)bytesToInt(cmd, 10, 2);
                         break;
                 }
+                if (!alreadyAdded)
+                    addLSCommandToDump(ref lvl, cmd, seg, off, desc);
                 off += cmdLen;
             }
             return endCmd;
         }
 
-        private static void CMD_00(ref Level lvl, byte[] cmd, ROM rom)
+        private static void addLSCommandToDump(ref Level lvl, byte[] cmd, byte seg, uint offset, string description)
+        {
+            ScriptDumpCommandInfo info = new ScriptDumpCommandInfo();
+            info.data = cmd;
+            info.description = description;
+            info.segAddress = (uint)(seg << 24) | offset;
+            info.romAddress = ROM.Instance.decodeSegmentAddress_safe(seg, offset);
+            lvl.LevelScriptCommands_ForDump.Add(info);
+        }
+
+        private static void CMD_00(ref Level lvl, ref string desc, byte[] cmd, ROM rom, byte org_seg, uint org_off)
         {
             byte seg = cmd[3];
             uint start = bytesToInt(cmd, 4, 4);
             uint end = bytesToInt(cmd, 8, 4);
             uint off = bytesToInt(cmd, 13, 3);
+            desc = "Load segment 0x" + seg.ToString("X2") + " and jump to 0x" + seg.ToString("X2") + off.ToString("X6");
             rom.setSegment(seg, start, end, false);
-            if (seg == 0x14) return;
+            if (seg == 0x14)
+            {
+                desc += " (This gets skipped in Quad64, since it's just the star select screen data)";
+                addLSCommandToDump(ref lvl, cmd, org_seg, org_off, desc);
+                return;
+            }
+            addLSCommandToDump(ref lvl, cmd, org_seg, org_off, desc);
             parse(ref lvl, seg, off);
         }
 
-        private static int CMD_05(ref Level lvl, byte[] cmd, byte currentSeg, uint currentOff)
+        private static int CMD_05(ref Level lvl, ref string desc, byte[] cmd, byte currentSeg, uint currentOff)
         {
             byte seg = cmd[4];
             uint off = bytesToInt(cmd, 5, 3);
+            desc = "Jump to segment address 0x" + seg.ToString("X2") + off.ToString("X6");
+            addLSCommandToDump(ref lvl, cmd, currentSeg, currentOff, desc);
             if (seg == currentSeg)
             {
                 if ((long)off - (long)currentOff == -4) {
@@ -123,16 +285,56 @@ namespace Quad64.Scripts
             return parse(ref lvl, seg, off);
         }
 
-        private static int CMD_06(ref Level lvl, byte[] cmd)
+        private static int CMD_06(ref Level lvl, ref string desc, byte[] cmd, byte org_seg, uint org_off)
         {
             byte seg = cmd[4];
             uint off = bytesToInt(cmd, 5, 3);
+            desc = "Push script stack and jump to address 0x" + seg.ToString("X2") + off.ToString("X6");
+            addLSCommandToDump(ref lvl, cmd, org_seg, org_off, desc);
             return parse(ref lvl, seg, off);
         }
 
-        private static void CMD_0C(ref Level lvl, byte[] cmd)
+        private static string getCondition(byte operation, uint argument, bool inverse)
+        {
+            string appendInverse = (inverse ? "!" : "");
+            switch (operation)
+            {
+                case 0:
+                    return "if (" + appendInverse + " script_accum & 0x" + argument.ToString("X2") + ")";
+                case 1:
+                    return "if (" + appendInverse + "!(script_accum & 0x" + argument.ToString("X2") + "))";
+                case 2:
+                    return "if (" + appendInverse + "script_accum == 0x" + argument.ToString("X2") + ")";
+                case 3:
+                    return "if (" + appendInverse + "script_accum != 0x" + argument.ToString("X2") + ")";
+                case 4:
+                    return "if (" + appendInverse + "script_accum < 0x" + argument.ToString("X2") + ")";
+                case 5:
+                    return "if (" + appendInverse + "script_accum <= 0x" + argument.ToString("X2") + ")";
+                case 6:
+                    return "if (" + appendInverse + "script_accum > 0x" + argument.ToString("X2") + ")";
+                case 7:
+                    return "if (" + appendInverse + "script_accum >= 0x" + argument.ToString("X2") + ")";
+                default:
+                    return "";
+            }
+        }
+
+
+        private static void CMD_0B(ref Level lvl, ref string desc, byte[] cmd, byte org_seg, uint org_off)
         {
             var lvlcheck = bytesToInt(cmd, 4, 4);
+            byte operation = cmd[2];
+            desc = "Pop stack " + " " + getCondition(operation, lvlcheck, false);
+            addLSCommandToDump(ref lvl, cmd, org_seg, org_off, desc);
+        }
+
+        private static void CMD_0C(ref Level lvl, ref string desc, byte[] cmd, byte org_seg, uint org_off)
+        {
+            var lvlcheck = bytesToInt(cmd, 4, 4);
+            byte operation = cmd[2];
+            desc = "Jump to address 0x" + bytesToInt(cmd, 8, 4).ToString("X8") + " " + getCondition(operation, lvlcheck, false);
+            addLSCommandToDump(ref lvl, cmd, org_seg, org_off, desc);
             if (lvlcheck == lvl.LevelID)
             {
                 byte seg = cmd[8];
@@ -141,48 +343,74 @@ namespace Quad64.Scripts
             }
         }
 
-        private static void CMD_17(ref Level lvl, byte[] cmd, ROM rom)
+
+        private static void CMD_0D(ref Level lvl, ref string desc, byte[] cmd, byte org_seg, uint org_off)
+        {
+            var lvlcheck = bytesToInt(cmd, 4, 4);
+            byte operation = cmd[2];
+            desc = "Push next command to stack and jump " + " " + getCondition(operation, lvlcheck, false);
+            addLSCommandToDump(ref lvl, cmd, org_seg, org_off, desc);
+        }
+
+        private static void CMD_0E(ref Level lvl, ref string desc, byte[] cmd, byte org_seg, uint org_off)
+        {
+            var lvlcheck = bytesToInt(cmd, 4, 4);
+            byte operation = cmd[2];
+            desc = "Skip following 0x10 and 0x0F levelscript commands if " + " " + getCondition(operation, lvlcheck, true);
+            addLSCommandToDump(ref lvl, cmd, org_seg, org_off, desc);
+        }
+
+        private static void CMD_17(ref Level lvl, ref string desc, byte[] cmd, ROM rom)
         {
             byte seg = cmd[3];
             uint start = bytesToInt(cmd, 4, 4);
             uint end = bytesToInt(cmd, 8, 4);
+            desc = "Load Segment 0x" + seg.ToString("X2") + " from ROM 0x" + start.ToString("X8") + " to 0x" + end.ToString("X8");
             rom.setSegment(seg, start, end, false);
         }
         
-        private static void CMD_18(ref Level lvl, byte[] cmd, ROM rom)
+        private static void CMD_18(ref Level lvl, ref string desc, byte[] cmd, ROM rom)
         {
             byte seg = cmd[3];
             uint start = bytesToInt(cmd, 4, 4);
             uint end = bytesToInt(cmd, 8, 4);
+            desc = "Load Segment 0x" + seg.ToString("X2") + " from compressed MIO0 at ROM addr 0x" + start.ToString("X8") + " to 0x" + end.ToString("X8");
             byte[] MIO0_header = rom.getSubArray(rom.Bytes, start, 0x10);
-
             if (bytesToInt(MIO0_header, 0, 4) == 0x4D494F30) // Check MIO0 signature
             {
-               rom.setSegment(seg, start, end, true);
+                int compressedOffset = (int)bytesToInt(MIO0_header, 0x8, 4);
+                int uncompressedOffset = (int)bytesToInt(MIO0_header, 0xC, 4);
+                bool isFakeMIO0 = rom.testIfMIO0IsFake(start, compressedOffset, uncompressedOffset);
+                rom.setSegment(seg, start, end, true, isFakeMIO0, (uint)uncompressedOffset);
             }
         }
         
-        private static void CMD_1F(ref Level lvl, byte[] cmd)
+        private static void CMD_1F(ref Level lvl, ref string desc, byte[] cmd)
         {
             byte areaID = cmd[2];
             byte seg = cmd[4];
             uint off = bytesToInt(cmd, 5, 3);
 
+            desc = "Start area " + areaID + "; Load area geo layout from 0x" + seg.ToString("X2") + off.ToString("X6");
+
             Area newArea = new Area(areaID, bytesToInt(cmd, 4, 4), lvl);
             GeoScripts.resetNodes();
             newArea.AreaModel.GeoDataSegAddress = bytesToInt(cmd, 4, 4);
             GeoScripts.parse(ref newArea.AreaModel, ref lvl, seg, off);
+            lvl.setAreaBackgroundInfo(ref newArea);
             lvl.Areas.Add(newArea);
             lvl.CurrentAreaID = areaID;
             newArea.AreaModel.buildBuffers();
            // newArea.AreaModel.outputTextureAtlasToPng("Area_"+areaID+"_TexAtlus.png");
         }
 
-        private static void CMD_21(ref Level lvl, byte[] cmd, ROM rom)
+        private static void CMD_21(ref Level lvl, ref string desc, byte[] cmd, ROM rom)
         {
             byte modelID = cmd[3];
             byte seg = cmd[4];
             uint off = bytesToInt(cmd, 5, 3);
+            
+            desc = "Define Model ID 0x" + modelID.ToString("X2") + "; Load Fast3D from 0x" + seg.ToString("X2") + off.ToString("X6");
 
             Model3D newModel = new Model3D();
             newModel.GeoDataSegAddress = bytesToInt(cmd, 4, 4);
@@ -197,11 +425,14 @@ namespace Quad64.Scripts
             lvl.ModelIDs.Add(modelID, newModel);
         }
 
-        private static void CMD_22(ref Level lvl, byte[] cmd, ROM rom)
+        private static void CMD_22(ref Level lvl, ref string desc, byte[] cmd, ROM rom)
         {
             byte modelID = cmd[3];
             byte seg = cmd[4];
             uint off = bytesToInt(cmd, 5, 3);
+
+            desc = "Define Model ID 0x" + modelID.ToString("X2") + "; Load Geometry layout from 0x" + seg.ToString("X2") + off.ToString("X6");
+
             //Console.WriteLine("Size of seg 0x"+seg.ToString("X2")+" = " + rom.getSegment(seg).Length);
             Model3D newModel = new Model3D();
             newModel.GeoDataSegAddress = bytesToInt(cmd, 4, 4);
@@ -217,7 +448,7 @@ namespace Quad64.Scripts
             lvl.ModelIDs.Add(modelID, newModel);
         }
 
-        private static void CMD_24(ref Level lvl, byte[] cmd, ROM rom, byte seg, uint off)
+        private static void CMD_24(ref Level lvl, ref string desc, byte[] cmd, ROM rom, byte seg, uint off)
         {
             Object3D newObj = new Object3D();
             if (rom.isSegmentMIO0(seg))
@@ -229,6 +460,7 @@ namespace Quad64.Scripts
             {
                 newObj.Address = "0x" + rom.decodeSegmentAddress(seg, off).ToString("X");
             }
+            
             byte actMask = cmd[2];
             newObj.AllActs = (actMask == 0x1F);
             newObj.Act1 = ((actMask & 0x1) == 0x1);
@@ -252,12 +484,15 @@ namespace Quad64.Scripts
             newObj.BehaviorParameter2 = cmd[0x11];
             newObj.BehaviorParameter3 = cmd[0x12];
             newObj.BehaviorParameter4 = cmd[0x13];
+            newObj.createdFromLevelScriptCommand = Object3D.FROM_LS_CMD.CMD_24;
             newObj.level = lvl;
             lvl.getCurrentArea().Objects.Add(newObj);
+            
+            desc = "Place Object at pos (" + newObj.xPos + "," + newObj.yPos + ","  + newObj.zPos + ")";
         }
 
 
-        private static void CMD_26(ref Level lvl, byte[] cmd, ROM rom, byte seg, uint off)
+        private static void CMD_26(ref Level lvl, ref string desc, byte[] cmd, ROM rom, byte seg, uint off)
         {
             Warp warp = new Warp(false);
             if (rom.isSegmentMIO0(seg))
@@ -274,9 +509,21 @@ namespace Quad64.Scripts
             warp.WarpTo_AreaID = cmd[4];
             warp.WarpTo_WarpID = cmd[5];
             lvl.getCurrentArea().Warps.Add(warp);
+            desc = "Define warp (0x" + warp.WarpFrom_ID.ToString("X2") + " -> ";
+            if (warp.WarpTo_LevelID == lvl.LevelID)
+            {
+                if (warp.WarpTo_AreaID == lvl.getCurrentArea().AreaID)
+                    desc += "0x" + warp.WarpTo_WarpID.ToString("X2") + ")";
+                else
+                    desc += "0x" + warp.WarpTo_WarpID.ToString("X2") + " in area " + warp.WarpTo_AreaID + ")";
+            }
+            else
+            {
+                desc += "0x" + warp.WarpTo_WarpID.ToString("X2") + " at level 0x"+ warp.WarpTo_LevelID.ToString("X2") + " in area " + warp.WarpTo_AreaID + ")";
+            }
         }
 
-        private static void CMD_27(ref Level lvl, byte[] cmd, ROM rom, byte seg, uint off)
+        private static void CMD_27(ref Level lvl, ref string desc, byte[] cmd, ROM rom, byte seg, uint off)
         {
             Warp warp = new Warp(true);
             if (rom.isSegmentMIO0(seg))
@@ -293,8 +540,21 @@ namespace Quad64.Scripts
             warp.WarpTo_AreaID = cmd[4];
             warp.WarpTo_WarpID = cmd[5];
             lvl.getCurrentArea().PaintingWarps.Add(warp);
+            desc = "Define painting warp (0x" + warp.WarpFrom_ID.ToString("X2") + " -> ";
+            if (warp.WarpTo_LevelID == lvl.LevelID)
+            {
+                if (warp.WarpTo_AreaID == lvl.getCurrentArea().AreaID)
+                    desc += "0x" + warp.WarpTo_WarpID.ToString("X2") + ")";
+                else
+                    desc += "0x" + warp.WarpTo_WarpID.ToString("X2") + " in area " + warp.WarpTo_AreaID + ")";
+            }
+            else
+            {
+                desc += "0x" + warp.WarpTo_WarpID.ToString("X2") + " at level 0x" + warp.WarpTo_LevelID.ToString("X2") + " in area " + warp.WarpTo_AreaID + ")";
+            }
         }
-        private static void CMD_28(ref Level lvl, byte[] cmd, ROM rom, byte seg, uint off)
+
+        private static void CMD_28(ref Level lvl, ref string desc, byte[] cmd, ROM rom, byte seg, uint off)
         {
             WarpInstant warp = new WarpInstant();
             if (rom.isSegmentMIO0(seg))
@@ -312,14 +572,20 @@ namespace Quad64.Scripts
             warp.TeleY = (short)bytesToInt(cmd, 6, 2);
             warp.TeleZ = (short)bytesToInt(cmd, 8, 2);
             lvl.getCurrentArea().InstantWarps.Add(warp);
+            desc = "Define Instant warp (";
+            if(lvl.getCurrentArea().AreaID != warp.AreaID)
+                desc += "To area " + warp.AreaID + ",";
+
+            desc += "Teleport (" + warp.TeleX + "," + warp.TeleY + "," + warp.TeleZ +
+                "), Trigger = collision id 0x" + (warp.TriggerID + 0x1B).ToString("X2") + ")";
         }
 
         /* Process collision map, Special Objects, and waterboxes. */
-        private static void CMD_2E(ref Level lvl, byte[] cmd, ROM rom)
+        private static void CMD_2E(ref Level lvl, ref string desc, byte[] cmd, ROM rom)
         {
             if (cmd.Length < 8)
                 return;
-
+            desc = "Load collision, and place special objects from address 0x"+ bytesToInt(cmd, 4, 4).ToString("X8");
             ushort sub_cmd = 0x40;
             byte segment = cmd[4];
             uint off = bytesToInt(cmd, 5, 3);
@@ -406,6 +672,7 @@ namespace Quad64.Scripts
                                 {
                                     newObj.BehaviorParameter1 = data[off + 10];
                                     newObj.BehaviorParameter2 = data[off + 11];
+                                    newObj.createdFromLevelScriptCommand = Object3D.FROM_LS_CMD.CMD_2E_12;
                                     lvl.AddSpecialObjectPreset_12(obj_id, entry[3], 
                                         bytesToInt(entry, 4, 4), data[off + 10], data[off + 11]);
                                 }
@@ -414,6 +681,7 @@ namespace Quad64.Scripts
                                     lvl.AddSpecialObjectPreset_10(obj_id, entry[3], bytesToInt(entry, 4, 4));
                                     newObj.HideProperty(Object3D.FLAGS.BPARAM_1);
                                     newObj.HideProperty(Object3D.FLAGS.BPARAM_2);
+                                    newObj.createdFromLevelScriptCommand = Object3D.FROM_LS_CMD.CMD_2E_10;
                                 }
                             }
                             else
@@ -422,6 +690,7 @@ namespace Quad64.Scripts
                                 newObj.HideProperty(Object3D.FLAGS.BPARAM_1);
                                 newObj.HideProperty(Object3D.FLAGS.BPARAM_2);
                                 newObj.HideProperty(Object3D.FLAGS.ROTATION_Y);
+                                newObj.createdFromLevelScriptCommand = Object3D.FROM_LS_CMD.CMD_2E_8;
                             }
                             newObj.ModelID = entry[3];
                             uint behavior = bytesToInt(entry, 4, 4);
@@ -495,11 +764,13 @@ namespace Quad64.Scripts
             }
         }
 
-        private static void CMD_39(ref Level lvl, byte[] cmd, ROM rom)
+        private static void CMD_39(ref Level lvl, ref string desc, byte[] cmd, ROM rom)
         {
             if (cmd.Length < 8)
                 return;
             uint pos = bytesToInt(cmd, 4, 4);
+
+            desc = "Place macro objects loaded from address 0x" + pos.ToString("X8");
 
             byte[] data = rom.getDataFromSegmentAddress_safe(pos, 10);
 
@@ -524,6 +795,7 @@ namespace Quad64.Scripts
                 uint table_off = (id - 0x1F) * 8;
                 byte[] entryData = rom.getSubArray(rom.Bytes, Globals.macro_preset_table + table_off, 8);
                 newObj.level = lvl;
+                newObj.createdFromLevelScriptCommand = Object3D.FROM_LS_CMD.CMD_39;
                 newObj.setBehaviorFromAddress(bytesToInt(entryData, 0, 4));
                 newObj.HideProperty(Object3D.FLAGS.ROTATION_X);
                 newObj.HideProperty(Object3D.FLAGS.ROTATION_Z);

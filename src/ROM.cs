@@ -45,6 +45,10 @@ namespace Quad64
         private uint[] segStart = new uint[0x20];
         private bool[] segIsMIO0 = new bool[0x20];
         private byte[][] segData = new byte[0x20][];
+        private uint seg02_uncompressedOffset = 0;
+        public uint Seg02_uncompressedOffset { get { return seg02_uncompressedOffset; } }
+        private bool seg02_isFakeMIO0 = false;
+        public bool Seg02_isFakeMIO0 { get { return seg02_isFakeMIO0; } }
         public ROM_Region Region { get { return region; } }
         public ROM_Endian Endian { get { return endian; } }
         public ROM_Type Type { get { return type; } }
@@ -148,7 +152,19 @@ namespace Quad64
                 bytes[i + 3] = temp[0];
             }
         }
-        
+
+        public void clearSegments()
+        {
+            for (int i = 0; i < 0x20; i++)
+            {
+                if (i == 2 || i == 0x15)
+                    continue;
+                segStart[i] = 0;
+                segIsMIO0[i] = false;
+                segData[i] = new byte[0];
+            }
+        }
+
         public string getROMFileName()
         {
             string name = filepath.Replace("\\", "/");
@@ -257,6 +273,11 @@ namespace Quad64
         
         public void setSegment(uint index, uint segmentStart, uint segmentEnd, bool isMIO0)
         {
+            setSegment(index, segmentStart, segmentEnd, isMIO0, false, 0);
+        }
+
+        public void setSegment(uint index, uint segmentStart, uint segmentEnd, bool isMIO0, bool fakeMIO0, uint uncompressedOffset)
+        {
             if (segmentStart > segmentEnd)
                 return;
 
@@ -271,9 +292,31 @@ namespace Quad64
             }
             else
             {
-                segIsMIO0[index] = true;
+                if (fakeMIO0)
+                {
+                    segStart[index] = segmentStart + uncompressedOffset;
+                    segIsMIO0[index] = false;
+                }
+                else
+                {
+                    segIsMIO0[index] = true;
+                }
                 segData[index] = MIO0.mio0_decode(getSubArray(bytes, segmentStart, segmentEnd - segmentStart));
             }
+        }
+
+        public byte[] getROMSection(uint start, uint end)
+        {
+            byte[] data = new byte[end-start];
+            Array.Copy(bytes, start, data, 0, end - start);
+            return data;
+        }
+
+        public byte[] cloneSegment(byte segment)
+        {
+            byte[] copy = new byte[segData[segment].Length];
+            Array.Copy(segData[segment], copy, segData[segment].Length);
+            return copy;
         }
 
         public byte[] getSegment(ushort seg)
@@ -281,12 +324,17 @@ namespace Quad64
             return segData[seg];
         }
 
+        public uint getSegmentStart(ushort seg)
+        {
+            return segStart[seg];
+        }
+
         public uint decodeSegmentAddress(uint segOffset)
         {
            // Console.WriteLine("Decoding segment address: " + segOffset.ToString("X8"));
             byte seg = (byte)(segOffset >> 24);
             if (segIsMIO0[seg])
-                throw new System.ArgumentException("Cannot decode segment address from MIO0 data. (decodeSegmentAddress 1)");
+                throw new System.ArgumentException("Cannot decode segment address (0x"+segOffset.ToString("X8")+") from MIO0 data. (decodeSegmentAddress 1)");
             uint off = segOffset & 0x00FFFFFF;
             return segStart[seg] + off;
         }
@@ -294,7 +342,25 @@ namespace Quad64
         public uint decodeSegmentAddress(byte segment, uint offset)
         {
             if (segIsMIO0[segment])
-                throw new System.ArgumentException("Cannot decode segment address from MIO0 data. (decodeSegmentAddress 2)");
+                throw new System.ArgumentException("Cannot decode segment address (0x" + segment.ToString("X2") + offset.ToString("X6") + ") from MIO0 data. (decodeSegmentAddress 2)");
+            return segStart[segment] + offset;
+        }
+
+
+        public uint decodeSegmentAddress_safe(uint segOffset)
+        {
+            // Console.WriteLine("Decoding segment address: " + segOffset.ToString("X8"));
+            byte seg = (byte)(segOffset >> 24);
+            if (segIsMIO0[seg])
+                return 0xFFFFFFFF;
+            uint off = segOffset & 0x00FFFFFF;
+            return segStart[seg] + off;
+        }
+
+        public uint decodeSegmentAddress_safe(byte segment, uint offset)
+        {
+            if (segIsMIO0[segment])
+                return 0xFFFFFFFF;
             return segStart[segment] + offset;
         }
 
@@ -339,8 +405,7 @@ namespace Quad64
         public byte[] getSubArray(byte[] arr, uint offset, uint size)
         {
             byte[] newArr = new byte[size];
-            for (uint i = 0; i < size; i++)
-                newArr[i] = arr[offset + i];
+            Array.Copy(arr, offset, newArr, 0, size);
             return newArr;
         }
 
@@ -393,6 +458,22 @@ namespace Quad64
             return -1;
         }
 
+        public void writeByteArray(uint offset, byte[] arr)
+        {
+            Array.Copy(arr, 0, bytes, offset, arr.Length);
+        }
+
+        public void writeByteArray(uint offset, byte[] arr, int arr_offset, int arr_length)
+        {
+            Array.Copy(arr, arr_offset, bytes, offset, arr_length);
+        }
+
+        public void writeByteArrayToSegment(uint segAddr, byte[] arr)
+        {
+            byte segment = (byte)((segAddr >> 24) & 0xFF);
+            uint off = segAddr & 0x00FFFFFF;
+            Array.Copy(arr, 0, segData[segment], off, arr.Length);
+        }
 
         public void writeWord(uint offset, int word)
         {
@@ -452,6 +533,16 @@ namespace Quad64
             return segIsMIO0[seg];
         }
 
+        public bool testIfMIO0IsFake(uint startAddr, int compOff, int uncompOff)
+        {
+            if (uncompOff - compOff == 2)
+            {
+                if (readHalfwordUnsigned((uint)(startAddr + compOff)) == 0x0000)
+                    return true; // Detected fake MIO0 header
+            }
+            return false;
+        }
+
         public void findAndSetSegment02()
         {
             AssemblyReader ar = new AssemblyReader();
@@ -466,7 +557,16 @@ namespace Quad64
                         {
                             Globals.seg02_location = new[] { func_calls[i].a1, func_calls[i].a2 };
                             if (readWordUnsigned(func_calls[i].a1) == 0x4D494F30)
+                            {
                                 segIsMIO0[0x02] = true;
+                                seg02_isFakeMIO0 = testIfMIO0IsFake(
+                                    func_calls[i].a1,
+                                    readWord(func_calls[i].a1 + 0x8),
+                                    readWord(func_calls[i].a1 + 0xC)
+                                 );
+                                segStart[0x02] = func_calls[i].a1;
+                                seg02_uncompressedOffset = readWordUnsigned(func_calls[i].a1 + 0xC);
+                            }
                         }
                     break;
                 case ROM_Region.EUROPE:
@@ -476,7 +576,16 @@ namespace Quad64
                         {
                             Globals.seg02_location = new[] { func_calls[i].a1, func_calls[i].a2 };
                             if (readWordUnsigned(func_calls[i].a1) == 0x4D494F30)
+                            {
                                 segIsMIO0[0x02] = true;
+                                seg02_isFakeMIO0 = testIfMIO0IsFake(
+                                    func_calls[i].a1,
+                                    readWord(func_calls[i].a1 + 0x8),
+                                    readWord(func_calls[i].a1 + 0xC)
+                                 );
+                                segStart[0x02] = func_calls[i].a1;
+                                seg02_uncompressedOffset = readWordUnsigned(func_calls[i].a1 + 0xC);
+                            }
                         }
                     break;
                 case ROM_Region.JAPAN:
@@ -486,7 +595,16 @@ namespace Quad64
                         {
                             Globals.seg02_location = new[] { func_calls[i].a1, func_calls[i].a2 };
                             if (readWordUnsigned(func_calls[i].a1) == 0x4D494F30)
+                            {
                                 segIsMIO0[0x02] = true;
+                                seg02_isFakeMIO0 = testIfMIO0IsFake(
+                                    func_calls[i].a1,
+                                    readWord(func_calls[i].a1 + 0x8),
+                                    readWord(func_calls[i].a1 + 0xC)
+                                 );
+                                segStart[0x02] = func_calls[i].a1;
+                                seg02_uncompressedOffset = readWordUnsigned(func_calls[i].a1 + 0xC);
+                            }
                         }
                     break;
                 case ROM_Region.JAPAN_SHINDOU:
@@ -496,7 +614,16 @@ namespace Quad64
                         {
                             Globals.seg02_location = new[] { func_calls[i].a1, func_calls[i].a2 };
                             if (readWordUnsigned(func_calls[i].a1) == 0x4D494F30)
+                            {
                                 segIsMIO0[0x02] = true;
+                                seg02_isFakeMIO0 = testIfMIO0IsFake(
+                                    func_calls[i].a1,
+                                    readWord(func_calls[i].a1 + 0x8),
+                                    readWord(func_calls[i].a1 + 0xC)
+                                 );
+                                segStart[0x02] = func_calls[i].a1;
+                                seg02_uncompressedOffset = readWordUnsigned(func_calls[i].a1 + 0xC);
+                            }
                         }
                     break;
             }

@@ -8,6 +8,13 @@ using System.Text;
 
 namespace Quad64
 {
+    class ScriptDumpCommandInfo
+    {
+        public byte[] data;
+        public uint romAddress, segAddress;
+        public string description;
+    }
+
     class Globals
     {
         // Render Options
@@ -33,6 +40,10 @@ namespace Quad64
         // TreeView selection
         public static int list_selected = -1;
         public static int item_selected = -1;
+        public static bool isMultiSelected = false;
+        public static bool isMultiSelectedFromMultipleLists = false;
+        public static bool isMultiSelectedFromSpecialObjects = false;
+        public static List<List<int>> multi_selected_nodes = new List<List<int>>();
 
         // Keeps track if the user needs to save their changes.
         public static bool needToSave = false;
@@ -52,7 +63,7 @@ namespace Quad64
         public static uint macro_preset_table = 0xEC7E0;
         public static uint special_preset_table = 0xED350;
 
-        // Ram to ROM conversion for assembly functions in each region
+        // RAM to ROM conversion for assembly functions in each region
         public static uint RAMtoROM_JP = 0x80245000; // Japan
         public static uint RAMtoROM_NA = 0x80245000; // USA 
         public static uint RAMtoROM_EU = 0x80240800; // Europe
@@ -69,6 +80,21 @@ namespace Quad64
         public static uint seg02_alloc_NA = 0x802787D8; // USA 
         public static uint seg02_alloc_EU = 0x80269994; // Europe
         public static uint seg02_alloc_JS = 0x80271EF4; // Japan (Shindou)
+
+        // Function that draws skybox image:
+        public static uint skybox_drawFunc_NA = 0x802763D4;
+
+        public static uint getSkyboxDrawFunction()
+        {
+            switch (ROM.Instance.Region)
+            {
+                default:
+                    return skybox_drawFunc_NA;
+            }
+        }
+        
+        // Function that draws the ending cake image:
+        public static uint endCake_drawFunc_NA = 0x802D28CC;
 
         public static List<ObjectComboEntry> objectComboEntries = new List<ObjectComboEntry>();
 

@@ -5,11 +5,24 @@ using Quad64.src.Scripts;
 using Quad64.src.Viewer;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 
 namespace Quad64.src.LevelInfo
 {
+
+    class AreaBackgroundInfo
+    {
+        public uint address = 0;
+        public ushort id_or_color = 0;
+        public bool isEndCakeImage = false;
+        public uint romLocation = 0;
+        public bool usesFog = false;
+        public Color fogColor = Color.White;
+        public List<uint> fogColor_romLocation = new List<uint>();
+    }
+
     class Area
     {
         private Level parent;
@@ -17,6 +30,7 @@ namespace Quad64.src.LevelInfo
         public ushort AreaID { get { return areaID; } }
         private uint geoLayoutPointer;
         public uint GeometryLayoutPointer { get { return geoLayoutPointer; } }
+        public AreaBackgroundInfo bgInfo = new AreaBackgroundInfo();
 
         public Model3D AreaModel = new Model3D();
         public CollisionMap collision = new CollisionMap();
@@ -39,8 +53,19 @@ namespace Quad64.src.LevelInfo
 
         private bool isObjectSelected(int list, int obj)
         {
-            if(list == Globals.list_selected && obj == Globals.item_selected)
-                return true;
+            if (!Globals.isMultiSelected)
+            {
+                if (list == Globals.list_selected && obj == Globals.item_selected)
+                    return true;
+            }
+            else
+            {
+                foreach (int selectedIndex in Globals.multi_selected_nodes[list])
+                {
+                    if (selectedIndex == obj)
+                        return true;
+                }
+            }
             return false;
         }
 
@@ -218,6 +243,7 @@ namespace Quad64.src.LevelInfo
         private ushort currentAreaID;
         public ushort CurrentAreaID { get { return currentAreaID; } set { currentAreaID = value; } }
         public List<Area> Areas = new List<Area>();
+        public AreaBackgroundInfo temp_bgInfo = new AreaBackgroundInfo();
         public Dictionary<ushort, Model3D> ModelIDs = new Dictionary<ushort, Model3D>();
 
         public List<ObjectComboEntry> LevelObjectCombos = new List<ObjectComboEntry>();
@@ -225,6 +251,9 @@ namespace Quad64.src.LevelInfo
         public List<PresetMacroEntry> SpecialObjectPresets_8 = new List<PresetMacroEntry>();
         public List<PresetMacroEntry> SpecialObjectPresets_10 = new List<PresetMacroEntry>();
         public List<PresetMacroEntry> SpecialObjectPresets_12 = new List<PresetMacroEntry>();
+
+        public List<ScriptDumpCommandInfo> LevelScriptCommands_ForDump = new List<ScriptDumpCommandInfo>();
+
 
         public ObjectComboEntry getObjectComboFromData(byte modelID, uint modelAddress, uint behavior, out int index)
         {
@@ -309,6 +338,26 @@ namespace Quad64.src.LevelInfo
             return false;
         }
 
+        public HashSet<ushort> getModelIDsUsedByObjects()
+        {
+            HashSet<ushort> modelIDs = new HashSet<ushort>();
+
+            foreach (Area area in Areas)
+            {
+                foreach (Object3D obj in area.Objects)
+                    if (obj.ModelID > 0)
+                        modelIDs.Add(obj.ModelID);
+                foreach (Object3D obj in area.MacroObjects)
+                    if (obj.ModelID > 0)
+                        modelIDs.Add(obj.ModelID);
+                foreach (Object3D obj in area.SpecialObjects)
+                    if (obj.ModelID > 0)
+                        modelIDs.Add(obj.ModelID);
+            }
+
+            return modelIDs;
+        }
+
         public Area getCurrentArea()
         {
             foreach (Area a in Areas)
@@ -316,11 +365,24 @@ namespace Quad64.src.LevelInfo
                     return a;
             return Areas[0]; // return default area
         }
+        
+        public void setAreaBackgroundInfo(ref Area area)
+        {
+            area.bgInfo.address = temp_bgInfo.address;
+            area.bgInfo.id_or_color = temp_bgInfo.id_or_color;
+            area.bgInfo.isEndCakeImage = temp_bgInfo.isEndCakeImage;
+            area.bgInfo.romLocation = temp_bgInfo.romLocation;
+            area.bgInfo.usesFog = temp_bgInfo.usesFog;
+            area.bgInfo.fogColor = temp_bgInfo.fogColor;
+            area.bgInfo.fogColor_romLocation = temp_bgInfo.fogColor_romLocation;
+        }
 
         public Level(ushort levelID, ushort startArea) {
+            ROM.Instance.clearSegments();
             this.levelID = levelID;
-            this.currentAreaID = startArea;
+            currentAreaID = startArea;
             LevelObjectCombos.Clear();
+            LevelScriptCommands_ForDump.Clear();
             AddMacroObjectEntries();
         }
     }
