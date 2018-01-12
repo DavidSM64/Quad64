@@ -21,7 +21,7 @@ namespace Quad64.src.JSON
             s["EnableHex"] = Globals.useHexadecimal.ToString();
             s["SignedHex"] = Globals.useSignedHex.ToString();
             s["EmulatorPath"] = Globals.pathToEmulator;
-            s["AutoSaveOnLaunchROM"] = Globals.autoSaveWhenClickEmulator;
+            s["AutoSaveOnLaunchROM"] = Globals.autoSaveWhenClickEmulator.ToString();
 
             string savePath = "./data/profiles/" + profileName + "/";
             Directory.CreateDirectory(savePath); // Create directory if it doesn't exist!

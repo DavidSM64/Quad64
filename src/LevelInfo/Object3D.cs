@@ -28,13 +28,27 @@ namespace Quad64
             BPARAM_2 = 0x4000,
             BPARAM_3 = 0x8000,
             BPARAM_4 = 0x10000,
+            ALLFLAGS = 0x1FFFF
         }
 
+        public enum FROM_LS_CMD {
+            CMD_24, CMD_39, CMD_2E_8, CMD_2E_10, CMD_2E_12
+        }
+        
         private const ushort NUM_OF_CATERGORIES = 7;
 
         bool isBehaviorReadOnly = false;
         bool isModelIDReadOnly = false;
-        
+        bool isTempHidden = false;
+
+        [Browsable(false)]
+        public bool canEditModelID { get { return !isModelIDReadOnly; } }
+        [Browsable(false)]
+        public bool canEditBehavior { get { return !isBehaviorReadOnly; } }
+
+        [Browsable(false)]
+        public FROM_LS_CMD createdFromLevelScriptCommand { get; set; }
+
         [CustomSortedCategory("Info", 1, NUM_OF_CATERGORIES)]
         [Browsable(true)]
         [Description("Name of the object combo")]
@@ -261,7 +275,7 @@ namespace Quad64
             }
             else if (Globals.list_selected == 2) // Special Object
             {
-                Console.WriteLine("Special Preset ID = 0x" + presetID.ToString("X"));
+                //Console.WriteLine("Special Preset ID = 0x" + presetID.ToString("X"));
                 rom.writeHalfword(romAddr, presetID);
                 rom.writeHalfword(romAddr + 2, xPos);
                 rom.writeHalfword(romAddr + 4, yPos);
@@ -347,6 +361,16 @@ namespace Quad64
                 isBrow.SetValue(attrib, name);
         }
 
+        private string GetPropertyDisplayName(string property)
+        {
+            PropertyDescriptor descriptor =
+                TypeDescriptor.GetProperties(this.GetType())[property];
+            DisplayNameAttribute attrib =
+              (DisplayNameAttribute)descriptor.Attributes[typeof(DisplayNameAttribute)];
+
+            return (string)attrib.GetType().GetField("_displayName", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(attrib);
+        }
+
         private void ChangePropertyDescription(string property, string description)
         {
             PropertyDescriptor descriptor =
@@ -403,6 +427,9 @@ namespace Quad64
 
         public void UpdateProperties()
         {
+            updateProperty("xPos", FLAGS.POSITION_X);
+            updateProperty("yPos", FLAGS.POSITION_Y);
+            updateProperty("zPos", FLAGS.POSITION_Z);
             updateProperty("xRot", FLAGS.ROTATION_X);
             updateProperty("yRot", FLAGS.ROTATION_Y);
             updateProperty("zRot", FLAGS.ROTATION_Z);
@@ -420,6 +447,73 @@ namespace Quad64
             updateReadOnlyProperty("Behavior", isBehaviorReadOnly);
             updateReadOnlyProperty("ModelID", isModelIDReadOnly);
             UpdateObjectComboNames();
+        }
+
+        FLAGS tempHideFlags;
+        
+        bool isBehaviorReadOnly_tempTrigger = false, isModelIDReadOnly_tempTrigger = false;
+        public void HideFieldsTemporarly(FLAGS showFlags)
+        {
+            tempHideFlags = (~showFlags & ~(FLAGS)Flags) & FLAGS.ALLFLAGS;
+            //Console.WriteLine(Convert.ToString((int)Flags, 2).PadLeft(32, '0'));
+            //Console.WriteLine(Convert.ToString((int)tempHideFlags, 2).PadLeft(32, '0'));
+
+            isTempHidden = true;
+            if(!isBehaviorReadOnly)
+            {
+                isBehaviorReadOnly_tempTrigger = true;
+                isBehaviorReadOnly = true;
+            }
+            if (!isModelIDReadOnly)
+            {
+                isModelIDReadOnly_tempTrigger = true;
+                isModelIDReadOnly = true;
+            }
+            HideProperty(tempHideFlags);
+            UpdateProperties();
+        }
+
+        public void RevealTemporaryHiddenFields()
+        {
+            if (isTempHidden)
+            {
+                if (isBehaviorReadOnly_tempTrigger)
+                {
+                    isBehaviorReadOnly_tempTrigger = false;
+                    isBehaviorReadOnly = false;
+                }
+                if (isModelIDReadOnly_tempTrigger)
+                {
+                    isModelIDReadOnly_tempTrigger = false;
+                    isModelIDReadOnly = false;
+                }
+                UnhideProperty(tempHideFlags);
+                UpdateProperties();
+                isTempHidden = false;
+                tempHideFlags = 0;
+            }
+        }
+
+        public FLAGS getFlagFromDisplayName(string displayName)
+        {
+            if (displayName == GetPropertyDisplayName("xPos")) return FLAGS.POSITION_X;
+            if (displayName == GetPropertyDisplayName("yPos")) return FLAGS.POSITION_Y;
+            if (displayName == GetPropertyDisplayName("zPos")) return FLAGS.POSITION_Z;
+            if (displayName == GetPropertyDisplayName("xRot")) return FLAGS.ROTATION_X;
+            if (displayName == GetPropertyDisplayName("yRot")) return FLAGS.ROTATION_Y;
+            if (displayName == GetPropertyDisplayName("zRot")) return FLAGS.ROTATION_Z;
+            if (displayName == GetPropertyDisplayName("Act1")) return FLAGS.ACT1;
+            if (displayName == GetPropertyDisplayName("Act2")) return FLAGS.ACT2;
+            if (displayName == GetPropertyDisplayName("Act3")) return FLAGS.ACT3;
+            if (displayName == GetPropertyDisplayName("Act4")) return FLAGS.ACT4;
+            if (displayName == GetPropertyDisplayName("Act5")) return FLAGS.ACT5;
+            if (displayName == GetPropertyDisplayName("Act6")) return FLAGS.ACT6;
+            if (displayName == GetPropertyDisplayName("AllActs")) return FLAGS.ALLACTS;
+            if (displayName == GetPropertyDisplayName("BehaviorParameter1")) return FLAGS.BPARAM_1;
+            if (displayName == GetPropertyDisplayName("BehaviorParameter2")) return FLAGS.BPARAM_2;
+            if (displayName == GetPropertyDisplayName("BehaviorParameter3")) return FLAGS.BPARAM_3;
+            if (displayName == GetPropertyDisplayName("BehaviorParameter4")) return FLAGS.BPARAM_4;
+            return 0;
         }
 
         public void SetBehaviorParametersToZero()
@@ -452,6 +546,11 @@ namespace Quad64
         public void HideProperty(FLAGS flag)
         {
             Flags |= (ulong)flag;
+        }
+
+        public void UnhideProperty(FLAGS flag)
+        {
+            Flags &= ~(ulong)flag;
         }
 
         public string getObjectComboName()

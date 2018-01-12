@@ -48,6 +48,10 @@ namespace Quad64.src.Scripts
         private List<TempMesh> TempMeshes = new List<TempMesh>();
         private FinalMesh finalMesh;
 
+        public bool UsesFog { get; set; }
+        public Color FogColor { get; set; }
+        public List<uint> FogColor_romLocation = new List<uint>();
+
         private Vector3 offset = new Vector3(0, 0, 0);
         public Vector3 Offset { get { return offset; } set { offset = value; } }
 

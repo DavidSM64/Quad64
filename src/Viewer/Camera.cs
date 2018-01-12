@@ -246,6 +246,22 @@ namespace Quad64
             cameraMatrix = Matrix4.LookAt(pos.X, pos.Y, pos.Z, lookat.X, lookat.Y, lookat.Z, 0, 1, 0);
         }
 
+        public void updateCameraOffsetDirectly(int horz_amount, int vert_amount, ref Matrix4 cameraMatrix)
+        {
+            //Console.WriteLine(MousePosX+","+ MousePosY);
+            double pitch = CamAngleY - (Math.PI / 2);
+            double yaw = CamAngleX - (Math.PI / 2);
+            float CamLX = (float)Math.Sin(yaw);
+            // float CamLY = (float)Math.Cos(pitch);
+            float CamLZ = (float)-Math.Cos(yaw);
+            pos.X += ((horz_amount*Globals.camSpeedMultiplier) * (CamLX));
+            pos.Y += ((vert_amount*Globals.camSpeedMultiplier) * (-1f));
+            pos.Z += ((horz_amount*Globals.camSpeedMultiplier) * (CamLZ));
+
+            orientateCam(CamAngleX, CamAngleY);
+            cameraMatrix = Matrix4.LookAt(pos.X, pos.Y, pos.Z, lookat.X, lookat.Y, lookat.Z, 0, 1, 0);
+        }
+
         private void updateCameraMatrixWithMouse_ORBIT(int mouseX, int mouseY, ref Matrix4 cameraMatrix)
         {
             updateCameraOffsetWithMouse_ORBIT(mouseX, mouseY, ref cameraMatrix);

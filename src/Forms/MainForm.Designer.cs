@@ -28,10 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.TreeNode treeNode5 = new System.Windows.Forms.TreeNode("3D Objects");
-            System.Windows.Forms.TreeNode treeNode6 = new System.Windows.Forms.TreeNode("Macro 3D Objects");
-            System.Windows.Forms.TreeNode treeNode7 = new System.Windows.Forms.TreeNode("Special 3D Objects");
-            System.Windows.Forms.TreeNode treeNode8 = new System.Windows.Forms.TreeNode("Warps");
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -56,6 +52,8 @@
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.settingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.rOMInfoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.scriptsDumpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.panel1 = new System.Windows.Forms.Panel();
@@ -66,7 +64,6 @@
             this.act3 = new System.Windows.Forms.RadioButton();
             this.act2 = new System.Windows.Forms.RadioButton();
             this.act1 = new System.Windows.Forms.RadioButton();
-            this.treeView1 = new System.Windows.Forms.TreeView();
             this.propertyGrid1 = new System.Windows.Forms.PropertyGrid();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
             this.splitContainer3 = new System.Windows.Forms.SplitContainer();
@@ -76,13 +73,13 @@
             this.radioButton2 = new System.Windows.Forms.RadioButton();
             this.radioButton1 = new System.Windows.Forms.RadioButton();
             this.fovText = new System.Windows.Forms.Label();
-            this.trackBar1 = new System.Windows.Forms.TrackBar();
+            this.trackBar_FOV = new System.Windows.Forms.TrackBar();
             this.camSpeedLabel = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
-            this.trackBar3 = new System.Windows.Forms.TrackBar();
+            this.trackBar_camSpeed = new System.Windows.Forms.TrackBar();
             this.objSpeedLabel = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
-            this.trackBar2 = new System.Windows.Forms.TrackBar();
+            this.trackBar_moveSpeed = new System.Windows.Forms.TrackBar();
             this.moveCamPanel = new System.Windows.Forms.Panel();
             this.label2 = new System.Windows.Forms.Label();
             this.moveCam_strafe = new System.Windows.Forms.PictureBox();
@@ -96,6 +93,8 @@
             this.moveObj = new System.Windows.Forms.PictureBox();
             this.movObj_UpDown = new System.Windows.Forms.PictureBox();
             this.glControl1 = new OpenTK.GLControl();
+            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+            this.texturesToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.panel1.SuspendLayout();
@@ -105,13 +104,12 @@
             this.splitContainer2.Panel2.SuspendLayout();
             this.splitContainer2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer3)).BeginInit();
-            this.splitContainer3.Panel1.SuspendLayout();
             this.splitContainer3.Panel2.SuspendLayout();
             this.splitContainer3.SuspendLayout();
             this.panel3.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.trackBar1)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.trackBar3)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.trackBar2)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.trackBar_FOV)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.trackBar_camSpeed)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.trackBar_moveSpeed)).BeginInit();
             this.moveCamPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.moveCam_strafe)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.moveCam_InOut)).BeginInit();
@@ -134,7 +132,7 @@
             this.helpToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(174, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(266, 24);
             this.menuStrip1.TabIndex = 1;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -203,7 +201,9 @@
             // 
             this.levelToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.selectLeveToolStripMenuItem,
-            this.selectAreaToolStripMenuItem});
+            this.selectAreaToolStripMenuItem,
+            this.toolStripSeparator2,
+            this.texturesToolStripMenuItem1});
             this.levelToolStripMenuItem.Name = "levelToolStripMenuItem";
             this.levelToolStripMenuItem.Size = new System.Drawing.Size(46, 20);
             this.levelToolStripMenuItem.Text = "Level";
@@ -211,7 +211,7 @@
             // selectLeveToolStripMenuItem
             // 
             this.selectLeveToolStripMenuItem.Name = "selectLeveToolStripMenuItem";
-            this.selectLeveToolStripMenuItem.Size = new System.Drawing.Size(135, 22);
+            this.selectLeveToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.selectLeveToolStripMenuItem.Text = "Select Level";
             this.selectLeveToolStripMenuItem.Click += new System.EventHandler(this.selectLeveToolStripMenuItem_Click);
             // 
@@ -227,7 +227,7 @@
             this.Area6Button,
             this.Area7Button});
             this.selectAreaToolStripMenuItem.Name = "selectAreaToolStripMenuItem";
-            this.selectAreaToolStripMenuItem.Size = new System.Drawing.Size(135, 22);
+            this.selectAreaToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.selectAreaToolStripMenuItem.Text = "Select Area";
             // 
             // Area0Button
@@ -290,7 +290,9 @@
             // 
             this.helpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.settingsToolStripMenuItem,
-            this.rOMInfoToolStripMenuItem});
+            this.rOMInfoToolStripMenuItem,
+            this.toolStripSeparator1,
+            this.scriptsDumpToolStripMenuItem});
             this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
             this.helpToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
             this.helpToolStripMenuItem.Text = "Misc";
@@ -298,16 +300,28 @@
             // settingsToolStripMenuItem
             // 
             this.settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
-            this.settingsToolStripMenuItem.Size = new System.Drawing.Size(125, 22);
+            this.settingsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.settingsToolStripMenuItem.Text = "Settings";
             this.settingsToolStripMenuItem.Click += new System.EventHandler(this.settingsToolStripMenuItem_Click);
             // 
             // rOMInfoToolStripMenuItem
             // 
             this.rOMInfoToolStripMenuItem.Name = "rOMInfoToolStripMenuItem";
-            this.rOMInfoToolStripMenuItem.Size = new System.Drawing.Size(125, 22);
+            this.rOMInfoToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.rOMInfoToolStripMenuItem.Text = "ROM Info";
             this.rOMInfoToolStripMenuItem.Click += new System.EventHandler(this.rOMInfoToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator1
+            // 
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(149, 6);
+            // 
+            // scriptsDumpToolStripMenuItem
+            // 
+            this.scriptsDumpToolStripMenuItem.Name = "scriptsDumpToolStripMenuItem";
+            this.scriptsDumpToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.scriptsDumpToolStripMenuItem.Text = "Script Dumps";
+            this.scriptsDumpToolStripMenuItem.Click += new System.EventHandler(this.scriptsDumpToolStripMenuItem_Click);
             // 
             // statusStrip1
             // 
@@ -451,7 +465,7 @@
             // 
             this.act1.Appearance = System.Windows.Forms.Appearance.Button;
             this.act1.BackgroundImage = global::Quad64.Properties.Resources.icon_Star1_gray;
-            this.act1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
+            this.act1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
             this.act1.FlatAppearance.BorderSize = 0;
             this.act1.FlatAppearance.CheckedBackColor = System.Drawing.SystemColors.Control;
             this.act1.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Gray;
@@ -465,42 +479,6 @@
             this.act1.UseVisualStyleBackColor = true;
             this.act1.Visible = false;
             this.act1.CheckedChanged += new System.EventHandler(this.starAct_CheckedChanged);
-            // 
-            // treeView1
-            // 
-            this.treeView1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.treeView1.BackColor = System.Drawing.Color.White;
-            this.treeView1.DrawMode = System.Windows.Forms.TreeViewDrawMode.OwnerDrawText;
-            this.treeView1.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.treeView1.HideSelection = false;
-            this.treeView1.Indent = 12;
-            this.treeView1.ItemHeight = 16;
-            this.treeView1.Location = new System.Drawing.Point(1, 1);
-            this.treeView1.Name = "treeView1";
-            treeNode5.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
-            treeNode5.Name = "objects";
-            treeNode5.Text = "3D Objects";
-            treeNode6.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(192)))));
-            treeNode6.Name = "Node0";
-            treeNode6.Text = "Macro 3D Objects";
-            treeNode7.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
-            treeNode7.Name = "special3DNode";
-            treeNode7.Text = "Special 3D Objects";
-            treeNode8.Name = "warps";
-            treeNode8.Text = "Warps";
-            this.treeView1.Nodes.AddRange(new System.Windows.Forms.TreeNode[] {
-            treeNode5,
-            treeNode6,
-            treeNode7,
-            treeNode8});
-            this.treeView1.Size = new System.Drawing.Size(217, 206);
-            this.treeView1.TabIndex = 0;
-            this.treeView1.TabStop = false;
-            this.treeView1.DrawNode += new System.Windows.Forms.DrawTreeNodeEventHandler(this.treeView1_DrawNode);
-            this.treeView1.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeView1_AfterSelect);
-            this.treeView1.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.treeView1_KeyPress);
             // 
             // propertyGrid1
             // 
@@ -549,10 +527,6 @@
             this.splitContainer3.Name = "splitContainer3";
             this.splitContainer3.Orientation = System.Windows.Forms.Orientation.Horizontal;
             // 
-            // splitContainer3.Panel1
-            // 
-            this.splitContainer3.Panel1.Controls.Add(this.treeView1);
-            // 
             // splitContainer3.Panel2
             // 
             this.splitContainer3.Panel2.Controls.Add(this.propertyGrid1);
@@ -565,19 +539,19 @@
             // 
             this.panel3.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.panel3.BackColor = System.Drawing.Color.DimGray;
+            this.panel3.BackColor = System.Drawing.Color.Gray;
             this.panel3.Controls.Add(this.keepOnGround);
             this.panel3.Controls.Add(this.dropToGround);
             this.panel3.Controls.Add(this.radioButton2);
             this.panel3.Controls.Add(this.radioButton1);
             this.panel3.Controls.Add(this.fovText);
-            this.panel3.Controls.Add(this.trackBar1);
+            this.panel3.Controls.Add(this.trackBar_FOV);
             this.panel3.Controls.Add(this.camSpeedLabel);
             this.panel3.Controls.Add(this.label6);
-            this.panel3.Controls.Add(this.trackBar3);
+            this.panel3.Controls.Add(this.trackBar_camSpeed);
             this.panel3.Controls.Add(this.objSpeedLabel);
             this.panel3.Controls.Add(this.label3);
-            this.panel3.Controls.Add(this.trackBar2);
+            this.panel3.Controls.Add(this.trackBar_moveSpeed);
             this.panel3.Controls.Add(this.moveCamPanel);
             this.panel3.Controls.Add(this.rotateObjectPanel);
             this.panel3.Controls.Add(this.moveObjectPanel);
@@ -659,20 +633,20 @@
             this.fovText.TabIndex = 14;
             this.fovText.Text = "FOV: 60°";
             // 
-            // trackBar1
+            // trackBar_FOV
             // 
-            this.trackBar1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.trackBar1.Location = new System.Drawing.Point(565, 67);
-            this.trackBar1.Maximum = 120;
-            this.trackBar1.Minimum = 15;
-            this.trackBar1.Name = "trackBar1";
-            this.trackBar1.Size = new System.Drawing.Size(86, 45);
-            this.trackBar1.SmallChange = 2;
-            this.trackBar1.TabIndex = 13;
-            this.trackBar1.TabStop = false;
-            this.trackBar1.TickFrequency = 15;
-            this.trackBar1.Value = 60;
-            this.trackBar1.ValueChanged += new System.EventHandler(this.trackBar1_ValueChanged);
+            this.trackBar_FOV.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.trackBar_FOV.Location = new System.Drawing.Point(565, 67);
+            this.trackBar_FOV.Maximum = 120;
+            this.trackBar_FOV.Minimum = 15;
+            this.trackBar_FOV.Name = "trackBar_FOV";
+            this.trackBar_FOV.Size = new System.Drawing.Size(86, 45);
+            this.trackBar_FOV.SmallChange = 2;
+            this.trackBar_FOV.TabIndex = 13;
+            this.trackBar_FOV.TabStop = false;
+            this.trackBar_FOV.TickFrequency = 15;
+            this.trackBar_FOV.Value = 60;
+            this.trackBar_FOV.ValueChanged += new System.EventHandler(this.trackBar1_ValueChanged);
             // 
             // camSpeedLabel
             // 
@@ -700,21 +674,21 @@
             this.label6.Text = "Cam speed:";
             this.label6.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
-            // trackBar3
+            // trackBar_camSpeed
             // 
-            this.trackBar3.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.trackBar_camSpeed.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.trackBar3.LargeChange = 10;
-            this.trackBar3.Location = new System.Drawing.Point(565, 25);
-            this.trackBar3.Maximum = 100;
-            this.trackBar3.Name = "trackBar3";
-            this.trackBar3.Size = new System.Drawing.Size(82, 45);
-            this.trackBar3.SmallChange = 5;
-            this.trackBar3.TabIndex = 10;
-            this.trackBar3.TabStop = false;
-            this.trackBar3.TickFrequency = 10;
-            this.trackBar3.Value = 50;
-            this.trackBar3.ValueChanged += new System.EventHandler(this.trackBar3_ValueChanged);
+            this.trackBar_camSpeed.LargeChange = 10;
+            this.trackBar_camSpeed.Location = new System.Drawing.Point(565, 25);
+            this.trackBar_camSpeed.Maximum = 100;
+            this.trackBar_camSpeed.Name = "trackBar_camSpeed";
+            this.trackBar_camSpeed.Size = new System.Drawing.Size(82, 45);
+            this.trackBar_camSpeed.SmallChange = 5;
+            this.trackBar_camSpeed.TabIndex = 10;
+            this.trackBar_camSpeed.TabStop = false;
+            this.trackBar_camSpeed.TickFrequency = 10;
+            this.trackBar_camSpeed.Value = 50;
+            this.trackBar_camSpeed.ValueChanged += new System.EventHandler(this.trackBar3_ValueChanged);
             // 
             // objSpeedLabel
             // 
@@ -740,19 +714,19 @@
             this.label3.Text = "Move speed:";
             this.label3.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
-            // trackBar2
+            // trackBar_moveSpeed
             // 
-            this.trackBar2.LargeChange = 10;
-            this.trackBar2.Location = new System.Drawing.Point(253, 27);
-            this.trackBar2.Maximum = 100;
-            this.trackBar2.Name = "trackBar2";
-            this.trackBar2.Size = new System.Drawing.Size(94, 45);
-            this.trackBar2.SmallChange = 5;
-            this.trackBar2.TabIndex = 7;
-            this.trackBar2.TabStop = false;
-            this.trackBar2.TickFrequency = 10;
-            this.trackBar2.Value = 50;
-            this.trackBar2.ValueChanged += new System.EventHandler(this.trackBar2_ValueChanged);
+            this.trackBar_moveSpeed.LargeChange = 10;
+            this.trackBar_moveSpeed.Location = new System.Drawing.Point(253, 27);
+            this.trackBar_moveSpeed.Maximum = 100;
+            this.trackBar_moveSpeed.Name = "trackBar_moveSpeed";
+            this.trackBar_moveSpeed.Size = new System.Drawing.Size(94, 45);
+            this.trackBar_moveSpeed.SmallChange = 5;
+            this.trackBar_moveSpeed.TabIndex = 7;
+            this.trackBar_moveSpeed.TabStop = false;
+            this.trackBar_moveSpeed.TickFrequency = 10;
+            this.trackBar_moveSpeed.Value = 50;
+            this.trackBar_moveSpeed.ValueChanged += new System.EventHandler(this.trackBar2_ValueChanged);
             // 
             // moveCamPanel
             // 
@@ -923,11 +897,24 @@
             this.glControl1.Paint += new System.Windows.Forms.PaintEventHandler(this.glControl1_Paint);
             this.glControl1.KeyDown += new System.Windows.Forms.KeyEventHandler(this.glControl1_KeyDown);
             this.glControl1.KeyUp += new System.Windows.Forms.KeyEventHandler(this.glControl1_KeyUp);
+            this.glControl1.Leave += new System.EventHandler(this.glControl1_Leave);
             this.glControl1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.glControl1_MouseDown);
             this.glControl1.MouseLeave += new System.EventHandler(this.glControl1_MouseLeave);
             this.glControl1.MouseMove += new System.Windows.Forms.MouseEventHandler(this.glControl1_MouseMove);
             this.glControl1.MouseUp += new System.Windows.Forms.MouseEventHandler(this.glControl1_MouseUp);
             this.glControl1.Resize += new System.EventHandler(this.glControl1_Resize);
+            // 
+            // toolStripSeparator2
+            // 
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            this.toolStripSeparator2.Size = new System.Drawing.Size(149, 6);
+            // 
+            // texturesToolStripMenuItem1
+            // 
+            this.texturesToolStripMenuItem1.Name = "texturesToolStripMenuItem1";
+            this.texturesToolStripMenuItem1.Size = new System.Drawing.Size(152, 22);
+            this.texturesToolStripMenuItem1.Text = "Textures";
+            this.texturesToolStripMenuItem1.Click += new System.EventHandler(this.texturesToolStripMenuItem_Click);
             // 
             // MainForm
             // 
@@ -942,10 +929,9 @@
             this.MinimumSize = new System.Drawing.Size(820, 522);
             this.Name = "MainForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Quad64 v0.1.1";
+            this.Text = "Quad64 v0.2 (Beta build 1)";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
             this.Shown += new System.EventHandler(this.Form1_Shown);
-            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Form1_KeyDown);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             this.statusStrip1.ResumeLayout(false);
@@ -957,15 +943,14 @@
             this.splitContainer2.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).EndInit();
             this.splitContainer2.ResumeLayout(false);
-            this.splitContainer3.Panel1.ResumeLayout(false);
             this.splitContainer3.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer3)).EndInit();
             this.splitContainer3.ResumeLayout(false);
             this.panel3.ResumeLayout(false);
             this.panel3.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.trackBar1)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.trackBar3)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.trackBar2)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.trackBar_FOV)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.trackBar_camSpeed)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.trackBar_moveSpeed)).EndInit();
             this.moveCamPanel.ResumeLayout(false);
             this.moveCamPanel.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.moveCam_strafe)).EndInit();
@@ -996,7 +981,6 @@
         private System.Windows.Forms.ToolStripMenuItem settingsToolStripMenuItem;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.ToolStripMenuItem selectLeveToolStripMenuItem;
-        private System.Windows.Forms.TreeView treeView1;
         private System.Windows.Forms.PropertyGrid propertyGrid1;
         private System.Windows.Forms.SplitContainer splitContainer2;
         private System.Windows.Forms.SplitContainer splitContainer3;
@@ -1016,13 +1000,13 @@
         private System.Windows.Forms.PictureBox rotObj;
         private System.Windows.Forms.PictureBox rotObj_Yaw;
         private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.TrackBar trackBar2;
+        private System.Windows.Forms.TrackBar trackBar_moveSpeed;
         private System.Windows.Forms.Label objSpeedLabel;
         private System.Windows.Forms.Label fovText;
-        private System.Windows.Forms.TrackBar trackBar1;
+        private System.Windows.Forms.TrackBar trackBar_FOV;
         private System.Windows.Forms.Label camSpeedLabel;
         private System.Windows.Forms.Label label6;
-        private System.Windows.Forms.TrackBar trackBar3;
+        private System.Windows.Forms.TrackBar trackBar_camSpeed;
         private System.Windows.Forms.RadioButton radioButton2;
         private System.Windows.Forms.RadioButton radioButton1;
         private System.Windows.Forms.ToolStripMenuItem rOMInfoToolStripMenuItem;
@@ -1047,6 +1031,10 @@
         private System.Windows.Forms.ToolStripMenuItem Area7Button;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
         private System.Windows.Forms.ToolStripMenuItem testROMToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem scriptsDumpToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
+        private System.Windows.Forms.ToolStripMenuItem texturesToolStripMenuItem1;
     }
 }
 

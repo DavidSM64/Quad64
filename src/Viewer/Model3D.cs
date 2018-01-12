@@ -29,7 +29,10 @@ namespace Quad64
         public uint GeoDataSegAddress { get; set; }
         public ModelBuilder builder = new ModelBuilder();
         public List<MeshData> meshes = new List<MeshData>();
-
+        
+        public List<ScriptDumpCommandInfo> GeoLayoutCommands_ForDump = new List<ScriptDumpCommandInfo>();
+        public List<List<ScriptDumpCommandInfo>> Fast3DCommands_ForDump = new List<List<ScriptDumpCommandInfo>>();
+        
         public List<uint> geoDisplayLists = new List<uint>();
 
         public bool hasGeoDisplayList(uint value)
@@ -40,6 +43,7 @@ namespace Quad64
                     return true;
             }
             geoDisplayLists.Add(value);
+            Fast3DCommands_ForDump.Add(new List<ScriptDumpCommandInfo>());
             return false;
         }
 

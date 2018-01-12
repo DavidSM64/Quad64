@@ -30,12 +30,13 @@
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>x86</PlatformTarget>
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG</DefineConstants>
+    <DefineConstants>
+    </DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -81,11 +82,30 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="src\Forms\MultiselectTree\MultiselectTreeView.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="src\Forms\MultiselectTree\MultiselectTreeView.Designer.cs" />
     <Compile Include="src\Forms\ROMInfoForm.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="src\Forms\ROMInfoForm.Designer.cs">
       <DependentUpon>ROMInfoForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="src\Forms\ScriptDumps.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="src\Forms\ScriptDumps.Designer.cs">
+      <DependentUpon>ScriptDumps.cs</DependentUpon>
+    </Compile>
+    <Compile Include="src\Forms\ScriptDumps_Tabs\Level\LevelTab_Fast3D.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="src\Forms\ScriptDumps_Tabs\Level\LevelTab_GeoLayout.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="src\Forms\ScriptDumps_Tabs\Level\LevelTab_Levelscripts.cs">
+      <SubType>Form</SubType>
     </Compile>
     <Compile Include="src\Forms\SelectComboPreset.cs">
       <SubType>Form</SubType>
@@ -106,10 +126,30 @@
     <Compile Include="src\Forms\SettingsForm.Designer.cs">
       <DependentUpon>SettingsForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="src\Forms\TextureEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="src\Forms\TextureEditor.Designer.cs">
+      <DependentUpon>TextureEditor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="src\Forms\TextureEditorComponents\LargeImageLoader.cs" />
+    <Compile Include="src\Forms\TextureEditorComponents\RadioButtonWithInfo.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="src\Forms\TextureEditorComponents\TabEditOtherTextures.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="src\Forms\TextureEditorComponents\TabEditLevelTextures.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="src\Forms\TextureEditorComponents\TabEditSkyBackground.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="src\Globals.cs" />
     <Compile Include="src\JSON\ModelCombo.cs" />
     <Compile Include="src\JSON\ModelComboFile.cs" />
     <Compile Include="src\JSON\ObjectComboEntry.cs" />
+    <Compile Include="src\JSON\OtherTexturesFile.cs" />
     <Compile Include="src\JSON\PresetMacroEntry.cs" />
     <Compile Include="src\JSON\SettingsFile.cs" />
     <Compile Include="src\LevelInfo\CustomSortedCategoryAttribute.cs" />
@@ -157,8 +197,12 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
+    <EmbeddedResource Include="src\Forms\MultiselectTree\MultiselectTreeView.resx" />
     <EmbeddedResource Include="src\Forms\ROMInfoForm.resx">
       <DependentUpon>ROMInfoForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="src\Forms\ScriptDumps.resx">
+      <DependentUpon>ScriptDumps.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="src\Forms\SelectComboPreset.resx">
       <DependentUpon>SelectComboPreset.cs</DependentUpon>
@@ -168,6 +212,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="src\Forms\SettingsForm.resx">
       <DependentUpon>SettingsForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="src\Forms\TextureEditor.resx">
+      <DependentUpon>TextureEditor.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="data\ObjectCombos_EU.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -179,6 +226,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="data\ObjectCombos_NA.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="data\OtherTextures_NA.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="OpenTK.dll.config" />
@@ -236,6 +286,7 @@
       <Install>true</Install>
     </BootstrapperPackage>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

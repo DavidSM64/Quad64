@@ -12,6 +12,8 @@ using Quad64.src.Viewer;
 using System.IO;
 using Quad64.src.TestROM;
 using Quad64.src.Forms;
+using System.Threading;
+using System.Collections.Generic;
 
 namespace Quad64
 {
@@ -23,7 +25,9 @@ namespace Quad64
         Vector3 savedCamPos = new Vector3();
         Matrix4 camMtx = Matrix4.Identity;
         Matrix4 ProjMatrix;
-        bool isMouseDown = false, isShiftDown = false, moveState = false;
+        MultiselectTreeView treeView1;
+        readonly System.Windows.Forms.Timer myTimer = new System.Windows.Forms.Timer();
+        bool isMouseDown = false, isShiftDown = false, isControlDown = false, moveState = false;
         static Level level;
         float FOV = 1.048f;
 
@@ -38,10 +42,43 @@ namespace Quad64
             else
                 return (short)(value % 360);
         }
-        
+
+        private TreeNode makeTreeNode(string text, Color color)
+        {
+            TreeNode newNode = new TreeNode();
+            newNode.Text = text;
+            newNode.ForeColor = color;
+            return newNode;
+        }
+
+        private void initTreeView()
+        {
+            treeView1 = new MultiselectTreeView();
+            treeView1.Name = "treeView1";
+            treeView1.DrawMode = TreeViewDrawMode.OwnerDrawAll;
+            treeView1.Font = new Font("Segoe UI", 8.0f, FontStyle.Bold);
+            treeView1.Nodes.Add(makeTreeNode("3D Objects", Color.FromArgb(192, 0, 0)));
+            treeView1.Nodes.Add(makeTreeNode("Macro 3D Objects", Color.FromArgb(0, 0, 192)));
+            treeView1.Nodes.Add(makeTreeNode("Special 3D Objects", Color.FromArgb(0, 192, 0)));
+            treeView1.Nodes.Add(makeTreeNode("Warps", Color.FromArgb(0, 0, 0)));
+            treeView1.Anchor = (AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left| AnchorStyles.Right );
+            treeView1.Size = new Size(217, 206);
+            treeView1.TabIndex = 0;
+            treeView1.TabStop = false;
+            treeView1.DrawNode += new DrawTreeNodeEventHandler(treeView1_DrawNode);
+            treeView1.AfterSelect += new TreeViewEventHandler(treeView1_AfterSelect);
+            treeView1.BeforeSelect += new TreeViewCancelEventHandler(treeView1_BeforeSelect);
+            treeView1.KeyPress += new KeyPressEventHandler(treeView1_KeyPress);
+            splitContainer3.Panel1.Controls.Add(treeView1);
+            Globals.multi_selected_nodes.Clear();
+            for (int i = 0; i < 4; i++)
+                Globals.multi_selected_nodes.Add(new List<int>());
+        }
+
         public MainForm()
         {
             InitializeComponent();
+            initTreeView();
             OpenTK.Toolkit.Init();
             glControl1.CreateControl();
             SettingsFile.LoadGlobalSettings("default");
@@ -51,6 +88,9 @@ namespace Quad64
             KeyPreview = true;
             treeView1.HideSelection = false;
             camera.updateMatrix(ref camMtx);
+            myTimer.Tick += updateWASDControls;
+            myTimer.Interval = 10;
+            myTimer.Enabled = false;
             //foreach(ObjectComboEntry entry in Globals.objectComboEntries) Console.WriteLine(entry.ToString());
         }
 
@@ -80,8 +120,8 @@ namespace Quad64
             ModelComboFile.parseObjectCombos(Globals.getDefaultObjectComboPath());
 
             rom.setSegment(0x15, Globals.seg15_location[0], Globals.seg15_location[1], false);
-            rom.setSegment(0x02, Globals.seg02_location[0], Globals.seg02_location[1], rom.isSegmentMIO0(0x02));
-
+            rom.setSegment(0x02, Globals.seg02_location[0], Globals.seg02_location[1], 
+                rom.isSegmentMIO0(0x02), rom.Seg02_isFakeMIO0, rom.Seg02_uncompressedOffset);
             level = new Level(0x10, 1);
             LevelScripts.parse(ref level, 0x15, 0);
             level.sortAndAddNoModelEntries();
@@ -98,6 +138,10 @@ namespace Quad64
         {
             Globals.list_selected = -1;
             Globals.item_selected = -1;
+            Globals.multi_selected_nodes[0].Clear();
+            Globals.multi_selected_nodes[1].Clear();
+            Globals.multi_selected_nodes[2].Clear();
+            Globals.multi_selected_nodes[3].Clear();
             propertyGrid1.SelectedObject = null;
             TreeNode objects = treeView1.Nodes[0];
             objects.Nodes.Clear();
@@ -159,7 +203,17 @@ namespace Quad64
                 glControl1.SwapBuffers();
             }
         }
-        
+
+        private bool treeViewAlreadyHasNodeSelected(TreeNode node)
+        {
+            foreach (TreeNode tNode in treeView1.SelectedNodes)
+            {
+                if (tNode.Equals(node))
+                    return true;
+            }
+            return false;
+        }
+
         private void selectObject(int mx, int my)
         {
             int h = glControl1.Height;
@@ -183,30 +237,29 @@ namespace Quad64
             {
                 Globals.list_selected = pixel[2] - 1;
                 Globals.item_selected = (pixel[1] * 256) + pixel[0];
-                treeView1.SelectedNode = 
-                    treeView1.Nodes[Globals.list_selected].Nodes[Globals.item_selected];
-                switch (Globals.list_selected)
+                if (isControlDown)
                 {
-                    case 0:
-                        propertyGrid1.SelectedObject = 
-                            level.getCurrentArea().Objects[Globals.item_selected];
-                        break;
-                    case 1:
-                        propertyGrid1.SelectedObject = 
-                            level.getCurrentArea().MacroObjects[Globals.item_selected];
-                        break;
-                    case 2:
-                        propertyGrid1.SelectedObject = 
-                            level.getCurrentArea().SpecialObjects[Globals.item_selected];
-                        break;
+                    bool setSelected = !treeViewAlreadyHasNodeSelected(treeView1.Nodes[Globals.list_selected].Nodes[Globals.item_selected]);
+                    treeView1.ToggleNode(treeView1.Nodes[Globals.list_selected].Nodes[Globals.item_selected],
+                    setSelected);
+                    if(setSelected)
+                        updateAfterSelect(treeView1.Nodes[Globals.list_selected].Nodes[Globals.item_selected]);
+                    else
+                        treeView1_updateMultiselection();
                 }
+                else
+                {
+                    treeView1.SelectSingleNode(treeView1.Nodes[Globals.list_selected].Nodes[Globals.item_selected]);
+                    updateAfterSelect(treeView1.Nodes[Globals.list_selected].Nodes[Globals.item_selected]);
+                }
+                
                 if (camera.isOrbitCamera())
                 {
                     camera.updateOrbitCamera(ref camMtx);
-                    glControl1.Invalidate();
                 }
+                glControl1.Invalidate();
             }
-            Color pickedColor = Color.FromArgb(pixel[0], pixel[1], pixel[2]);
+            //Color pickedColor = Color.FromArgb(pixel[0], pixel[1], pixel[2]);
             //Console.WriteLine(pickedColor.ToString());
             //Console.WriteLine("Picking Done");
         }
@@ -264,13 +317,137 @@ namespace Quad64
         private void glControl1_KeyUp(object sender, KeyEventArgs e)
         {
             isShiftDown = e.Shift;
+            isControlDown = e.Control;
             if (!isMouseDown)
                 moveState = false;
+            switch (e.KeyCode)
+            {
+                case Keys.W: isWDown = false; break;
+                case Keys.S: isSDown = false; break;
+                case Keys.A: isADown = false; break;
+                case Keys.D: isDDown = false; break;
+            }
+            if(!isWDown && !isSDown && !isADown && !isDDown)
+                myTimer.Enabled = false;
+        }
+        
+        private void glControl1_Leave(object sender, EventArgs e)
+        {
+            isWDown = false;
+            isSDown = false;
+            isADown = false;
+            isDDown = false;
+            myTimer.Enabled = false;
+        }
+
+        bool isWDown = false, isSDown = false, isADown = false, isDDown = false;
+        private void updateWASDControls(object sender, EventArgs e)
+        {
+            if (!isShiftDown && camera.CamMode == CameraMode.FLY)
+            {
+                if (isWDown)
+                {
+                    camera.resetMouseStuff();
+                    camera.updateCameraMatrixWithScrollWheel(50, ref camMtx);
+                    savedCamPos = camera.Position;
+                    glControl1.Invalidate();
+                }
+                else if (isSDown)
+                {
+                    camera.resetMouseStuff();
+                    camera.updateCameraMatrixWithScrollWheel(-50, ref camMtx);
+                    savedCamPos = camera.Position;
+                    glControl1.Invalidate();
+                }
+
+                if (isDDown)
+                {
+                    camera.updateCameraOffsetDirectly(50, 0, ref camMtx);
+                    glControl1.Invalidate();
+                }
+                else if (isADown)
+                {
+                    camera.updateCameraOffsetDirectly(-50, 0, ref camMtx);
+                    glControl1.Invalidate();
+                }
+            }
         }
 
         private void glControl1_KeyDown(object sender, KeyEventArgs e)
         {
             isShiftDown = e.Shift;
+            isControlDown = e.Control;
+            switch (e.KeyCode)
+            {
+                case Keys.P:
+                    /*
+                    if (Globals.list_selected != -1 && Globals.item_selected != -1)
+                    {
+                        int listSel = Globals.list_selected;
+                        int objSel = Globals.item_selected;
+                        Object3D obj = getSelectedObject();
+                        if (obj == null) return;
+                        string newName = Prompts.ShowInputDialog("Type the new combo name", "New combo name");
+                        if (newName.Length > 0)
+                        {
+                            obj.Title = newName;
+                            uint segmentAddress = 0;
+                            if (level.ModelIDs.ContainsKey(obj.ModelID))
+                                segmentAddress = level.ModelIDs[obj.ModelID].GeoDataSegAddress;
+                            ObjectComboEntry oce = new ObjectComboEntry(newName, obj.ModelID,
+                                segmentAddress, obj.getBehaviorAddress());
+                            Globals.insertNewEntry(oce);
+                            refreshObjectsInList();
+                            treeView1.SelectedNode = treeView1.Nodes[listSel].Nodes[objSel];
+                            Globals.list_selected = listSel;
+                            Globals.item_selected = objSel;
+                            propertyGrid1.Refresh();
+                        }
+                        ModelComboFile.writeObjectCombosFile(Globals.getDefaultObjectComboPath());
+                        Console.WriteLine("Saved Object Combos!");
+                    }*/
+                    break;
+                case Keys.W:
+                    isWDown = true;
+                    myTimer.Enabled = true;
+                    break;
+                case Keys.S:
+                    isSDown = true;
+                    myTimer.Enabled = true;
+                    break;
+                case Keys.A:
+                    isADown = true;
+                    myTimer.Enabled = true;
+                    break;
+                case Keys.D:
+                    isDDown = true;
+                    myTimer.Enabled = true;
+                    break;
+                case Keys.D1:
+                    trySwitchArea(1);
+                    break;
+                case Keys.D2:
+                    trySwitchArea(2);
+                    break;
+                case Keys.D3:
+                    trySwitchArea(3);
+                    break;
+                case Keys.D4:
+                    trySwitchArea(4);
+                    break;
+                case Keys.D5:
+                    trySwitchArea(5);
+                    break;
+                case Keys.D6:
+                    trySwitchArea(6);
+                    break;
+                case Keys.D7:
+                    trySwitchArea(7);
+                    break;
+                case Keys.D0:
+                    trySwitchArea(0);
+                    break;
+            }
         }
 
         private void glControl1_Load(object sender, EventArgs e)
@@ -309,11 +486,11 @@ namespace Quad64
         private void saveROMAsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             SaveFileDialog saveFileDialog1 = new SaveFileDialog();
-            saveFileDialog1.Filter = "Z64 ROM|*.z64|V64 ROM|*.v64|N64 ROM|*.n64|All Files|*";
+            saveFileDialog1.Filter = "Z64 ROM|*.z64|V64 ROM|*.v64|N64 ROM (little endian)|*.n64|N64 ROM (big endian)|*.n64";
             DialogResult result = saveFileDialog1.ShowDialog();
             if (result == DialogResult.OK) // Test result.
             {
-                if(saveFileDialog1.FilterIndex == 1)
+                if(saveFileDialog1.FilterIndex == 1 || saveFileDialog1.FilterIndex == 4)
                     ROM.Instance.saveFileAs(saveFileDialog1.FileName, ROM_Endian.BIG);
                 else if (saveFileDialog1.FilterIndex == 2)
                     ROM.Instance.saveFileAs(saveFileDialog1.FileName, ROM_Endian.MIXED);
@@ -336,6 +513,50 @@ namespace Quad64
             glControl1.Update(); // Needed after calling propertyGrid1.Refresh();
         }
 
+        private void replaceObject(int index, ref SelectComboPreset comboWindow)
+        {
+            Area area = level.getCurrentArea();
+            area.Objects[index].ModelID = comboWindow.ReturnObjectCombo.ModelID;
+            area.Objects[index].setBehaviorFromAddress(comboWindow.ReturnObjectCombo.Behavior);
+            treeView1.Nodes[0].Nodes[index].Text = area.Objects[index].getObjectComboName();
+            area.Objects[index].SetBehaviorParametersToZero();
+            area.Objects[index].UpdateProperties();
+        }
+
+        private void replaceMacroObject(int index, ref SelectComboPreset comboWindow)
+        {
+            //Console.WriteLine(comboWindow.ReturnPresetMacro.PresetID);
+            Area area = level.getCurrentArea();
+            area.MacroObjects[index].ModelID = comboWindow.ReturnPresetMacro.ModelID;
+            area.MacroObjects[index].setPresetID(comboWindow.ReturnPresetMacro.PresetID);
+            area.MacroObjects[index].setBehaviorFromAddress(comboWindow.ReturnPresetMacro.Behavior);
+            //area.MacroObjects[Globals.item_selected].SetBehaviorParametersToZero();
+            area.MacroObjects[index].BehaviorParameter1
+                = comboWindow.ReturnPresetMacro.BehaviorParameter1;
+            area.MacroObjects[index].BehaviorParameter2
+                = comboWindow.ReturnPresetMacro.BehaviorParameter2;
+            treeView1.Nodes[1].Nodes[index].Text
+                = area.MacroObjects[index].getObjectComboName();
+            area.MacroObjects[index].UpdateProperties();
+        }
+
+        private void replaceSpecialObject(int index, ref SelectComboPreset comboWindow)
+        {
+            //Console.WriteLine(comboWindow.ReturnPresetMacro.PresetID);
+            Area area = level.getCurrentArea();
+            area.SpecialObjects[index].ModelID = comboWindow.ReturnPresetMacro.ModelID;
+            area.SpecialObjects[index].setPresetID(comboWindow.ReturnPresetMacro.PresetID);
+            area.SpecialObjects[index].setBehaviorFromAddress(comboWindow.ReturnPresetMacro.Behavior);
+            //area.SpecialObjects[Globals.item_selected].SetBehaviorParametersToZero();
+            area.SpecialObjects[index].BehaviorParameter1
+                = comboWindow.ReturnPresetMacro.BehaviorParameter1;
+            area.SpecialObjects[index].BehaviorParameter2
+                = comboWindow.ReturnPresetMacro.BehaviorParameter2;
+            treeView1.Nodes[2].Nodes[index].Text
+                = area.SpecialObjects[index].getObjectComboName();
+            area.SpecialObjects[index].UpdateProperties();
+        }
+
         private void objectComboPresetToolStripMenuItem_Click(object sender, EventArgs e)
         {
             SelectComboPreset comboWindow;
@@ -347,13 +568,11 @@ namespace Quad64
                     comboWindow.ShowDialog();
                     if(comboWindow.ClickedSelect)
                     {
-                        Area area = level.getCurrentArea();
-                        area.Objects[Globals.item_selected].ModelID = comboWindow.ReturnObjectCombo.ModelID;
-                        area.Objects[Globals.item_selected].setBehaviorFromAddress(comboWindow.ReturnObjectCombo.Behavior);
-                        treeView1.Nodes[0].Nodes[Globals.item_selected].Text
-                            = area.Objects[Globals.item_selected].getObjectComboName();
-                        area.Objects[Globals.item_selected].SetBehaviorParametersToZero();
-                        area.Objects[Globals.item_selected].UpdateProperties();
+                        if (!Globals.isMultiSelected)
+                            replaceObject(Globals.item_selected, ref comboWindow);
+                        else
+                            for (int i = 0; i < treeView1.SelectedNodes.Count; i++)
+                                replaceObject(treeView1.SelectedNodes[i].Index, ref comboWindow);
                     }
                     break;
                 case 1:
@@ -362,19 +581,11 @@ namespace Quad64
                     comboWindow.ShowDialog();
                     if (comboWindow.ClickedSelect)
                     {
-                        Console.WriteLine(comboWindow.ReturnPresetMacro.PresetID);
-                        Area area = level.getCurrentArea();
-                        area.MacroObjects[Globals.item_selected].ModelID = comboWindow.ReturnPresetMacro.ModelID;
-                        area.MacroObjects[Globals.item_selected].setPresetID(comboWindow.ReturnPresetMacro.PresetID);
-                        area.MacroObjects[Globals.item_selected].setBehaviorFromAddress(comboWindow.ReturnPresetMacro.Behavior);
-                        //area.MacroObjects[Globals.item_selected].SetBehaviorParametersToZero();
-                        area.MacroObjects[Globals.item_selected].BehaviorParameter1
-                            = comboWindow.ReturnPresetMacro.BehaviorParameter1;
-                        area.MacroObjects[Globals.item_selected].BehaviorParameter2
-                            = comboWindow.ReturnPresetMacro.BehaviorParameter2;
-                        treeView1.Nodes[1].Nodes[Globals.item_selected].Text
-                            = area.MacroObjects[Globals.item_selected].getObjectComboName();
-                        area.MacroObjects[Globals.item_selected].UpdateProperties();
+                        if (!Globals.isMultiSelected)
+                            replaceMacroObject(Globals.item_selected, ref comboWindow);
+                        else
+                            for (int i = 0; i < treeView1.SelectedNodes.Count; i++)
+                                replaceMacroObject(treeView1.SelectedNodes[i].Index, ref comboWindow);
                     }
                     break;
                 case 2:
@@ -390,19 +601,11 @@ namespace Quad64
                         comboWindow.ShowDialog();
                         if (comboWindow.ClickedSelect)
                         {
-                            Console.WriteLine(comboWindow.ReturnPresetMacro.PresetID);
-                            Area area = level.getCurrentArea();
-                            area.SpecialObjects[Globals.item_selected].ModelID = comboWindow.ReturnPresetMacro.ModelID;
-                            area.SpecialObjects[Globals.item_selected].setPresetID(comboWindow.ReturnPresetMacro.PresetID);
-                            area.SpecialObjects[Globals.item_selected].setBehaviorFromAddress(comboWindow.ReturnPresetMacro.Behavior);
-                            //area.SpecialObjects[Globals.item_selected].SetBehaviorParametersToZero();
-                            area.SpecialObjects[Globals.item_selected].BehaviorParameter1
-                                = comboWindow.ReturnPresetMacro.BehaviorParameter1;
-                            area.SpecialObjects[Globals.item_selected].BehaviorParameter2
-                                = comboWindow.ReturnPresetMacro.BehaviorParameter2;
-                            treeView1.Nodes[2].Nodes[Globals.item_selected].Text
-                                = area.SpecialObjects[Globals.item_selected].getObjectComboName();
-                            area.SpecialObjects[Globals.item_selected].UpdateProperties();
+                            if (!Globals.isMultiSelected)
+                                replaceSpecialObject(Globals.item_selected, ref comboWindow);
+                            else
+                                for (int i = 0; i < treeView1.SelectedNodes.Count; i++)
+                                    replaceSpecialObject(treeView1.SelectedNodes[i].Index, ref comboWindow);
                         }
                         break;
                     }
@@ -461,60 +664,7 @@ namespace Quad64
 
         private void Form1_KeyDown(object sender, KeyEventArgs e)
         {
-            switch(e.KeyCode)
-            {
-                case Keys.P:
-                    if (Globals.list_selected != -1 && Globals.item_selected != -1)
-                    {
-                        int listSel = Globals.list_selected;
-                        int objSel = Globals.item_selected;
-                        Object3D obj = getSelectedObject();
-                        if (obj == null) return;
-                        string newName = Prompts.ShowInputDialog("Type the new combo name", "New combo name");
-                        if (newName.Length > 0)
-                        {
-                            obj.Title = newName;
-                            uint segmentAddress = 0;
-                            if(level.ModelIDs.ContainsKey(obj.ModelID))
-                                segmentAddress = level.ModelIDs[obj.ModelID].GeoDataSegAddress;
-                            ObjectComboEntry oce = new ObjectComboEntry(newName, obj.ModelID,
-                                segmentAddress, obj.getBehaviorAddress());
-                            Globals.insertNewEntry(oce);
-                            refreshObjectsInList();
-                            treeView1.SelectedNode = treeView1.Nodes[listSel].Nodes[objSel];
-                            Globals.list_selected = listSel;
-                            Globals.item_selected = objSel;
-                            propertyGrid1.Refresh();
-                        }
-                        ModelComboFile.writeObjectCombosFile(Globals.getDefaultObjectComboPath());
-                        Console.WriteLine("Saved Object Combos!");
-                    }
-                    break;
-                case Keys.D1:
-                    trySwitchArea(1);
-                    break;
-                case Keys.D2:
-                    trySwitchArea(2);
-                    break;
-                case Keys.D3:
-                    trySwitchArea(3);
-                    break;
-                case Keys.D4:
-                    trySwitchArea(4);
-                    break;
-                case Keys.D5:
-                    trySwitchArea(5);
-                    break;
-                case Keys.D6:
-                    trySwitchArea(6);
-                    break;
-                case Keys.D7:
-                    trySwitchArea(7);
-                    break;
-                case Keys.D0:
-                    trySwitchArea(0);
-                    break;
-            }
+            
         }
 
         private void resetObjectVariables()
@@ -523,6 +673,31 @@ namespace Quad64
             treeView1.SelectedNode = null;
             Globals.list_selected = -1;
             Globals.item_selected = -1;
+            Globals.isMultiSelected = false;
+            Globals.isMultiSelectedFromMultipleLists = false;
+        }
+
+        private void switchLevel(ushort levelID)
+        {
+            Level testLevel = new Level(levelID, 1);
+            LevelScripts.parse(ref testLevel, 0x15, 0);
+            if (testLevel.Areas.Count > 0)
+            {
+                level = testLevel;
+                camera.setCameraMode(CameraMode.FLY, ref camMtx);
+                camera.setLevel(level);
+                level.sortAndAddNoModelEntries();
+                level.CurrentAreaID = level.Areas[0].AreaID;
+                resetObjectVariables();
+                refreshObjectsInList();
+                glControl1.Invalidate();
+                updateAreaButtons();
+            }
+            else
+            {
+                ushort id = levelID;
+                MessageBox.Show("Error: No areas found in level ID: 0x" + id.ToString("X"));
+            }
         }
 
         private void selectLeveToolStripMenuItem_Click(object sender, EventArgs e)
@@ -532,26 +707,7 @@ namespace Quad64
             newLevel.ShowDialog();
             if (newLevel.changeLevel)
             {
-                //Console.WriteLine("Changing Level to " + newLevel.levelID);
-                Level testLevel = new Level(newLevel.levelID, 1);
-                LevelScripts.parse(ref testLevel, 0x15, 0);
-                if (testLevel.Areas.Count > 0)
-                {
-                    level = testLevel;
-                    camera.setCameraMode(CameraMode.FLY, ref camMtx);
-                    camera.setLevel(level);
-                    level.sortAndAddNoModelEntries();
-                    level.CurrentAreaID = level.Areas[0].AreaID;
-                    resetObjectVariables();
-                    refreshObjectsInList();
-                    glControl1.Invalidate();
-                    updateAreaButtons();
-                }
-                else
-                {
-                    ushort id = newLevel.levelID;
-                    MessageBox.Show("Error: No areas found in level ID: 0x" + id.ToString("X"));
-                }
+                switchLevel(newLevel.levelID);
             }
         }
 
@@ -568,21 +724,171 @@ namespace Quad64
             romInfo.ShowDialog();
         }
 
-        private void treeView1_AfterSelect(object sender, TreeViewEventArgs e)
+        private void treeView1_updateMultiselection()
         {
+            Globals.multi_selected_nodes[0].Clear();
+            Globals.multi_selected_nodes[1].Clear();
+            Globals.multi_selected_nodes[2].Clear();
+            Globals.multi_selected_nodes[3].Clear();
 
+            foreach (TreeNode node in treeView1.SelectedNodes)
+            {
+                if (node.Parent.Text.Equals("3D Objects"))
+                    Globals.multi_selected_nodes[0].Add(node.Index);
+                else if (node.Parent.Text.Equals("Macro 3D Objects"))
+                    Globals.multi_selected_nodes[1].Add(node.Index);
+                else if (node.Parent.Text.Equals("Special 3D Objects"))
+                    Globals.multi_selected_nodes[2].Add(node.Index);
+                else if (node.Parent.Text.Equals("Warps"))
+                    Globals.multi_selected_nodes[3].Add(node.Index);
+            }
+        }
+
+        private void treeView1_BeforeSelect(object sender, TreeViewCancelEventArgs e)
+        {
             TreeNode node = e.Node;
-            //Console.WriteLine("Selected: " + node.Text);
             if (node.Parent == null)
             {
+                Globals.isMultiSelected = false;
+                Globals.isMultiSelectedFromMultipleLists = false;
                 propertyGrid1.SelectedObject = null;
                 Globals.list_selected = -1;
                 Globals.item_selected = -1;
                 objectComboPresetToolStripMenuItem.Enabled = false;
+
+                glControl1.Invalidate();
+                glControl1.Update();
             }
-            else
+        }
+
+        bool atLeastTwoBools(bool a, bool b, bool c)
+        {
+            return a ? (b || c) : (b && c);
+        }
+
+        private void updateAfterSelect(TreeNode node)
+        {
+            if (node.Parent != null)
             {
                 objectComboPresetToolStripMenuItem.Enabled = true;
+                if (treeView1.SelectedNodes.Count > 1)
+                {
+                    Area area = level.getCurrentArea();
+                    string parent_text = treeView1.SelectedNodes[0].Parent.Text;
+                    
+                    if (parent_text.Equals("3D Objects"))
+                        Globals.list_selected = 0;
+                    else if (parent_text.Equals("Macro 3D Objects"))
+                        Globals.list_selected = 1;
+                    else if (parent_text.Equals("Special 3D Objects"))
+                        Globals.list_selected = 2;
+                    
+                    Globals.isMultiSelectedFromMultipleLists = false;
+                    Globals.isMultiSelectedFromSpecialObjects = false;
+                    bool hasSO_8 = false, hasSO_10 = false, hasSO_12 = false;
+                    if (Globals.list_selected == 2)
+                    {
+                        Object3D obj3d_0 = area.SpecialObjects[treeView1.SelectedNodes[0].Index];
+                        switch (obj3d_0.createdFromLevelScriptCommand)
+                        {
+                            case Object3D.FROM_LS_CMD.CMD_2E_8:
+                                hasSO_8 = true;
+                                break;
+                            case Object3D.FROM_LS_CMD.CMD_2E_10:
+                                hasSO_10 = true;
+                                break;
+                            case Object3D.FROM_LS_CMD.CMD_2E_12:
+                                hasSO_12 = true;
+                                break;
+                        }
+                    }
+
+                    for (int i = 1; i < treeView1.SelectedNodes.Count; i++)
+                    {
+
+                        if (!treeView1.SelectedNodes[i].Parent.Text.Equals(parent_text))
+                        {
+                            Globals.isMultiSelectedFromMultipleLists = true;
+                            objectComboPresetToolStripMenuItem.Enabled = false;
+                            if (Globals.list_selected != 2 || (Globals.list_selected == 2 && Globals.isMultiSelectedFromSpecialObjects))
+                                break;
+                        }
+
+                        if (treeView1.SelectedNodes[i].Parent.Text.Equals("Special 3D Objects") && !Globals.isMultiSelectedFromSpecialObjects)
+                        {
+                            Object3D obj3d_i = area.SpecialObjects[treeView1.SelectedNodes[i].Index];
+                            switch (obj3d_i.createdFromLevelScriptCommand)
+                            {
+                                case Object3D.FROM_LS_CMD.CMD_2E_8:
+                                    hasSO_8 = true;
+                                    break;
+                                case Object3D.FROM_LS_CMD.CMD_2E_10:
+                                    hasSO_10 = true;
+                                    break;
+                                case Object3D.FROM_LS_CMD.CMD_2E_12:
+                                    hasSO_12 = true;
+                                    break;
+                            }
+
+                            //Console.WriteLine(hasSO_8 + "/" + hasSO_10 + "/" + hasSO_12);
+                            if (atLeastTwoBools(hasSO_8, hasSO_10, hasSO_12)) {
+                                Globals.isMultiSelectedFromSpecialObjects = true;
+                                objectComboPresetToolStripMenuItem.Enabled = false;
+                                if (Globals.isMultiSelectedFromMultipleLists)
+                                    break;
+                            }
+                        }
+                    }
+                    
+                    Object3D[] selectedObjs = new Object3D[treeView1.SelectedNodes.Count];
+                    Object3D.FLAGS showFlags =
+                        Object3D.FLAGS.POSITION_X | Object3D.FLAGS.POSITION_Y | Object3D.FLAGS.POSITION_Z |
+                        Object3D.FLAGS.ROTATION_Y | Object3D.FLAGS.BPARAM_1 | Object3D.FLAGS.BPARAM_2;
+                    
+                    for (int i = 0; i < treeView1.SelectedNodes.Count; i++)
+                    {
+                        string local_parent_text = treeView1.SelectedNodes[i].Parent.Text;
+
+                        if (local_parent_text.Equals("3D Objects"))
+                            selectedObjs[i] = area.Objects[treeView1.SelectedNodes[i].Index];
+                        else if (local_parent_text.Equals("Macro 3D Objects"))
+                        {
+                            selectedObjs[i] = area.MacroObjects[treeView1.SelectedNodes[i].Index];
+                        }
+                        else if (local_parent_text.Equals("Special 3D Objects"))
+                        {
+                            selectedObjs[i] = area.SpecialObjects[treeView1.SelectedNodes[i].Index];
+                            if (selectedObjs[i].createdFromLevelScriptCommand == Object3D.FROM_LS_CMD.CMD_2E_8)
+                                showFlags &= ~(Object3D.FLAGS.BPARAM_1 | Object3D.FLAGS.BPARAM_2 | Object3D.FLAGS.ROTATION_Y);
+                            else if (selectedObjs[i].createdFromLevelScriptCommand == Object3D.FROM_LS_CMD.CMD_2E_10)
+                                showFlags &= ~(Object3D.FLAGS.BPARAM_1 | Object3D.FLAGS.BPARAM_2);
+                        }
+                    }
+                    for (int i = 0; i < selectedObjs.Length; i++)
+                    {
+                        {
+                            selectedObjs[i].RevealTemporaryHiddenFields();
+                           // Console.WriteLine(Globals.isMultiSelectedFromSpecialObjects);
+                            if (Globals.isMultiSelectedFromMultipleLists || Globals.isMultiSelectedFromSpecialObjects)
+                            {
+                                selectedObjs[i].HideFieldsTemporarly(showFlags);
+                            }
+                        }
+                    }
+                    
+                    propertyGrid1.SelectedObjects = selectedObjs;
+
+                    treeView1_updateMultiselection();
+                    Globals.isMultiSelected = true;
+                    glControl1.Invalidate();
+                    glControl1.Update();
+                    return;
+                }
+               // Console.WriteLine("Single Node!");
+                Globals.isMultiSelected = false;
+                Globals.isMultiSelectedFromMultipleLists = false;
+                Globals.isMultiSelectedFromSpecialObjects = false;
+
                 if (node.Parent.Text.Equals("3D Objects"))
                 {
                     Globals.list_selected = 0;
@@ -635,24 +941,30 @@ namespace Quad64
                         propertyGrid1.SelectedObject = area.InstantWarps[node.Index - area.Warps.Count - area.PaintingWarps.Count];
                 }
             }
-            
+
             Object3D obj = getSelectedObject();
             if (obj != null)
             {
-                if(obj.IsReadOnly)
+                obj.RevealTemporaryHiddenFields();
+                if (obj.IsReadOnly)
                     objectComboPresetToolStripMenuItem.Enabled = false;
                 obj.UpdateProperties();
                 propertyGrid1.Refresh();
             }
-            
+
             glControl1.Invalidate();
             glControl1.Update();
         }
 
+        private void treeView1_AfterSelect(object sender, TreeViewEventArgs e)
+        {
+            updateAfterSelect(e.Node);
+        }
+
         private void trackBar1_ValueChanged(object sender, EventArgs e)
         {
-            fovText.Text = "FOV: " + trackBar1.Value + "°";
-            FOV = trackBar1.Value * ((float)Math.PI/180.0f);
+            fovText.Text = "FOV: " + trackBar_FOV.Value + "°";
+            FOV = trackBar_FOV.Value * ((float)Math.PI/180.0f);
             if (FOV < 0.1f)
                 FOV = 0.1f;
             ProjMatrix = Matrix4.CreatePerspectiveFieldOfView(FOV, (float)glControl1.Width / (float)glControl1.Height, 100f, 100000f);
@@ -664,20 +976,59 @@ namespace Quad64
             string label = e.ChangedItem.Label;
             if (Globals.list_selected > -1 && Globals.list_selected < 3)
             {
-                Object3D obj = getSelectedObject();
-                if (obj == null) return;
-                if (label.Equals("All Acts"))
+                if (!Globals.isMultiSelected)
                 {
-                    obj.ShowHideActs((bool)e.ChangedItem.Value);
-                    propertyGrid1.Refresh();
+                    Object3D obj = getSelectedObject();
+                    if (obj == null) return;
+                    if (label.Equals("All Acts"))
+                    {
+                        obj.ShowHideActs((bool)e.ChangedItem.Value);
+                        propertyGrid1.Refresh();
+                    }
+                    else if (label.Equals("Behavior") || label.Equals("Model ID"))
+                    {
+                        if (Globals.item_selected > -1)
+                            treeView1.Nodes[Globals.list_selected].Nodes[Globals.item_selected].Text
+                                = obj.getObjectComboName();
+                    }
+                    obj.updateROMData();
                 }
-                else if(label.Equals("Behavior") || label.Equals("Model ID"))
+                else
                 {
-                    if(Globals.item_selected > -1)
-                        treeView1.Nodes[Globals.list_selected].Nodes[Globals.item_selected].Text
-                            = obj.getObjectComboName();
+                    for (int i = 0; i < treeView1.SelectedNodes.Count; i++)
+                    {
+                        TreeNode currentNode = treeView1.SelectedNodes[i];
+                        Area area = level.getCurrentArea();
+                        string local_parent_text = currentNode.Parent.Text;
+                        Object3D obj = null;
+
+                        if (local_parent_text.Equals("3D Objects"))
+                            obj = area.Objects[currentNode.Index];
+                        else if (local_parent_text.Equals("Macro 3D Objects"))
+                            obj = area.MacroObjects[currentNode.Index];
+                        else if (local_parent_text.Equals("Special 3D Objects"))
+                            obj = area.SpecialObjects[currentNode.Index];
+
+                        if (obj == null)
+                            continue;
+                        
+                        Object3D.FLAGS flag = obj.getFlagFromDisplayName(e.ChangedItem.Label);
+                        if (flag != 0)
+                            if (!obj.isPropertyShown(flag))
+                                continue;
+
+                        if (e.ChangedItem.Label.Equals("Model ID"))
+                            if (!obj.canEditModelID)
+                                continue;
+
+                        if (e.ChangedItem.Label.Equals("Behavior"))
+                            if (!obj.canEditBehavior)
+                                continue;
+                        
+                        obj.updateROMData();
+                    }
                 }
-                obj.updateROMData();
+
                 if (camera.isOrbitCamera())
                     camera.updateOrbitCamera(ref camMtx);
                 glControl1.Invalidate();
@@ -724,7 +1075,7 @@ namespace Quad64
             {
                 var font = e.Node.NodeFont ?? e.Node.TreeView.Font;
                 e.Graphics.FillRectangle(SystemBrushes.Highlight, e.Bounds);
-                TextRenderer.DrawText(e.Graphics, e.Node.Text, font, e.Bounds, SystemColors.HighlightText, TextFormatFlags.GlyphOverhangPadding);
+                TextRenderer.DrawText(e.Graphics, e.Node.Text, font, e.Bounds, e.Node.ForeColor, TextFormatFlags.GlyphOverhangPadding);
             }
             else
             {
@@ -802,6 +1153,7 @@ namespace Quad64
         {
             if (moveCam_strafe_mouseDown)
             {
+                //Console.WriteLine(e.X+"/"+ e.Y);
                 camera.updateCameraOffsetWithMouse(savedCamPos, e.X, e.Y, glControl1.Width, glControl1.Height, ref camMtx);
                 glControl1.Invalidate();
             }
@@ -810,7 +1162,9 @@ namespace Quad64
         private Object3D getSelectedObject()
         {
             if (Globals.list_selected == -1 || Globals.item_selected == -1)
+            {
                 return null;
+            }
             switch (Globals.list_selected)
             {
                 case 0:
@@ -820,7 +1174,22 @@ namespace Quad64
                 case 2:
                     return level.getCurrentArea().SpecialObjects[Globals.item_selected];
                 default:
-                    return null;
+                    {
+                        if (!Globals.isMultiSelected)
+                            return null;
+                        else
+                        {
+                            string parentText = treeView1.SelectedNodes[0].Parent.Text;
+                            if (parentText.Equals("3D Objects"))
+                                return level.getCurrentArea().Objects[treeView1.SelectedNodes[0].Index];
+                            else if (parentText.Equals("Macro 3D Objects"))
+                                return level.getCurrentArea().MacroObjects[treeView1.SelectedNodes[0].Index];
+                            else if (parentText.Equals("Special 3D Objects"))
+                                return level.getCurrentArea().SpecialObjects[treeView1.SelectedNodes[0].Index];
+                            else
+                                return null;
+                        }
+                    }
             }
         }
 
@@ -853,10 +1222,135 @@ namespace Quad64
             }
         }
 
+        void updateSelectedObjectsInROM()
+        {
+            if (!Globals.isMultiSelected)
+            {
+                Object3D obj = getSelectedObject();
+                if (obj != null)
+                    obj.updateROMData();
+            }
+            else
+            {
+                for (int i = 0; i < 3; i++)
+                {
+                    foreach (int selectedIndex in Globals.multi_selected_nodes[i])
+                    {
+                        switch (i)
+                        {
+                            case 0:
+                                level.getCurrentArea().Objects[selectedIndex].updateROMData();
+                                break;
+                            case 1:
+                                level.getCurrentArea().MacroObjects[selectedIndex].updateROMData();
+                                break;
+                            case 2:
+                                level.getCurrentArea().SpecialObjects[selectedIndex].updateROMData();
+                                break;
+                        }
+                    }
+                }
+            }
+        }
+
         bool moveObj_mouseDown = false;
         int moveObj_lastMouseX = 0;
         int moveObj_lastMouseY = 0;
-        short moveObj_savedX=0, moveObj_savedY=0, moveObj_savedZ=0;
+        //short moveObj_savedX=0, moveObj_savedY=0, moveObj_savedZ=0;
+
+        struct Vec3S {
+            public short X, Y, Z;
+        };
+
+        private void saveObjectPositionToList(ref List<Vec3S> posList)
+        {
+            Object3D obj;
+            posList.Clear();
+            if (!Globals.isMultiSelected)
+            {
+                Vec3S pos;
+                obj = getSelectedObject();
+                pos.X = obj.xPos;
+                pos.Y = obj.yPos;
+                pos.Z = obj.zPos;
+                posList.Add(pos);
+            }
+            else
+            {
+                for (int i = 0; i < 3; i++)
+                {
+                    for (int j = 0; j < Globals.multi_selected_nodes[i].Count; j++)
+                    {
+                        int selectedIndex = Globals.multi_selected_nodes[i][j];
+                        Vec3S pos;
+                        switch (i)
+                        {
+                            case 0:
+                                obj = level.getCurrentArea().Objects[selectedIndex];
+                                break;
+                            case 1:
+                                obj = level.getCurrentArea().MacroObjects[selectedIndex];
+                                break;
+                            case 2:
+                                obj = level.getCurrentArea().SpecialObjects[selectedIndex];
+                                break;
+                            default:
+                                return;
+                        }
+                        pos.X = obj.xPos;
+                        pos.Y = obj.yPos;
+                        pos.Z = obj.zPos;
+                        posList.Add(pos);
+                    }
+                }
+            }
+        }
+        
+        private void saveObjectRotationToList(ref List<Vec3S> posList)
+        {
+            Object3D obj;
+            posList.Clear();
+            if (!Globals.isMultiSelected)
+            {
+                Vec3S rot;
+                obj = getSelectedObject();
+                rot.X = obj.xRot;
+                rot.Y = obj.yRot;
+                rot.Z = obj.zRot;
+                posList.Add(rot);
+            }
+            else
+            {
+                for (int i = 0; i < 3; i++)
+                {
+                    for (int j = 0; j < Globals.multi_selected_nodes[i].Count; j++)
+                    {
+                        int selectedIndex = Globals.multi_selected_nodes[i][j];
+                        Vec3S rot;
+                        switch (i)
+                        {
+                            case 0:
+                                obj = level.getCurrentArea().Objects[selectedIndex];
+                                break;
+                            case 1:
+                                obj = level.getCurrentArea().MacroObjects[selectedIndex];
+                                break;
+                            case 2:
+                                obj = level.getCurrentArea().SpecialObjects[selectedIndex];
+                                break;
+                            default:
+                                return;
+                        }
+                        rot.X = obj.xRot;
+                        rot.Y = obj.yRot;
+                        rot.Z = obj.zRot;
+                        posList.Add(rot);
+                    }
+                }
+            }
+        }
+        
+        List<Vec3S> moveObj_saved = new List<Vec3S>();
         private void moveObj_MouseDown(object sender, MouseEventArgs e)
         {
             if (Globals.item_selected > -1 && Globals.list_selected > -1)
@@ -867,45 +1361,106 @@ namespace Quad64
                 moveObj_mouseDown = true;
                 moveObj_lastMouseX = e.X;
                 moveObj_lastMouseY = e.Y;
-                moveObj_savedX = obj.xPos;
-                moveObj_savedY = obj.yPos;
-                moveObj_savedZ = obj.zPos;
+                saveObjectPositionToList(ref moveObj_saved);
             }
         }
+
         private void moveObj_MouseUp(object sender, MouseEventArgs e)
         {
             moveObj_mouseDown = false;
-            Object3D obj = getSelectedObject();
-            if (obj != null)
-                obj.updateROMData();
+            updateSelectedObjectsInROM();
+            //Object3D obj = getSelectedObject();
+            //if (obj != null)
+            //obj.updateROMData();
         }
+
+        private void moveObjectXZ(Object3D obj, MouseEventArgs e, Vec3S savedPos, bool forRotation)
+        {
+            if (obj == null) return;
+            if (obj.IsReadOnly) return;
+            float speedMult = 30.0f;
+
+            int mx;
+            int my;
+            if (!forRotation)
+            {
+                mx = e.X - moveObj_lastMouseX;
+                my = -(e.Y - moveObj_lastMouseY);
+            }
+            else
+            {
+                mx = e.X - rotObj_lastMouseX;
+                my = -(e.Y - rotObj_lastMouseY);
+            }
+            
+            float CX = (float)Math.Sin(camera.Yaw);
+            float CZ = (float)-Math.Cos(camera.Yaw);
+            float CX_2 = (float)Math.Sin(camera.Yaw + (Math.PI / 2));
+            float CZ_2 = (float)-Math.Cos(camera.Yaw + (Math.PI / 2));
+
+            if (!forRotation)
+            {
+                if (obj.isPropertyShown(Object3D.FLAGS.POSITION_X))
+                    obj.xPos = (short)(savedPos.X - (short)(CX * my * speedMult * Globals.objSpeedMultiplier) - (short)(CX_2 * mx * speedMult * Globals.objSpeedMultiplier));
+                if (obj.isPropertyShown(Object3D.FLAGS.POSITION_Z))
+                    obj.zPos = (short)(savedPos.Z - (short)(CZ * my * speedMult * Globals.objSpeedMultiplier) - (short)(CZ_2 * mx * speedMult * Globals.objSpeedMultiplier));
+                if (keepOnGround.Checked)
+                    dropObjectToGround();
+            }
+            else
+            {
+                speedMult = 0.5f;
+                if (obj.isPropertyShown(Object3D.FLAGS.ROTATION_X))
+                {
+                    obj.xRot = (short)(savedPos.X - (short)(CX * my * speedMult * Globals.objSpeedMultiplier) - (short)(CX_2 * mx * speedMult * Globals.objSpeedMultiplier));
+                    obj.xRot = keepDegreesWithin360(obj.xRot);
+                }
+                if (obj.isPropertyShown(Object3D.FLAGS.ROTATION_Z))
+                {
+                    obj.zRot = (short)(savedPos.Z - (short)(CZ * my * speedMult * Globals.objSpeedMultiplier) - (short)(CZ_2 * mx * speedMult * Globals.objSpeedMultiplier));
+                    obj.zRot = keepDegreesWithin360(obj.zRot);
+                }
+            }
+            
+            if (camera.isOrbitCamera())
+                camera.updateOrbitCamera(ref camMtx);
+        }
+
         private void moveObj_MouseMove(object sender, MouseEventArgs e)
         {
             if (moveObj_mouseDown)
             {
                 if (Globals.item_selected > -1 && Globals.list_selected > -1)
                 {
-                    Object3D obj = getSelectedObject();
-                    if (obj == null) return;
-                    if (obj.IsReadOnly) return;
-                    short speedMult = 30;
+                    if (!Globals.isMultiSelected)
+                    {
+                        moveObjectXZ(getSelectedObject(), e, moveObj_saved[0], false);
+                    }
+                    else
+                    {
+                        int mo_s_incr = 0;
+                        for (int i = 0; i < 3; i++)
+                        {
+                            //foreach (int selectedIndex in Globals.multi_selected_nodes[i])
+                            for(int j = 0; j < Globals.multi_selected_nodes[i].Count; j++)
+                            {
+                                int selectedIndex = Globals.multi_selected_nodes[i][j];
+                                switch (i)
+                                {
+                                    case 0:
+                                        moveObjectXZ(level.getCurrentArea().Objects[selectedIndex], e, moveObj_saved[mo_s_incr++], false);
+                                        break;
+                                    case 1:
+                                        moveObjectXZ(level.getCurrentArea().MacroObjects[selectedIndex], e, moveObj_saved[mo_s_incr++], false);
+                                        break;
+                                    case 2:
+                                        moveObjectXZ(level.getCurrentArea().SpecialObjects[selectedIndex], e, moveObj_saved[mo_s_incr++], false);
+                                        break;
+                                }
+                            }
+                        }
+                    }
 
-                    int mx = e.X - moveObj_lastMouseX;
-                    int my = -(e.Y - moveObj_lastMouseY);
-
-                    float CX = (float)Math.Sin(camera.Yaw);
-                    float CZ = (float)-Math.Cos(camera.Yaw);
-                    float CX_2 = (float)Math.Sin(camera.Yaw + (Math.PI / 2));
-                    float CZ_2 = (float)-Math.Cos(camera.Yaw + (Math.PI / 2));
-
-                    if (obj.isPropertyShown(Object3D.FLAGS.POSITION_X))
-                        obj.xPos = (short)(moveObj_savedX - (short)(CX * my * speedMult * Globals.objSpeedMultiplier) - (short)(CX_2 * mx * speedMult * Globals.objSpeedMultiplier));
-                    if (obj.isPropertyShown(Object3D.FLAGS.POSITION_Z))
-                        obj.zPos = (short)(moveObj_savedZ - (short)(CZ * my * speedMult * Globals.objSpeedMultiplier) - (short)(CZ_2 * mx * speedMult * Globals.objSpeedMultiplier));
-                    if (keepOnGround.Checked)
-                        dropObjectToGround();
-                    if (camera.isOrbitCamera())
-                        camera.updateOrbitCamera(ref camMtx);
                     glControl1.Invalidate();
                     propertyGrid1.Refresh();
                     glControl1.Update(); // Needed after calling propertyGrid1.Refresh();
@@ -921,28 +1476,77 @@ namespace Quad64
             if (Globals.item_selected > -1 && Globals.list_selected > -1)
             {
                 moveObj_UpDown_lastMouseY = e.Y;
+                //saveObjectPositionToList(ref moveObj_saved);
                 moveObj_UpDown_mouseDown = true;
             }
         }
         private void movObj_UpDown_MouseUp(object sender, MouseEventArgs e)
         {
             moveObj_UpDown_mouseDown = false;
-            Object3D obj = getSelectedObject();
-            if (obj != null)
-                obj.updateROMData();
+            updateSelectedObjectsInROM();
+            //Object3D obj = getSelectedObject();
+            //if (obj != null)
+            //    obj.updateROMData();
         }
+
+        private void moveObjectY(Object3D obj, MouseEventArgs e, bool forRotation)
+        {
+            if (obj == null) return;
+            if (obj.IsReadOnly) return;
+            if (!forRotation)
+            {
+                if (obj.isPropertyShown(Object3D.FLAGS.POSITION_Y))
+                {
+                    obj.yPos -= (short)(30 * (e.Y - moveObj_UpDown_lastMouseY) * Globals.objSpeedMultiplier);
+                }
+            }
+            else
+            {
+                if (obj.isPropertyShown(Object3D.FLAGS.ROTATION_Y))
+                {
+                    obj.yRot -= (short)((e.Y - rotObj_Yaw_lastMouseY) * Globals.objSpeedMultiplier);
+                    obj.yRot = keepDegreesWithin360(obj.yRot);
+                }
+            }
+
+            if (camera.isOrbitCamera())
+                camera.updateOrbitCamera(ref camMtx);
+        }
+
         private void movObj_UpDown_MouseMove(object sender, MouseEventArgs e)
         {
             if (moveObj_UpDown_mouseDown)
             {
                 if (Globals.item_selected > -1 && Globals.list_selected > -1)
                 {
-                    Object3D obj = getSelectedObject();
-                    if (obj == null) return;
-                    if (obj.IsReadOnly) return;
-                    obj.yPos -= (short)(30 * (e.Y - moveObj_UpDown_lastMouseY) * Globals.objSpeedMultiplier);
-                    if (camera.isOrbitCamera())
-                        camera.updateOrbitCamera(ref camMtx);
+                    //Object3D obj = getSelectedObject();
+                    if (!Globals.isMultiSelected)
+                    {
+                        moveObjectY(getSelectedObject(), e, false);
+                    }
+                    else
+                    {
+                        for (int i = 0; i < 3; i++)
+                        {
+                            //foreach (int selectedIndex in Globals.multi_selected_nodes[i])
+                            for (int j = 0; j < Globals.multi_selected_nodes[i].Count; j++)
+                            {
+                                int selectedIndex = Globals.multi_selected_nodes[i][j];
+                                switch (i)
+                                {
+                                    case 0:
+                                        moveObjectY(level.getCurrentArea().Objects[selectedIndex], e, false);
+                                        break;
+                                    case 1:
+                                        moveObjectY(level.getCurrentArea().MacroObjects[selectedIndex], e, false);
+                                        break;
+                                    case 2:
+                                        moveObjectY(level.getCurrentArea().SpecialObjects[selectedIndex], e, false);
+                                        break;
+                                }
+                            }
+                        }
+                    }
                     glControl1.Invalidate();
                     propertyGrid1.Refresh();
                     glControl1.Update(); // Needed after calling propertyGrid1.Refresh();
@@ -955,7 +1559,6 @@ namespace Quad64
         bool rotObj_mouseDown = false;
         int rotObj_lastMouseX = 0;
         int rotObj_lastMouseY = 0;
-        short rotObj_savedX = 0, rotObj_savedY = 0, rotObj_savedZ = 0;
 
         private void rotObj_MouseDown(object sender, MouseEventArgs e)
         {
@@ -967,18 +1570,17 @@ namespace Quad64
                 rotObj_mouseDown = true;
                 rotObj_lastMouseX = e.X;
                 rotObj_lastMouseY = e.Y;
-                rotObj_savedX = obj.xRot;
-                rotObj_savedY = obj.yRot;
-                rotObj_savedZ = obj.zRot;
+                saveObjectRotationToList(ref moveObj_saved);
             }
         }
 
         private void rotObj_MouseUp(object sender, MouseEventArgs e)
         {
             rotObj_mouseDown = false;
-            Object3D obj = getSelectedObject();
-            if (obj != null)
-                obj.updateROMData();
+            updateSelectedObjectsInROM();
+            //Object3D obj = getSelectedObject();
+            //if (obj != null)
+            //    obj.updateROMData();
         }
 
         private void rotObj_MouseMove(object sender, MouseEventArgs e)
@@ -987,31 +1589,35 @@ namespace Quad64
             {
                 if (Globals.item_selected > -1 && Globals.list_selected > -1)
                 {
-                    Object3D obj = getSelectedObject();
-                    if (obj == null) return;
-                    if (obj.IsReadOnly) return;
-                    float speedMult = 0.5f;
-
-                    int mx = e.X - rotObj_lastMouseX;
-                    int my = -(e.Y - rotObj_lastMouseY);
-
-                    float CZ = (float)Math.Sin(camera.Yaw);
-                    float CX = (float)-Math.Cos(camera.Yaw);
-                    float CZ_2 = (float)Math.Sin(camera.Yaw + (Math.PI / 2));
-                    float CX_2 = (float)-Math.Cos(camera.Yaw + (Math.PI / 2));
-                    if (obj.isPropertyShown(Object3D.FLAGS.ROTATION_X))
+                    if (!Globals.isMultiSelected)
                     {
-                        obj.xRot = (short)(rotObj_savedX - (short)(CX * my * speedMult * Globals.objSpeedMultiplier) - (short)(CX_2 * mx * speedMult * Globals.objSpeedMultiplier));
-                        obj.xRot = keepDegreesWithin360(obj.xRot);
+                        moveObjectXZ(getSelectedObject(), e, moveObj_saved[0], true);
                     }
-                    if (obj.isPropertyShown(Object3D.FLAGS.ROTATION_Z))
+                    else
                     {
-                        obj.zRot = (short)(rotObj_savedZ - (short)(CZ * my * speedMult * Globals.objSpeedMultiplier) - (short)(CZ_2 * mx * speedMult * Globals.objSpeedMultiplier));
-                        obj.zRot = keepDegreesWithin360(obj.zRot);
+                        int mo_s_incr = 0;
+                        for (int i = 0; i < 3; i++)
+                        {
+                            //foreach (int selectedIndex in Globals.multi_selected_nodes[i])
+                            for (int j = 0; j < Globals.multi_selected_nodes[i].Count; j++)
+                            {
+                                int selectedIndex = Globals.multi_selected_nodes[i][j];
+                                switch (i)
+                                {
+                                    case 0:
+                                        moveObjectXZ(level.getCurrentArea().Objects[selectedIndex], e, moveObj_saved[mo_s_incr++], true);
+                                        break;
+                                    case 1:
+                                        moveObjectXZ(level.getCurrentArea().MacroObjects[selectedIndex], e, moveObj_saved[mo_s_incr++], true);
+                                        break;
+                                    case 2:
+                                        moveObjectXZ(level.getCurrentArea().SpecialObjects[selectedIndex], e, moveObj_saved[mo_s_incr++], true);
+                                        break;
+                                }
+                            }
+                        }
                     }
 
-                    if (camera.isOrbitCamera())
-                        camera.updateOrbitCamera(ref camMtx);
                     glControl1.Invalidate();
                     propertyGrid1.Refresh();
                     glControl1.Update(); // Needed after calling propertyGrid1.Refresh();
@@ -1028,15 +1634,51 @@ namespace Quad64
             }
         }
 
+
+
         private void dropObjectToGround()
         {
             if (Globals.item_selected > -1 && Globals.list_selected > -1)
             {
-                Object3D obj = getSelectedObject();
-                if (obj == null) return;
-                obj.yPos = level.getCurrentArea().collision.dropToGround(new Vector3(obj.xPos, obj.yPos, obj.zPos));
+                //Object3D obj = getSelectedObject();
+                //if (obj == null) return;
+                //obj.yPos = level.getCurrentArea().collision.dropToGround(new Vector3(obj.xPos, obj.yPos, obj.zPos));
+                if (!Globals.isMultiSelected)
+                {
+                    Object3D obj = getSelectedObject();
+                    if (obj == null) return;
+                    obj.yPos = level.getCurrentArea().collision.dropToGround(new Vector3(obj.xPos, obj.yPos, obj.zPos));
+                }
+                else
+                {
+                    Object3D obj = null;
+                    for (int i = 0; i < 3; i++)
+                    {
+                        //foreach (int selectedIndex in Globals.multi_selected_nodes[i])
+                        for (int j = 0; j < Globals.multi_selected_nodes[i].Count; j++)
+                        {
+                            int selectedIndex = Globals.multi_selected_nodes[i][j];
+                            switch (i)
+                            {
+                                case 0:
+                                    obj = level.getCurrentArea().Objects[selectedIndex];
+                                    break;
+                                case 1:
+                                    obj = level.getCurrentArea().MacroObjects[selectedIndex];
+                                    break;
+                                case 2:
+                                    obj = level.getCurrentArea().SpecialObjects[selectedIndex];
+                                    break;
+                            }
+                            if (obj == null) continue;
+                            obj.yPos = level.getCurrentArea().collision.dropToGround(new Vector3(obj.xPos, obj.yPos, obj.zPos));
+                        }
+                    }
+                }
+
                 if (camera.isOrbitCamera())
                     camera.updateOrbitCamera(ref camMtx);
+                updateSelectedObjectsInROM();
                 glControl1.Invalidate();
                 propertyGrid1.Refresh();
                 glControl1.Update(); // Needed after calling propertyGrid1.Refresh();
@@ -1065,7 +1707,25 @@ namespace Quad64
             }
         }
 
+        private void texturesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+           textureEditor texEdit = new textureEditor(level);
+           texEdit.ShowDialog();
+           if (texEdit.needToUpdateLevel)
+           {
+                switchLevel(level.LevelID);
+           }
+           //new Thread(() => new textureEditor(level).ShowDialog()).Start();
+        }
+
+        private void scriptsDumpToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ScriptDumps dumpWindow = new ScriptDumps(level);
+            dumpWindow.ShowDialog();
+        }
+
         bool rotObj_Yaw_mouseDown = false;
+
         int rotObj_Yaw_lastMouseY = 0;
         private void rotObj_Yaw_MouseDown(object sender, MouseEventArgs e)
         {
@@ -1079,9 +1739,10 @@ namespace Quad64
         private void rotObj_Yaw_MouseUp(object sender, MouseEventArgs e)
         {
             rotObj_Yaw_mouseDown = false;
-            Object3D obj = getSelectedObject();
-            if (obj != null)
-                obj.updateROMData();
+            updateSelectedObjectsInROM();
+            //Object3D obj = getSelectedObject();
+            //if (obj != null)
+            //    obj.updateROMData();
         }
 
         private void rotObj_Yaw_MouseMove(object sender, MouseEventArgs e)
@@ -1090,16 +1751,33 @@ namespace Quad64
             {
                 if (Globals.item_selected > -1 && Globals.list_selected > -1)
                 {
-                    Object3D obj = getSelectedObject();
-                    if (obj == null) return;
-                    if (obj.IsReadOnly) return;
-                    if (obj.isPropertyShown(Object3D.FLAGS.ROTATION_Y))
+                    if (!Globals.isMultiSelected)
                     {
-                        obj.yRot -= (short)((e.Y - rotObj_Yaw_lastMouseY) * Globals.objSpeedMultiplier);
-                        obj.yRot = keepDegreesWithin360(obj.yRot);
+                        moveObjectY(getSelectedObject(), e, true);
                     }
-                    if (camera.isOrbitCamera())
-                        camera.updateOrbitCamera(ref camMtx);
+                    else
+                    {
+                        for (int i = 0; i < 3; i++)
+                        {
+                            //foreach (int selectedIndex in Globals.multi_selected_nodes[i])
+                            for (int j = 0; j < Globals.multi_selected_nodes[i].Count; j++)
+                            {
+                                int selectedIndex = Globals.multi_selected_nodes[i][j];
+                                switch (i)
+                                {
+                                    case 0:
+                                        moveObjectY(level.getCurrentArea().Objects[selectedIndex], e, true);
+                                        break;
+                                    case 1:
+                                        moveObjectY(level.getCurrentArea().MacroObjects[selectedIndex], e, true);
+                                        break;
+                                    case 2:
+                                        moveObjectY(level.getCurrentArea().SpecialObjects[selectedIndex], e, true);
+                                        break;
+                                }
+                            }
+                        }
+                    }
                     glControl1.Invalidate();
                     propertyGrid1.Refresh();
                     glControl1.Update(); // Needed after calling propertyGrid1.Refresh();
@@ -1112,10 +1790,10 @@ namespace Quad64
         private void trackBar3_ValueChanged(object sender, EventArgs e)
         {
             float newValue;
-            if (trackBar3.Value > 50)
-                newValue = 100.0f+((trackBar3.Value-50)*8f);
+            if (trackBar_camSpeed.Value > 50)
+                newValue = 100.0f+((trackBar_camSpeed.Value-50)*8f);
             else
-                newValue = (trackBar3.Value/50.0f) * 100f;
+                newValue = (trackBar_camSpeed.Value/50.0f) * 100f;
             
             if (newValue < 1f)
                 newValue = 1f;
@@ -1130,11 +1808,11 @@ namespace Quad64
         {
 
             float newValue;
-            if (trackBar2.Value > 50)
-                newValue = 100.0f + ((trackBar2.Value - 50) * 8f);
+            if (trackBar_moveSpeed.Value > 50)
+                newValue = 100.0f + ((trackBar_moveSpeed.Value - 50) * 8f);
             
             else
-               newValue = (trackBar2.Value / 50.0f) * 100f;
+               newValue = (trackBar_moveSpeed.Value / 50.0f) * 100f;
             if (newValue < 1f)
                 newValue = 1f;
             else if (newValue > 96f && newValue < 114f)
