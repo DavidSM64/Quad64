@@ -29,7 +29,7 @@ namespace Quad64.src.Scripts
                     random.Next(0, 255)
                 )
             );
-            texture = ContentPipe.LoadTexture(textureColor);
+            texture = ContentPipe.LoadTexture(ref textureColor);
         }
 
         public void AddTriangle(uint a, uint b, uint c)
@@ -37,6 +37,11 @@ namespace Quad64.src.Scripts
             indicesList.Add(a);
             indicesList.Add(b);
             indicesList.Add(c);
+        }
+
+        public uint getTriangleCount()
+        {
+            return (uint)indices.Length / 3;
         }
 
         public void buildList()
@@ -49,9 +54,10 @@ namespace Quad64.src.Scripts
     {
         private int vbo;
         private List<Vector3> vertices = new List<Vector3>();
+        //private Vector3[] vertices = null;
         private List<CollisionTriangleList> triangles = new List<CollisionTriangleList>();
         private Vector3[] verts;
-
+        
         public void AddVertex(Vector3 newVert)
         {
             vertices.Add(newVert);
@@ -66,6 +72,14 @@ namespace Quad64.src.Scripts
         public void NewTriangleList(int ID)
         {
             triangles.Add(new CollisionTriangleList(ID));
+        }
+
+        public uint getTriangleCount()
+        {
+            uint tri_count = 0;
+            foreach (CollisionTriangleList tri in triangles)
+                tri_count += tri.getTriangleCount();
+            return tri_count;
         }
 
 

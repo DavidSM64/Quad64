@@ -1,6 +1,7 @@
 ﻿using Quad64.src.LevelInfo;
 using Quad64.src.Scripts;
 using System;
+using System.Diagnostics;
 
 namespace Quad64.Scripts
 {
@@ -25,6 +26,8 @@ namespace Quad64.Scripts
             int endCmd = 0;
             while (!end)
             {
+                //Stopwatch stopWatch = new Stopwatch();
+                //stopWatch.Start();
                 byte cmdLen = data[off + 1];
                 byte[] cmd = rom.getSubArray(data, off, cmdLen);
                 //rom.printArray(cmd, cmdLen);
@@ -34,7 +37,7 @@ namespace Quad64.Scripts
                 {
                     case 0x00:
                     case 0x01:
-                        CMD_00(ref lvl, ref desc, cmd, rom, seg, off);
+                        CMD_00(ref lvl, ref desc, cmd, seg, off);
                         alreadyAdded = true;
                         break;
                     case 0x02:
@@ -114,11 +117,11 @@ namespace Quad64.Scripts
                         desc = "Copy bytes from ROM (0x" + bytesToInt(cmd, 8, 4).ToString("X8") + " to 0x" + bytesToInt(cmd, 12, 4).ToString("X8") + ") to RAM address 0x" + bytesToInt(cmd, 4, 4).ToString("X8");
                         break;
                     case 0x17:
-                        CMD_17(ref lvl, ref desc, cmd, rom);
+                        CMD_17(ref lvl, ref desc, cmd);
                         break;
                     case 0x18:
                     case 0x1A:
-                        CMD_18(ref lvl, ref desc, cmd, rom);
+                        CMD_18(ref lvl, ref desc, cmd);
                         break;
                     case 0x19:
                         desc = "Create Mario head demo (";
@@ -156,26 +159,26 @@ namespace Quad64.Scripts
                         desc = "End of area " + lvl.CurrentAreaID;
                         break;
                     case 0x21:
-                        CMD_21(ref lvl, ref desc, cmd, rom);
+                        CMD_21(ref lvl, ref desc, cmd);
                         break;
                     case 0x22:
                         //Globals.DEBUG_PLG = false;
-                        CMD_22(ref lvl, ref desc, cmd, rom);
+                        CMD_22(ref lvl, ref desc, cmd);
                         break;
                     case 0x24:
-                        CMD_24(ref lvl, ref desc, cmd, rom, seg, off);
+                        CMD_24(ref lvl, ref desc, cmd, seg, off);
                         break;
                     case 0x25:
                         desc = "Setup Mario object";
                         break;
                     case 0x26:
-                        CMD_26(ref lvl, ref desc, cmd, rom, seg, off);
+                        CMD_26(ref lvl, ref desc, cmd, seg, off);
                         break;
                     case 0x27:
-                        CMD_27(ref lvl, ref desc, cmd, rom, seg, off);
+                        CMD_27(ref lvl, ref desc, cmd, seg, off);
                         break;
                     case 0x28:
-                        CMD_28(ref lvl, ref desc, cmd, rom, seg, off);
+                        CMD_28(ref lvl, ref desc, cmd, seg, off);
                         break;
                     case 0x2B:
                         {
@@ -187,7 +190,10 @@ namespace Quad64.Scripts
                         }
                         break;
                     case 0x2E:
-                        CMD_2E(ref lvl, ref desc, cmd, rom);
+                        CMD_2E(ref lvl, ref desc, cmd);
+                        break;
+                    case 0x2F:
+                        CMD_2F(ref lvl, ref desc, cmd);
                         break;
                     case 0x30:
                         desc = "Show dialog message when level starts; dialog ID = 0x" + cmd[3].ToString("X2");
@@ -226,7 +232,7 @@ namespace Quad64.Scripts
                         desc = "Set music (Seq = 0x" + cmd[3].ToString("X2") + ")";
                         break;
                     case 0x39:
-                        CMD_39(ref lvl, ref desc, cmd, rom);
+                        CMD_39(ref lvl, ref desc, cmd);
                         break;
                     case 0x3B:
                         desc = "Add jet stream; Position = (" + (short)bytesToInt(cmd, 4, 2) + "," + 
@@ -236,6 +242,9 @@ namespace Quad64.Scripts
                 }
                 if (!alreadyAdded)
                     addLSCommandToDump(ref lvl, cmd, seg, off, desc);
+                //stopWatch.Stop();
+               // if(stopWatch.Elapsed.Milliseconds > 1)
+                //    Console.WriteLine("RunTime (CMD "+cmd[0].ToString("X2")+"): " + stopWatch.Elapsed.Milliseconds + "ms");
                 off += cmdLen;
             }
             return endCmd;
@@ -251,8 +260,10 @@ namespace Quad64.Scripts
             lvl.LevelScriptCommands_ForDump.Add(info);
         }
 
-        private static void CMD_00(ref Level lvl, ref string desc, byte[] cmd, ROM rom, byte org_seg, uint org_off)
+        private static void CMD_00(ref Level lvl, ref string desc, byte[] cmd, byte org_seg, uint org_off)
         {
+
+            ROM rom = ROM.Instance;
             byte seg = cmd[3];
             uint start = bytesToInt(cmd, 4, 4);
             uint end = bytesToInt(cmd, 8, 4);
@@ -360,8 +371,9 @@ namespace Quad64.Scripts
             addLSCommandToDump(ref lvl, cmd, org_seg, org_off, desc);
         }
 
-        private static void CMD_17(ref Level lvl, ref string desc, byte[] cmd, ROM rom)
+        private static void CMD_17(ref Level lvl, ref string desc, byte[] cmd)
         {
+            ROM rom = ROM.Instance;
             byte seg = cmd[3];
             uint start = bytesToInt(cmd, 4, 4);
             uint end = bytesToInt(cmd, 8, 4);
@@ -369,8 +381,9 @@ namespace Quad64.Scripts
             rom.setSegment(seg, start, end, false);
         }
         
-        private static void CMD_18(ref Level lvl, ref string desc, byte[] cmd, ROM rom)
+        private static void CMD_18(ref Level lvl, ref string desc, byte[] cmd)
         {
+            ROM rom = ROM.Instance;
             byte seg = cmd[3];
             uint start = bytesToInt(cmd, 4, 4);
             uint end = bytesToInt(cmd, 8, 4);
@@ -396,16 +409,30 @@ namespace Quad64.Scripts
             Area newArea = new Area(areaID, bytesToInt(cmd, 4, 4), lvl);
             GeoScripts.resetNodes();
             newArea.AreaModel.GeoDataSegAddress = bytesToInt(cmd, 4, 4);
+
+           // Globals.DEBUG_PARSING_LEVEL_AREA = true;
+           // Stopwatch stopWatch = new Stopwatch();
+           // stopWatch.Start();
             GeoScripts.parse(ref newArea.AreaModel, ref lvl, seg, off);
             lvl.setAreaBackgroundInfo(ref newArea);
             lvl.Areas.Add(newArea);
             lvl.CurrentAreaID = areaID;
+           // stopWatch.Stop();
+           // Console.WriteLine("RunTime (GeoScripts.parse): " + stopWatch.Elapsed.Milliseconds + "ms");
+
+            //stopWatch = new Stopwatch();
+           // stopWatch.Start();
             newArea.AreaModel.buildBuffers();
-           // newArea.AreaModel.outputTextureAtlasToPng("Area_"+areaID+"_TexAtlus.png");
+            //if(areaID == 1) newArea.AreaModel.dumpModelToOBJ(1.0f/500.0f);
+            //stopWatch.Stop();
+            //Console.WriteLine("RunTime (newArea.AreaModel.buildBuffers): " + stopWatch.Elapsed.Milliseconds + "ms");
+            //Globals.DEBUG_PARSING_LEVEL_AREA = false;
+            // newArea.AreaModel.outputTextureAtlasToPng("Area_"+areaID+"_TexAtlus.png");
         }
 
-        private static void CMD_21(ref Level lvl, ref string desc, byte[] cmd, ROM rom)
+        private static void CMD_21(ref Level lvl, ref string desc, byte[] cmd)
         {
+            ROM rom = ROM.Instance;
             byte modelID = cmd[3];
             byte seg = cmd[4];
             uint off = bytesToInt(cmd, 5, 3);
@@ -425,11 +452,16 @@ namespace Quad64.Scripts
             lvl.ModelIDs.Add(modelID, newModel);
         }
 
-        private static void CMD_22(ref Level lvl, ref string desc, byte[] cmd, ROM rom)
+        private static void CMD_22(ref Level lvl, ref string desc, byte[] cmd)
         {
+            ROM rom = ROM.Instance;
             byte modelID = cmd[3];
             byte seg = cmd[4];
             uint off = bytesToInt(cmd, 5, 3);
+
+            if (modelID == 0x7A)
+                Globals.DEBUG_PARSING_DL = true;
+            
 
             desc = "Define Model ID 0x" + modelID.ToString("X2") + "; Load Geometry layout from 0x" + seg.ToString("X2") + off.ToString("X6");
 
@@ -446,10 +478,15 @@ namespace Quad64.Scripts
                 lvl.ModelIDs.Remove(modelID);
             newModel.buildBuffers();
             lvl.ModelIDs.Add(modelID, newModel);
+
+
+            if (modelID == 0x7A)
+                Globals.DEBUG_PARSING_DL = false;
         }
 
-        private static void CMD_24(ref Level lvl, ref string desc, byte[] cmd, ROM rom, byte seg, uint off)
+        private static void CMD_24(ref Level lvl, ref string desc, byte[] cmd, byte seg, uint off)
         {
+            ROM rom = ROM.Instance;
             Object3D newObj = new Object3D();
             if (rom.isSegmentMIO0(seg))
             {
@@ -492,8 +529,9 @@ namespace Quad64.Scripts
         }
 
 
-        private static void CMD_26(ref Level lvl, ref string desc, byte[] cmd, ROM rom, byte seg, uint off)
+        private static void CMD_26(ref Level lvl, ref string desc, byte[] cmd, byte seg, uint off)
         {
+            ROM rom = ROM.Instance;
             Warp warp = new Warp(false);
             if (rom.isSegmentMIO0(seg))
             {
@@ -523,8 +561,9 @@ namespace Quad64.Scripts
             }
         }
 
-        private static void CMD_27(ref Level lvl, ref string desc, byte[] cmd, ROM rom, byte seg, uint off)
+        private static void CMD_27(ref Level lvl, ref string desc, byte[] cmd, byte seg, uint off)
         {
+            ROM rom = ROM.Instance;
             Warp warp = new Warp(true);
             if (rom.isSegmentMIO0(seg))
             {
@@ -554,8 +593,9 @@ namespace Quad64.Scripts
             }
         }
 
-        private static void CMD_28(ref Level lvl, ref string desc, byte[] cmd, ROM rom, byte seg, uint off)
+        private static void CMD_28(ref Level lvl, ref string desc, byte[] cmd, byte seg, uint off)
         {
+            ROM rom = ROM.Instance;
             WarpInstant warp = new WarpInstant();
             if (rom.isSegmentMIO0(seg))
             {
@@ -581,8 +621,9 @@ namespace Quad64.Scripts
         }
 
         /* Process collision map, Special Objects, and waterboxes. */
-        private static void CMD_2E(ref Level lvl, ref string desc, byte[] cmd, ROM rom)
+        private static void CMD_2E(ref Level lvl, ref string desc, byte[] cmd)
         {
+            ROM rom = ROM.Instance;
             if (cmd.Length < 8)
                 return;
             desc = "Load collision, and place special objects from address 0x"+ bytesToInt(cmd, 4, 4).ToString("X8");
@@ -591,18 +632,18 @@ namespace Quad64.Scripts
             uint off = bytesToInt(cmd, 5, 3);
             byte[] data = rom.getSegment(segment);
             sub_cmd = (ushort)bytesToInt(data, (int)off, 2);
-            
+            CollisionMap cmap = lvl.getCurrentArea().collision;
             uint num_verts = (ushort)bytesToInt(data, (int)off + 2, 2);
+
             off += 4;
             for (int i = 0; i < num_verts; i++)
             {
                 short x = (short)bytesToInt(data, (int)off + 0, 2);
                 short y = (short)bytesToInt(data, (int)off + 2, 2);
                 short z = (short)bytesToInt(data, (int)off + 4, 2);
-                lvl.getCurrentArea().collision.AddVertex(new OpenTK.Vector3(x,y,z));
+                cmap.AddVertex(new OpenTK.Vector3(x,y,z));
                 off += 6;
             }
-            //off += (num_verts * 6);
 
             while (sub_cmd != 0x0041)
             {
@@ -610,7 +651,7 @@ namespace Quad64.Scripts
                 //Console.WriteLine(sub_cmd.ToString("X8"));
                 if (sub_cmd == 0x0041) break;
                 //rom.printArraySection(data, (int)off, 4 + (int)collisionLength(sub_cmd));
-                lvl.getCurrentArea().collision.NewTriangleList((int)bytesToInt(data, (int)off, 2));
+                cmap.NewTriangleList((int)bytesToInt(data, (int)off, 2));
                 uint num_tri = (ushort)bytesToInt(data, (int)off + 2, 2);
                 uint col_len = collisionLength(sub_cmd);
                 off += 4;
@@ -619,11 +660,11 @@ namespace Quad64.Scripts
                     uint a = bytesToInt(data, (int)off + 0, 2);
                     uint b = bytesToInt(data, (int)off + 2, 2);
                     uint c = bytesToInt(data, (int)off + 4, 2);
-                    lvl.getCurrentArea().collision.AddTriangle(a,b,c);
+                    cmap.AddTriangle(a,b,c);
                     off += col_len;
                 }
             }
-            lvl.getCurrentArea().collision.buildCollisionMap();
+            cmap.buildCollisionMap();
             off += 2;
             bool end = false;
             while (!end)
@@ -710,6 +751,18 @@ namespace Quad64.Scripts
             }
 
         }
+        
+        private static void CMD_2F(ref Level lvl, ref string desc, byte[] cmd)
+        {
+            ROM rom = ROM.Instance;
+            Console.WriteLine(bytesToInt(cmd, 4, 4).ToString("X8"));
+            byte seg = cmd[4];
+            uint off = bytesToInt(cmd, 5, 3);
+            uint len = lvl.getCurrentArea().collision.getTriangleCount();
+            byte[] data = rom.getSubArray(rom.getSegment(seg), off, len);
+            //Console.WriteLine("Num triangles = 0x" + len.ToString("X8") + ": ");
+            //rom.printArray(data);
+        }
 
         private static byte[] getSpecialObjectEntry(byte presetID)
         {
@@ -764,10 +817,11 @@ namespace Quad64.Scripts
             }
         }
 
-        private static void CMD_39(ref Level lvl, ref string desc, byte[] cmd, ROM rom)
+        private static void CMD_39(ref Level lvl, ref string desc, byte[] cmd)
         {
             if (cmd.Length < 8)
                 return;
+            ROM rom = ROM.Instance;
             uint pos = bytesToInt(cmd, 4, 4);
 
             desc = "Place macro objects loaded from address 0x" + pos.ToString("X8");

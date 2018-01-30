@@ -56,7 +56,9 @@ namespace Quad64
 
         public static bool DEBUG_PLG = false; // parsing level geometry flag
         public static uint DEBUG_PDL = 0x00000000; // parsing display list value
-        
+        public static bool DEBUG_PARSING_LEVEL_AREA = false;
+        public static bool DEBUG_PARSING_DL = false;
+
         // Locations in the Vanilla North American ROM (default)
         public static uint[] seg02_location = { 0x108A40, 0x114750 };
         public static uint[] seg15_location = { 0x2ABCA0, 0x2AC6B0 };
@@ -97,6 +99,21 @@ namespace Quad64
         public static uint endCake_drawFunc_NA = 0x802D28CC;
 
         public static List<ObjectComboEntry> objectComboEntries = new List<ObjectComboEntry>();
+        public static List<BehaviorNameEntry> behaviorNameEntries = new List<BehaviorNameEntry>();
+
+        public static BehaviorNameEntry getBehaviorNameEntryFromSegAddress(uint address)
+        {
+            foreach (BehaviorNameEntry entry in behaviorNameEntries)
+            {
+                if (entry.Behavior == address)
+                    return entry;
+            }
+            
+            BehaviorNameEntry new_bne = new BehaviorNameEntry("Undefined Behavior", address);
+            behaviorNameEntries.Add(new_bne);
+            
+            return behaviorNameEntries[behaviorNameEntries.Count - 1];
+        }
 
         public static string getDefaultObjectComboPath()
         {
@@ -114,7 +131,24 @@ namespace Quad64
                     return "./data/ObjectCombos_JS.json";
             }
         }
-        
+
+        public static string getDefaultBehaviorNamesPath()
+        {
+            // Console.WriteLine("ROM.Instance.Region = " + ROM.Instance.Region.ToString());
+            switch (ROM.Instance.Region)
+            {
+                default:
+                //case ROM_Region.NORTH_AMERICA:
+                    return "./data/BehaviorNames.json";
+                /*case ROM_Region.EUROPE:
+                    return "./data/ObjectCombos_EU.json";
+                case ROM_Region.JAPAN:
+                    return "./data/ObjectCombos_JP.json";
+                case ROM_Region.JAPAN_SHINDOU:
+                    return "./data/ObjectCombos_JS.json";*/
+            }
+        }
+
         public static void insertNewEntry(ObjectComboEntry newEntry)
         {
             for(int i = 0; i < objectComboEntries.Count; i++)

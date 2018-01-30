@@ -161,17 +161,14 @@ namespace Quad64.src.LevelInfo
                     scale = new Vector3(1.001f, 1.001f, 1.001f);
                 Quaternion rotation = new Quaternion(obj.xRot, obj.yRot, obj.zRot, 1.0f);
                 Vector3 position = new Vector3(obj.xPos, obj.yPos, obj.zPos);
-                if (obj.ModelID != 0)
+                if (obj.ModelID != 0 && parent.ModelIDs.ContainsKey(obj.ModelID))
                 {
-                    if (parent.ModelIDs.ContainsKey(obj.ModelID))
-                    {
-                        Model3D model = parent.ModelIDs[obj.ModelID];
-                        if(Globals.drawObjectModels)
-                            model.drawModel(scale, rotation, position);
-                        BoundingBox.draw(scale, rotation, position,
-                            isObjectSelected(0, i) ? Globals.SelectedObjectColor : Globals.ObjectColor,
-                            model.UpperBoundary + boundOff, model.LowerBoundary - boundOff);
-                    }
+                    Model3D model = parent.ModelIDs[obj.ModelID];
+                    if (Globals.drawObjectModels)
+                        model.drawModel(scale, rotation, position);
+                    BoundingBox.draw(scale, rotation, position,
+                        isObjectSelected(0, i) ? Globals.SelectedObjectColor : Globals.ObjectColor,
+                        model.UpperBoundary + boundOff, model.LowerBoundary - boundOff);
                 }
                 else
                 {
@@ -187,17 +184,14 @@ namespace Quad64.src.LevelInfo
                 Vector3 scale = Vector3.One;
                 Quaternion rotation = new Quaternion(obj.xRot, obj.yRot, obj.zRot, 1.0f);
                 Vector3 position = new Vector3(obj.xPos, obj.yPos, obj.zPos);
-                if (obj.ModelID != 0)
+                if (obj.ModelID != 0 && parent.ModelIDs.ContainsKey(obj.ModelID))
                 {
-                    if (parent.ModelIDs.ContainsKey(obj.ModelID))
-                    {
-                        Model3D model = parent.ModelIDs[obj.ModelID];
-                        if (Globals.drawObjectModels)
-                            model.drawModel(scale, rotation, position);
-                        BoundingBox.draw(scale, rotation, position,
-                            isObjectSelected(1, i) ? Globals.SelectedObjectColor : Globals.MacroObjectColor,
-                            model.UpperBoundary + boundOff, model.LowerBoundary - boundOff);
-                    }
+                    Model3D model = parent.ModelIDs[obj.ModelID];
+                    if (Globals.drawObjectModels)
+                        model.drawModel(scale, rotation, position);
+                    BoundingBox.draw(scale, rotation, position,
+                        isObjectSelected(1, i) ? Globals.SelectedObjectColor : Globals.MacroObjectColor,
+                        model.UpperBoundary + boundOff, model.LowerBoundary - boundOff);
                 }
                 else
                 {
@@ -213,17 +207,14 @@ namespace Quad64.src.LevelInfo
                 Vector3 scale = Vector3.One;
                 Quaternion rotation = new Quaternion(obj.xRot, obj.yRot, obj.zRot, 1.0f);
                 Vector3 position = new Vector3(obj.xPos, obj.yPos, obj.zPos);
-                if (obj.ModelID != 0)
+                if (obj.ModelID != 0 && parent.ModelIDs.ContainsKey(obj.ModelID))
                 {
-                    if (parent.ModelIDs.ContainsKey(obj.ModelID))
-                    {
-                        Model3D model = parent.ModelIDs[obj.ModelID];
-                        if (Globals.drawObjectModels)
-                            model.drawModel(scale, rotation, position);
-                        BoundingBox.draw(scale, rotation, position,
-                            isObjectSelected(2, i) ? Globals.SelectedObjectColor : Globals.SpecialObjectColor,
-                            model.UpperBoundary + boundOff, model.LowerBoundary - boundOff);
-                    }
+                    Model3D model = parent.ModelIDs[obj.ModelID];
+                    if (Globals.drawObjectModels)
+                        model.drawModel(scale, rotation, position);
+                    BoundingBox.draw(scale, rotation, position,
+                        isObjectSelected(2, i) ? Globals.SelectedObjectColor : Globals.SpecialObjectColor,
+                        model.UpperBoundary + boundOff, model.LowerBoundary - boundOff);
                 }
                 else
                 {
@@ -247,6 +238,7 @@ namespace Quad64.src.LevelInfo
         public Dictionary<ushort, Model3D> ModelIDs = new Dictionary<ushort, Model3D>();
 
         public List<ObjectComboEntry> LevelObjectCombos = new List<ObjectComboEntry>();
+
         public List<PresetMacroEntry> MacroObjectPresets = new List<PresetMacroEntry>();
         public List<PresetMacroEntry> SpecialObjectPresets_8 = new List<PresetMacroEntry>();
         public List<PresetMacroEntry> SpecialObjectPresets_10 = new List<PresetMacroEntry>();

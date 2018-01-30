@@ -386,19 +386,14 @@ namespace Quad64
         }
 
 
-        public byte[] getSubArray_safe(byte[] arr, uint offset, uint size)
+        public byte[] getSubArray_safe(byte[] arr, uint offset, long size)
         {
-            if (arr == null)
+            if (arr == null || arr.Length <= offset)
                 return new byte[size];
-
+            if((arr.Length - offset) < size)
+                size = (arr.Length - offset);
             byte[] newArr = new byte[size];
-            for (uint i = 0; i < size; i++)
-            {
-                if(offset + i < arr.Length)
-                    newArr[i] = arr[offset + i];
-                else
-                    newArr[i] = 0x00;
-            }
+            Array.Copy(arr, offset, newArr, 0, size);
             return newArr;
         }
 
@@ -407,6 +402,11 @@ namespace Quad64
             byte[] newArr = new byte[size];
             Array.Copy(arr, offset, newArr, 0, size);
             return newArr;
+        }
+
+        public void printArray(byte[] arr)
+        {
+            Console.WriteLine(BitConverter.ToString(arr.Take(arr.Length).ToArray()).Replace("-", " "));
         }
 
         public void printArray(byte[] arr, int size)

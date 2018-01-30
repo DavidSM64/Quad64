@@ -67,7 +67,12 @@ namespace Quad64.src.Forms
                             l_off = bytesToInt(cmd, 13, 3);
                             segmentStarts[l_seg] = l_start;
                             segments[l_seg] = rom.getROMSection(l_start, l_end);
-                            parseLevelScriptTemporarlyForSegments(segments, segmentStarts, segmentsAreMIO0, l_seg, l_off);
+                            int end_r = parseLevelScriptTemporarlyForSegments(segments, segmentStarts, segmentsAreMIO0, l_seg, l_off);
+                            if (end_r == 0x02)
+                            {
+                                end = true;
+                                endCmd = 2;
+                            }
                         }
                         break;
                     case 0x02:

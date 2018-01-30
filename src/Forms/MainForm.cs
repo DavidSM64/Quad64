@@ -3,17 +3,14 @@ using OpenTK.Graphics.OpenGL;
 using System;
 using System.Drawing;
 using System.Windows.Forms;
-using PropertyGridExtensionHacks;
 using Quad64.src.LevelInfo;
 using Quad64.Scripts;
 using Quad64.src.JSON;
 using Quad64.src;
-using Quad64.src.Viewer;
-using System.IO;
 using Quad64.src.TestROM;
 using Quad64.src.Forms;
-using System.Threading;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 
 namespace Quad64
 {
@@ -67,7 +64,7 @@ namespace Quad64
             treeView1.TabStop = false;
             treeView1.DrawNode += new DrawTreeNodeEventHandler(treeView1_DrawNode);
             treeView1.AfterSelect += new TreeViewEventHandler(treeView1_AfterSelect);
-            treeView1.BeforeSelect += new TreeViewCancelEventHandler(treeView1_BeforeSelect);
+            //treeView1.BeforeSelect += new TreeViewCancelEventHandler(treeView1_BeforeSelect);
             treeView1.KeyPress += new KeyPressEventHandler(treeView1_KeyPress);
             splitContainer3.Panel1.Controls.Add(treeView1);
             Globals.multi_selected_nodes.Clear();
@@ -116,9 +113,13 @@ namespace Quad64
                     return;
                 }
             }
-            Globals.objectComboEntries.Clear();
-            ModelComboFile.parseObjectCombos(Globals.getDefaultObjectComboPath());
+            //Stopwatch stopWatch = new Stopwatch();
+            //stopWatch.Start();
 
+            Globals.objectComboEntries.Clear();
+            Globals.behaviorNameEntries.Clear();
+            BehaviorNameFile.parseBehaviorNames(Globals.getDefaultBehaviorNamesPath());
+            ModelComboFile.parseObjectCombos(Globals.getDefaultObjectComboPath());
             rom.setSegment(0x15, Globals.seg15_location[0], Globals.seg15_location[1], false);
             rom.setSegment(0x02, Globals.seg02_location[0], Globals.seg02_location[1], 
                 rom.isSegmentMIO0(0x02), rom.Seg02_isFakeMIO0, rom.Seg02_uncompressedOffset);
@@ -131,11 +132,16 @@ namespace Quad64
             bgColor = Color.CornflowerBlue;
             camera.setLevel(level);
             updateAreaButtons();
+
+            //stopWatch.Stop();
+            //Console.WriteLine("Startup time: " + stopWatch.Elapsed.Milliseconds + "ms");
+
             glControl1.Invalidate();
         }
 
         private void refreshObjectsInList()
         {
+            BeginUpdate(treeView1);
             Globals.list_selected = -1;
             Globals.item_selected = -1;
             Globals.multi_selected_nodes[0].Clear();
@@ -184,6 +190,7 @@ namespace Quad64
             {
                 warps.Nodes.Add(warp.ToString());
             }
+            EndUpdate(treeView1);
         }
         
         private void glControl1_Paint(object sender, PaintEventArgs e)
@@ -513,6 +520,13 @@ namespace Quad64
             glControl1.Update(); // Needed after calling propertyGrid1.Refresh();
         }
 
+        private void replaceBehavior(int index, ref SelectBehavior behWindow)
+        {
+            Area area = level.getCurrentArea();
+            area.Objects[index].setBehaviorFromAddress(behWindow.ReturnBehavior);
+            treeView1.Nodes[0].Nodes[index].Text = area.Objects[index].getObjectComboName();
+        }
+
         private void replaceObject(int index, ref SelectComboPreset comboWindow)
         {
             Area area = level.getCurrentArea();
@@ -555,6 +569,59 @@ namespace Quad64
             treeView1.Nodes[2].Nodes[index].Text
                 = area.SpecialObjects[index].getObjectComboName();
             area.SpecialObjects[index].UpdateProperties();
+        }
+        
+        private void behaviorToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SelectBehavior behWindow = new SelectBehavior();
+            behWindow.ShowDialog();
+            if (behWindow.ClickedSelect)
+            {
+                if (!Globals.isMultiSelected)
+                    replaceBehavior(Globals.item_selected, ref behWindow);
+                else
+                    for (int i = 0; i < treeView1.SelectedNodes.Count; i++)
+                        replaceBehavior(treeView1.SelectedNodes[i].Index, ref behWindow);
+
+                updateSelectedObjectsInROM();
+                glControl1.Invalidate();
+                propertyGrid1.Refresh();
+                glControl1.Update(); // Needed after calling propertyGrid1.Refresh();
+            }
+        }
+        
+        private void objectComboNameToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            RenameObjectCombo roc = new RenameObjectCombo(getSelectedObject().Title);
+            roc.ShowDialog();
+            if (roc.ClickedSelect)
+            {
+
+                if (!Globals.isMultiSelected)
+                    getSelectedObject().renameObjectCombo(roc.ReturnName);
+                else
+                {
+                    Area area = level.getCurrentArea();
+                    for (int i = 0; i < treeView1.SelectedNodes.Count; i++)
+                    {
+                        TreeNode node = treeView1.SelectedNodes[i];
+                        if (node.Parent.Text.Equals("3D Objects"))
+                            area.Objects[node.Index].renameObjectCombo(roc.ReturnName);
+                        else if (node.Parent.Text.Equals("Macro 3D Objects"))
+                            area.MacroObjects[node.Index].renameObjectCombo(roc.ReturnName);
+                        else if (node.Parent.Text.Equals("Special 3D Objects"))
+                            area.SpecialObjects[node.Index].renameObjectCombo(roc.ReturnName);
+                    }
+                }
+               // Console.WriteLine("Changed object combo name to " + roc.ReturnName);
+               
+                updateSelectedObjectsInROM();
+                glControl1.Invalidate();
+                propertyGrid1.Refresh();
+                refreshObjectsInList();
+                glControl1.Update(); // Needed after calling propertyGrid1.Refresh();
+            }
+
         }
 
         private void objectComboPresetToolStripMenuItem_Click(object sender, EventArgs e)
@@ -680,7 +747,12 @@ namespace Quad64
         private void switchLevel(ushort levelID)
         {
             Level testLevel = new Level(levelID, 1);
+            //Stopwatch stopWatch = new Stopwatch();
+            //stopWatch.Start();
             LevelScripts.parse(ref testLevel, 0x15, 0);
+            //stopWatch.Stop();
+            //Console.WriteLine("RunTime (LevelScripts.parse): " + stopWatch.Elapsed.Milliseconds + "ms");
+
             if (testLevel.Areas.Count > 0)
             {
                 level = testLevel;
@@ -744,23 +816,6 @@ namespace Quad64
             }
         }
 
-        private void treeView1_BeforeSelect(object sender, TreeViewCancelEventArgs e)
-        {
-            TreeNode node = e.Node;
-            if (node.Parent == null)
-            {
-                Globals.isMultiSelected = false;
-                Globals.isMultiSelectedFromMultipleLists = false;
-                propertyGrid1.SelectedObject = null;
-                Globals.list_selected = -1;
-                Globals.item_selected = -1;
-                objectComboPresetToolStripMenuItem.Enabled = false;
-
-                glControl1.Invalidate();
-                glControl1.Update();
-            }
-        }
-
         bool atLeastTwoBools(bool a, bool b, bool c)
         {
             return a ? (b || c) : (b && c);
@@ -768,9 +823,26 @@ namespace Quad64
 
         private void updateAfterSelect(TreeNode node)
         {
-            if (node.Parent != null)
+            if (node.Parent == null)
+            {
+
+                Globals.isMultiSelected = false;
+                Globals.isMultiSelectedFromMultipleLists = false;
+                propertyGrid1.SelectedObject = null;
+                Globals.list_selected = -1;
+                Globals.item_selected = -1;
+                objectComboPresetToolStripMenuItem.Enabled = false;
+                objectComboNameToolStripMenuItem.Enabled = false;
+                behaviorToolStripMenuItem.Enabled = false;
+
+                glControl1.Invalidate();
+                glControl1.Update();
+            }
+            else
             {
                 objectComboPresetToolStripMenuItem.Enabled = true;
+                objectComboNameToolStripMenuItem.Enabled = true;
+                behaviorToolStripMenuItem.Enabled = true;
                 if (treeView1.SelectedNodes.Count > 1)
                 {
                     Area area = level.getCurrentArea();
@@ -783,6 +855,9 @@ namespace Quad64
                     else if (parent_text.Equals("Special 3D Objects"))
                         Globals.list_selected = 2;
                     
+                    if(Globals.list_selected != 0)
+                        behaviorToolStripMenuItem.Enabled = false;
+
                     Globals.isMultiSelectedFromMultipleLists = false;
                     Globals.isMultiSelectedFromSpecialObjects = false;
                     bool hasSO_8 = false, hasSO_10 = false, hasSO_12 = false;
@@ -810,6 +885,8 @@ namespace Quad64
                         {
                             Globals.isMultiSelectedFromMultipleLists = true;
                             objectComboPresetToolStripMenuItem.Enabled = false;
+                            objectComboNameToolStripMenuItem.Enabled = false;
+                            behaviorToolStripMenuItem.Enabled = false;
                             if (Globals.list_selected != 2 || (Globals.list_selected == 2 && Globals.isMultiSelectedFromSpecialObjects))
                                 break;
                         }
@@ -834,6 +911,8 @@ namespace Quad64
                             if (atLeastTwoBools(hasSO_8, hasSO_10, hasSO_12)) {
                                 Globals.isMultiSelectedFromSpecialObjects = true;
                                 objectComboPresetToolStripMenuItem.Enabled = false;
+                                objectComboNameToolStripMenuItem.Enabled = false;
+                                behaviorToolStripMenuItem.Enabled = false;
                                 if (Globals.isMultiSelectedFromMultipleLists)
                                     break;
                             }
@@ -891,6 +970,7 @@ namespace Quad64
 
                 if (node.Parent.Text.Equals("3D Objects"))
                 {
+                    behaviorToolStripMenuItem.Enabled = true;
                     Globals.list_selected = 0;
                     Globals.item_selected = node.Index;
                     propertyGrid1.SelectedObject = level.getCurrentArea().Objects[node.Index];
@@ -904,6 +984,7 @@ namespace Quad64
                 }
                 else if (node.Parent.Text.Equals("Macro 3D Objects"))
                 {
+                    behaviorToolStripMenuItem.Enabled = false;
                     Globals.list_selected = 1;
                     Globals.item_selected = node.Index;
                     propertyGrid1.SelectedObject = level.getCurrentArea().MacroObjects[node.Index];
@@ -917,6 +998,7 @@ namespace Quad64
                 }
                 else if (node.Parent.Text.Equals("Special 3D Objects"))
                 {
+                    behaviorToolStripMenuItem.Enabled = false;
                     Globals.list_selected = 2;
                     Globals.item_selected = node.Index;
                     propertyGrid1.SelectedObject = level.getCurrentArea().SpecialObjects[node.Index];
@@ -930,6 +1012,7 @@ namespace Quad64
                 }
                 else if (node.Parent.Text.Equals("Warps"))
                 {
+                    behaviorToolStripMenuItem.Enabled = false;
                     Globals.list_selected = 3;
                     Globals.item_selected = node.Index;
                     Area area = level.getCurrentArea();
@@ -941,13 +1024,17 @@ namespace Quad64
                         propertyGrid1.SelectedObject = area.InstantWarps[node.Index - area.Warps.Count - area.PaintingWarps.Count];
                 }
             }
-
+            
             Object3D obj = getSelectedObject();
             if (obj != null)
             {
                 obj.RevealTemporaryHiddenFields();
                 if (obj.IsReadOnly)
+                {
                     objectComboPresetToolStripMenuItem.Enabled = false;
+                    objectComboNameToolStripMenuItem.Enabled = false;
+                    behaviorToolStripMenuItem.Enabled = false;
+                }
                 obj.UpdateProperties();
                 propertyGrid1.Refresh();
             }
@@ -1029,6 +1116,7 @@ namespace Quad64
                     }
                 }
 
+                updateSelectedObjectsInROM();
                 if (camera.isOrbitCamera())
                     camera.updateOrbitCamera(ref camMtx);
                 glControl1.Invalidate();
@@ -1820,6 +1908,26 @@ namespace Quad64
 
             objSpeedLabel.Text = (int)(newValue) + "%";
             Globals.objSpeedMultiplier = newValue / 100.0f;
+        }
+
+        private const int WM_USER = 0x0400;
+        private const int EM_SETEVENTMASK = (WM_USER + 69);
+        private const int WM_SETREDRAW = 0x0b;
+        private IntPtr OldEventMask;
+
+        [DllImport("user32.dll", CharSet = CharSet.Auto)]
+        private static extern IntPtr SendMessage(IntPtr hWnd, int msg, IntPtr wParam, IntPtr lParam);
+
+        private void BeginUpdate(Control c)
+        {
+            SendMessage(c.Handle, WM_SETREDRAW, IntPtr.Zero, IntPtr.Zero);
+            OldEventMask = SendMessage(c.Handle, EM_SETEVENTMASK, IntPtr.Zero, IntPtr.Zero);
+        }
+
+        private void EndUpdate(Control c)
+        {
+            SendMessage(c.Handle, WM_SETREDRAW, (IntPtr)1, IntPtr.Zero);
+            SendMessage(c.Handle, EM_SETEVENTMASK, IntPtr.Zero, OldEventMask);
         }
     }
 }

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Quad64.src.Scripts
 {
@@ -138,22 +139,15 @@ namespace Quad64.src.Scripts
             return -1;
         }
 
-        public void BuildData(List<Model3D.MeshData> meshes) {
-            //TextureAtlasBuilder.TextureAtlas atlas = new TextureAtlasBuilder.TextureAtlas(textureImages);
-            //atlas.outputToPNG("TestAtlas.png");
-
+        public void BuildData(ref List<Model3D.MeshData> meshes) {
             finalMesh = newFinalMesh();
-            for (int t = 0; t < TempMeshes.Count; t++)
-            {
+            for (int t = 0; t < TempMeshes.Count; t++) {
                 uint indexCount = 0;
-                meshes.Add(new Model3D.MeshData());
-                //if (t != 0) continue;
-                //TextureAtlasBuilder.TextureAtlas.AtlasEntry atlasEntry = atlas.getEntryFromID((uint)t);
-                Model3D.MeshData md = meshes[t];
-                md.texture = ContentPipe.LoadTexture(textureImages[t]);
+                Model3D.MeshData md = new Model3D.MeshData();
+                Bitmap bmp = textureImages[t];
+                md.texture = ContentPipe.LoadTexture(ref bmp);
                 md.texture.TextureParamS = textureInfo[t].wrapS;
                 md.texture.TextureParamT = textureInfo[t].wrapT;
-                //Console.WriteLine("[Building]: " + (OpenTK.Graphics.OpenGL.All)md.texture.TextureParamS + "," +(OpenTK.Graphics.OpenGL.All)md.texture.TextureParamT);
                 TempMesh temp = TempMeshes[t];
                 for (int i = 0; i < temp.vertices.Count; i++)
                 {
@@ -161,17 +155,20 @@ namespace Quad64.src.Scripts
                     if (vExists < 0)
                     {
                         Vector2 texCoord = temp.texCoords[i];
-                        texCoord.X /= (float)textureImages[t].Width * 32.0f;
-                        texCoord.Y /= (float)textureImages[t].Height * 32.0f;
+                        texCoord.X /= (float)bmp.Width * 32.0f;
+                        texCoord.Y /= (float)bmp.Height * 32.0f;
                         temp.final.vertices.Add(temp.vertices[i]);
                         temp.final.texCoords.Add(texCoord);
                         temp.final.colors.Add(temp.colors[i]);
                         temp.final.indices.Add(indexCount);
                         indexCount++;
-                    } else {
+                    }
+                    else
+                    {
                         temp.final.indices.Add((uint)vExists);
                     }
                 }
+                meshes.Add(md);
             }
         }
 

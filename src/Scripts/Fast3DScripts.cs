@@ -1,7 +1,9 @@
 ﻿using OpenTK;
 using Quad64.src.LevelInfo;
 using System;
+using System.Diagnostics;
 using System.Drawing;
+using System.Linq;
 
 namespace Quad64.src.Scripts
 {
@@ -23,7 +25,15 @@ namespace Quad64.src.Scripts
                 default: return (uint)(b[0 + offset] << 24 | b[1 + offset] << 16 | b[2 + offset] << 8 | b[3 + offset]);
             }
         }
-        
+
+        private static ulong bytesToLong(byte[] b, int offset)
+        {
+            ulong val = 0;
+            for (int i = 0; i < 8; i++)
+                val |= ((ulong)b[i + offset] << ((7-i) * 8));
+            return val;
+        }
+
         private enum CMD
         {
             F3D_NOOP = 0x00,
@@ -91,7 +101,7 @@ namespace Quad64.src.Scripts
                 }
                 string desc = ((CMD)cmd[0]).ToString();
                 bool alreadyAdded = false;
-                //rom.printArray(cmd, 8);
+
                 switch ((CMD)cmd[0])
                 {
                     case CMD.F3D_NOOP:
@@ -112,9 +122,10 @@ namespace Quad64.src.Scripts
                     case CMD.F3D_DL:
                         alreadyAdded = true;
                         if (cmd[1] == 0x00)
-                            desc = "Branch to display list at 0x" + bytesToInt(cmd, 4, 4).ToString("X8");
+                            desc = "Jump and link to display list at 0x" + bytesToInt(cmd, 4, 4).ToString("X8");
                         else
                             desc = "Jump to display list at 0x" + bytesToInt(cmd, 4, 4).ToString("X8");
+                            
                         addF3DCommandToDump(ref mdl, cmd, seg, off, desc);
                         F3D_DL(ref mdl, ref lvl, cmd);
                         if (cmd[1] == 1)
@@ -201,22 +212,21 @@ namespace Quad64.src.Scripts
         private static void switchTextureStatus(ref Model3D mdl, ref TempMaterial temp, bool status)
         {
             ROM rom = ROM.Instance;
+            
             if (mdl.builder.processingTexture != status)
             {
                 if (status == false)
                 {
                     if (!mdl.builder.hasTexture(temp.segOff))
                     {
-                        //System.Console.WriteLine("Adding new texture!");
                         if (temp.segOff != 0)
                         {
-                            //System.Console.WriteLine("temp.segOff = " + temp.segOff.ToString("X8"));
                             mdl.builder.AddTexture(
                                 TextureFormats.decodeTexture(
                                     temp.format,
                                     rom.getDataFromSegmentAddress_safe(
                                         temp.segOff,
-                                        (uint)(temp.w * temp.h * 2)
+                                        (uint)(temp.w * temp.h * 4)
                                     ),
                                     temp.w,
                                     temp.h,
@@ -226,7 +236,9 @@ namespace Quad64.src.Scripts
                                 mdl.builder.newTexInfo(temp.wrapS, temp.wrapT),
                                 temp.segOff
                             );
-                        } else {
+                        }
+                        else
+                        {
                             mdl.builder.AddTexture(
                                 TextureFormats.createColorTexture(System.Drawing.Color.FromArgb((int)temp.color)),
                                 mdl.builder.newTexInfo(temp.wrapS, temp.wrapT),
@@ -304,7 +316,7 @@ namespace Quad64.src.Scripts
         {
             ushort tsX = (ushort)bytesToInt(cmd, 4, 2);
             ushort tsY = (ushort)bytesToInt(cmd, 6, 2);
-
+            
             if ((temp.geometryMode & 0x40000) == 0x40000)
             {
                 temp.w = (ushort)((tsX >> 6));
@@ -416,7 +428,7 @@ namespace Quad64.src.Scripts
 
         private static bool G_SETCOMBINE(ref TempMaterial temp, byte[] cmd)
         {
-            if(bytesToInt(cmd, 0, 4) == 0xFCFFFFFF)
+            if(bytesToLong(cmd, 0) == 0xFCFFFFFFFFFE793C)
             {
                 temp.segOff = 0;
                 return true;

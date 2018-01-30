@@ -160,7 +160,7 @@ namespace Quad64.src.Forms
         {
             if (ot_info_RomAddress.Text.Contains("N/A") || ot_info_RomAddress.Text.Contains("null"))
             {
-                MessageBox.Show("Importing over compressed MIO0 data is not currently supported in this version.",
+                MessageBox.Show("Importing over compressed MIO0 data is not currently supported in this version. You will need to use an extended ROM file.",
                         "Notice",
                         MessageBoxButtons.OK,
                         MessageBoxIcon.Exclamation,
@@ -213,7 +213,7 @@ namespace Quad64.src.Forms
             }
             if (info_Address.Text.Contains("N/A") || info_Address.Text.Contains("null"))
             {
-                MessageBox.Show("Importing over compressed MIO0 data is not currently supported in this version.",
+                MessageBox.Show("Importing over compressed MIO0 data is not currently supported in this version. You will need to use an extended ROM file.",
                         "Notice",
                         MessageBoxButtons.OK,
                         MessageBoxIcon.Exclamation,

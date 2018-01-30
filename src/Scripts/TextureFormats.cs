@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Quad64.src.Scripts
@@ -10,7 +12,7 @@ namespace Quad64.src.Scripts
         public static Bitmap createColorTexture(Color color)
         {
             Bitmap tex = new Bitmap(1, 1);
-            tex.SetPixel(0, 0, color);
+            Graphics.FromImage(tex).Clear(color);
             return tex;
         }
 
@@ -334,15 +336,22 @@ namespace Quad64.src.Scripts
 
         public static Bitmap decodeRGBA32(byte[] data, int width, int height)
         {
+            Console.WriteLine("Texture size = (" + width + "x" + height + ")");
+            Console.WriteLine("data.Length = (" + data.Length + ")");
             Bitmap tex = new Bitmap(width, height);
-            for (int i = 0; i < width * height; ++i)
+            BitmapData bitmapData = tex.LockBits(new Rectangle(0, 0, width, height), 
+                ImageLockMode.ReadWrite, tex.PixelFormat);
+
+            int len = width * height;
+            for (int i = 0; i < len; i++)
             {
-                byte red = data[i * 4 + 0];
-                byte green = data[i * 4 + 1];
-                byte blue = data[i * 4 + 2];
-                byte alpha = data[i * 4 + 3]; // (Transparency)
-                tex.SetPixel(i % width, i / width, Color.FromArgb(alpha, red, green, blue));
+                // Swap red and blue values
+                byte temp_red = data[(i * 4) + 0];
+                data[(i * 4) + 0] = data[(i * 4) + 2];
+                data[(i * 4) + 2] = temp_red;
             }
+            Marshal.Copy(data, 0, bitmapData.Scan0, data.Length);
+            tex.UnlockBits(bitmapData);
 
             tex.Tag = new string[] { "Format: RGBA32", "Width: " + width,
              "Height: " + height };
@@ -352,16 +361,21 @@ namespace Quad64.src.Scripts
         public static Bitmap decodeRGBA16(byte[] data, int width, int height)
         {
             Bitmap tex = new Bitmap(width, height);
-
-            for (int i = 0; i < width * height; ++i)
-            {
+            BitmapData bitmapData = tex.LockBits(new Rectangle(0, 0, width, height), 
+                ImageLockMode.ReadWrite, tex.PixelFormat);
+            byte[] pixels = new byte[width * height * 4];
+            
+            int len = width * height;
+            for(int i = 0; i < len; i++)
+            { 
                 ushort pixel = (ushort)((data[i * 2] << 8) | data[i * 2 + 1]);
-                byte red = (byte)(((pixel >> 11) & 0x1F) * 8);
-                byte green = (byte)(((pixel >> 6) & 0x1F) * 8);
-                byte blue = (byte)(((pixel >> 1) & 0x1F) * 8);
-                byte alpha = (pixel & 1) > 0 ? (byte)0xFF : (byte)0x00; // (Transparency)
-                tex.SetPixel(i % width, i / width, Color.FromArgb(alpha, red, green, blue));
+                pixels[(i * 4) + 2] = (byte)(((pixel >> 11) & 0x1F) * 8); // Red
+                pixels[(i * 4) + 1] = (byte)(((pixel >> 6) & 0x1F) * 8); // Green
+                pixels[(i * 4) + 0] = (byte)(((pixel >> 1) & 0x1F) * 8); // Blue
+                pixels[(i * 4) + 3] = (pixel & 1) > 0 ? (byte)0xFF : (byte)0x00; // (Transparency)
             }
+            Marshal.Copy(pixels, 0, bitmapData.Scan0, pixels.Length);
+            tex.UnlockBits(bitmapData);
 
             tex.Tag = new string[] { "Format: RGBA16", "Width: " + width,
              "Height: " + height };
@@ -371,14 +385,20 @@ namespace Quad64.src.Scripts
         public static Bitmap decodeIA16(byte[] data, int width, int height)
         {
             Bitmap tex = new Bitmap(width, height);
+            BitmapData bitmapData = tex.LockBits(new Rectangle(0, 0, width, height), 
+                ImageLockMode.ReadWrite, tex.PixelFormat);
+            byte[] pixels = new byte[width * height * 4];
 
-            for (int i = 0; i < width * height; ++i)
+            int len = width * height;
+            for (int i = 0; i < len; i++)
             {
-                ushort pixel = (ushort)((data[i * 2] << 8) | data[i * 2 + 1]);
-                byte intensity = data[i * 2];
-                byte alpha = data[i * 2 + 1];
-                tex.SetPixel(i % width, i / width, Color.FromArgb(alpha, intensity, intensity, intensity));
+                pixels[(i * 4) + 2] = data[i * 2]; // Red
+                pixels[(i * 4) + 1] = data[i * 2]; // Green
+                pixels[(i * 4) + 0] = data[i * 2]; // Blue
+                pixels[(i * 4) + 3] = data[(i * 2) + 1]; // Alpha
             }
+            Marshal.Copy(pixels, 0, bitmapData.Scan0, pixels.Length);
+            tex.UnlockBits(bitmapData);
 
             tex.Tag = new string[] { "Format: IA16", "Width: " + width,
              "Height: " + height};
@@ -388,13 +408,21 @@ namespace Quad64.src.Scripts
         public static Bitmap decodeIA8(byte[] data, int width, int height)
         {
             Bitmap tex = new Bitmap(width, height);
+            BitmapData bitmapData = tex.LockBits(new Rectangle(0, 0, width, height), 
+                ImageLockMode.ReadWrite, tex.PixelFormat);
+            byte[] pixels = new byte[width * height * 4];
 
-            for (int i = 0; i < width * height; ++i)
+            int len = width * height;
+            for (int i = 0; i < len; i++)
             {
                 byte intensity = (byte)(((data[i] >> 4) & 0xF) * 16);
-                byte alpha = (byte)((data[i] & 0xF) * 16);
-                tex.SetPixel(i % width, i / width, Color.FromArgb(alpha, intensity, intensity, intensity));
+                pixels[(i * 4) + 2] = intensity; // Red
+                pixels[(i * 4) + 1] = intensity; // Green
+                pixels[(i * 4) + 0] = intensity; // Blue
+                pixels[(i * 4) + 3] = (byte)((data[i] & 0xF) * 16); // Alpha
             }
+            Marshal.Copy(pixels, 0, bitmapData.Scan0, pixels.Length);
+            tex.UnlockBits(bitmapData);
 
             tex.Tag = new string[] { "Format: IA8", "Width: " + width,
              "Height: " + height };
@@ -403,19 +431,29 @@ namespace Quad64.src.Scripts
         public static Bitmap decodeIA4(byte[] data, int width, int height)
         {
             Bitmap tex = new Bitmap(width, height);
+            BitmapData bitmapData = tex.LockBits(new Rectangle(0, 0, width, height),
+                ImageLockMode.ReadWrite, tex.PixelFormat);
+            byte[] pixels = new byte[width * height * 4];
+
             int len = (width * height) / 2;
             for (int i = 0; i < len; i++)
             {
                 byte twoPixels = data[i];
-                byte intensity = (byte)((twoPixels >> 5) * 32);
-                byte alpha = (byte)(((twoPixels >> 4) & 0x1) * 255);
-                tex.SetPixel((i * 2) % width, (i * 2) / width, Color.FromArgb(alpha, intensity, intensity, intensity));
-                
-                intensity = (byte)(((twoPixels >> 1) & 0x7) * 32);
-                alpha = (byte)((twoPixels & 0x1) * 255);
-                tex.SetPixel(((i * 2) + 1) % width, ((i * 2) + 1) / width, Color.FromArgb(alpha, intensity, intensity, intensity));
-            }
 
+                byte intensity = (byte)((twoPixels >> 5) * 32);
+                pixels[(i * 8) + 2] = intensity; // Red
+                pixels[(i * 8) + 1] = intensity; // Green
+                pixels[(i * 8) + 0] = intensity; // Blue
+                pixels[(i * 8) + 3] = (byte)(((twoPixels >> 4) & 0x1) * 255); // Alpha
+
+                intensity = (byte)(((twoPixels >> 1) & 0x7) * 32);
+                pixels[(i * 8) + 6] = intensity; // Red
+                pixels[(i * 8) + 5] = intensity; // Green
+                pixels[(i * 8) + 4] = intensity; // Blue
+                pixels[(i * 8) + 7] = (byte)((twoPixels & 0x1) * 255); // Alpha
+            }
+            Marshal.Copy(pixels, 0, bitmapData.Scan0, pixels.Length);
+            tex.UnlockBits(bitmapData);
             tex.Tag = new string[] { "Format: IA4", "Width: " + width,
              "Height: " + height };
             return tex;
@@ -423,12 +461,21 @@ namespace Quad64.src.Scripts
         public static Bitmap decodeI8(byte[] data, int width, int height)
         {
             Bitmap tex = new Bitmap(width, height);
+            BitmapData bitmapData = tex.LockBits(new Rectangle(0, 0, width, height),
+                ImageLockMode.ReadWrite, tex.PixelFormat);
+            byte[] pixels = new byte[width * height * 4];
 
-            for (int i = 0; i < width * height; ++i)
+            int len = width * height;
+            for (int i = 0; i < len; i++)
             {
                 byte intensity = data[i];
-                tex.SetPixel(i % width, i / width, Color.FromArgb(intensity, intensity, intensity));
+                pixels[(i * 4) + 2] = intensity; // Red
+                pixels[(i * 4) + 1] = intensity; // Green
+                pixels[(i * 4) + 0] = intensity; // Blue
+                pixels[(i * 4) + 3] = 0xFF; // Alpha
             }
+            Marshal.Copy(pixels, 0, bitmapData.Scan0, pixels.Length);
+            tex.UnlockBits(bitmapData);
 
             tex.Tag = new string[] { "Format: I8", "Width: " + width,
              "Height: " + height };
@@ -437,17 +484,30 @@ namespace Quad64.src.Scripts
         public static Bitmap decodeI4(byte[] data, int width, int height)
         {
             Bitmap tex = new Bitmap(width, height);
-            int len = (width * height)/2;
+            BitmapData bitmapData = tex.LockBits(new Rectangle(0, 0, width, height),
+                ImageLockMode.ReadWrite, tex.PixelFormat);
+            byte[] pixels = new byte[width * height * 4];
+
+            int len = (width * height) / 2;
             for (int i = 0; i < len; i++)
             {
                 byte twoPixels = data[i];
+
                 byte intensity = (byte)((twoPixels >> 4) * 16);
-                tex.SetPixel((i * 2) % width, (i * 2) / width, Color.FromArgb(intensity, intensity, intensity));
+                pixels[(i * 8) + 2] = intensity; // Red
+                pixels[(i * 8) + 1] = intensity; // Green
+                pixels[(i * 8) + 0] = intensity; // Blue
+                pixels[(i * 8) + 3] = 0xFF; // Alpha
 
                 intensity = (byte)((twoPixels & 0xF) * 16);
-                tex.SetPixel(((i * 2) + 1) % width, ((i * 2) + 1) / width, Color.FromArgb(intensity, intensity, intensity));
+                pixels[(i * 8) + 6] = intensity; // Red
+                pixels[(i * 8) + 5] = intensity; // Green
+                pixels[(i * 8) + 4] = intensity; // Blue
+                pixels[(i * 8) + 7] = 0xFF; // Alpha
             }
-
+            Marshal.Copy(pixels, 0, bitmapData.Scan0, pixels.Length);
+            tex.UnlockBits(bitmapData);
+            
             tex.Tag = new string[] { "Format: I4", "Width: " + width,
              "Height: " + height };
             return tex;
@@ -456,24 +516,33 @@ namespace Quad64.src.Scripts
         public static Bitmap decodeCI4(byte[] data, int width, int height, ushort[] palette, bool isPaletteRGBA16)
         {
             Bitmap tex = new Bitmap(width, height);
+
+            BitmapData bitmapData = tex.LockBits(new Rectangle(0, 0, width, height), 
+                ImageLockMode.ReadWrite, tex.PixelFormat);
+            byte[] pixels = new byte[width * height * 4];
+
             int len = (width * height) / 2;
             for (int i = 0; i < len; i++)
             {
                 ushort pixel = palette[(data[i] >> 4) & 0xF];
-                byte red = (byte)(((pixel >> 11) & 0x1F) * 8);
-                byte green = (byte)(((pixel >> 6) & 0x1F) * 8);
-                byte blue = (byte)(((pixel >> 1) & 0x1F) * 8);
-                byte alpha = (pixel & 1) > 0 ? (byte)0xFF : (byte)0x00;
-                tex.SetPixel((i * 2) % width, (i * 2) / width, Color.FromArgb(alpha, red, green, blue));
+                pixels[(i * 8) + 2] = (byte)(((pixel >> 11) & 0x1F) * 8); // Red
+                pixels[(i * 8) + 1] = (byte)(((pixel >> 6) & 0x1F) * 8); // Green
+                pixels[(i * 8) + 0] = (byte)(((pixel >> 1) & 0x1F) * 8); // Blue
+                pixels[(i * 8) + 3] = (pixel & 1) > 0 ? (byte)0xFF : (byte)0x00; // Alpha
 
                 pixel = palette[(data[i]) & 0xF];
-                red = (byte)(((pixel >> 11) & 0x1F) * 8);
-                green = (byte)(((pixel >> 6) & 0x1F) * 8);
-                blue = (byte)(((pixel >> 1) & 0x1F) * 8);
-                alpha = (pixel & 1) > 0 ? (byte)0xFF : (byte)0x00;
-                tex.SetPixel(((i * 2) + 1) % width, ((i * 2) + 1) / width, Color.FromArgb(alpha, red, green, blue));
+                pixels[(i * 8) + 6] = (byte)(((pixel >> 11) & 0x1F) * 8); // Red
+                pixels[(i * 8) + 5] = (byte)(((pixel >> 6) & 0x1F) * 8); // Green
+                pixels[(i * 8) + 4] = (byte)(((pixel >> 1) & 0x1F) * 8); // Blue
+                pixels[(i * 8) + 7] = (pixel & 1) > 0 ? (byte)0xFF : (byte)0x00; // Alpha
+                
             }
+            Marshal.Copy(pixels, 0, bitmapData.Scan0, pixels.Length);
+            tex.UnlockBits(bitmapData);
 
+            tex.Tag = new string[] { "Format: RGBA16", "Width: " + width,
+             "Height: " + height };
+            
             tex.Tag = new string[] { "Format: CI4", "Width: " + width,
              "Height: " + height };
             return tex;
@@ -482,17 +551,24 @@ namespace Quad64.src.Scripts
         public static Bitmap decodeCI8(byte[] data, int width, int height, ushort[] palette, bool isPaletteRGBA16)
         {
             Bitmap tex = new Bitmap(width, height);
-            int len = (width * height) / 2;
+
+            BitmapData bitmapData = tex.LockBits(new Rectangle(0, 0, width, height),
+                ImageLockMode.ReadWrite, tex.PixelFormat);
+            byte[] pixels = new byte[width * height * 4];
+
+            int len = width * height;
             for (int i = 0; i < len; i++)
             {
                 ushort pixel = palette[data[i]];
-                byte red = (byte)(((pixel >> 11) & 0x1F) * 8);
-                byte green = (byte)(((pixel >> 6) & 0x1F) * 8);
-                byte blue = (byte)(((pixel >> 1) & 0x1F) * 8); 
-                byte alpha = (pixel & 1) > 0 ? (byte)0xFF : (byte)0x00;
-                tex.SetPixel(i % width, i / width, Color.FromArgb(alpha, red, green, blue));
+                pixels[(i * 4) + 2] = (byte)(((pixel >> 11) & 0x1F) * 8); // Red
+                pixels[(i * 4) + 1] = (byte)(((pixel >> 6) & 0x1F) * 8); // Green
+                pixels[(i * 4) + 0] = (byte)(((pixel >> 1) & 0x1F) * 8); // Blue
+                pixels[(i * 4) + 3] = (pixel & 1) > 0 ? (byte)0xFF : (byte)0x00; // (Transparency)
+                //tex.SetPixel(i % width, i / width, Color.FromArgb(alpha, red, green, blue));
             }
-
+            Marshal.Copy(pixels, 0, bitmapData.Scan0, pixels.Length);
+            tex.UnlockBits(bitmapData);
+            
             tex.Tag = new string[] { "Format: CI8", "Width: " + width,
              "Height: " + height };
             return tex;

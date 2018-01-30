@@ -8,10 +8,12 @@ namespace Quad64.src.JSON
     class ObjectComboEntry
     {
         string name = "";
+        string behavior_name = "";
         ModelCombo modelCombo;
         uint behavior = 0;
 
         public string Name { get { return name; } set { name = value; } }
+        public string BehaviorName { get { return behavior_name; } set { behavior_name = value; } }
         public byte ModelID { get { return modelCombo.ModelID; } }
         public uint ModelSegmentAddress { get { return modelCombo.SegmentAddress; } }
         public uint Behavior { get { return behavior; } }
@@ -19,8 +21,9 @@ namespace Quad64.src.JSON
         public ObjectComboEntry(string name, byte modelId, uint modelSegAddress, uint behavior)
         {
             this.name = name;
-            this.modelCombo = new ModelCombo(modelId, modelSegAddress);
             this.behavior = behavior;
+            behavior_name = Globals.getBehaviorNameEntryFromSegAddress(behavior).Name;
+            modelCombo = new ModelCombo(modelId, modelSegAddress);
         }
         
         private string bp1, bp2, bp3, bp4;
@@ -37,7 +40,7 @@ namespace Quad64.src.JSON
 
         public override string ToString()
         {
-            return name + " = ["+ modelCombo.ToString() + ", 0x"+behavior.ToString("X8")+"]";
+            return name + " = ["+ modelCombo.ToString() + "," + behavior_name + " (0x"+behavior.ToString("X8")+")]";
         }
     }
 }

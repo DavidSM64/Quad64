@@ -1,5 +1,8 @@
-﻿using Quad64.src.LevelInfo;
+﻿using Quad64.src.JSON;
+using Quad64.src.LevelInfo;
+using Quad64.src.Scripts;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.Runtime.InteropServices;
@@ -10,16 +13,20 @@ namespace Quad64.src.Forms
     partial class ScriptDumps : Form
     {
         private Level level;
-        private RichTextBox currentTextbox;
+        private RichTextBox currentTextbox, lastTextBoxForLevelTab, lastTextBoxForObjectsTab;
         public ScriptDumps(Level level)
         {
             this.level = level;
             InitializeComponent();
+            lastTextBoxForLevelTab = lt_ls_textbox;
+            lastTextBoxForObjectsTab = ot_gls_textbox;
             initGeoLayoutForLevelTab();
             initFast3DForLevelTab();
             currentTextbox = lt_ls_textbox;
             organizeCurrentLevelScript(level.LevelScriptCommands_ForDump);
+            initObjectList();
         }
+
         
         private static uint bytesToInt(byte[] b, int offset, int length)
         {
@@ -109,13 +116,70 @@ namespace Quad64.src.Forms
         {
             BeginUpdate(currentTextbox);
             Point scrollPos = GetScrollPos(currentTextbox);
-            if(currentTextbox.Name.Equals("lt_ls_textbox"))
-                organizeCurrentLevelScript(level.LevelScriptCommands_ForDump);
-            else if (currentTextbox.Name.Equals("lt_gls_textbox"))
-                organizeCurrentGeoLayoutScript(level.Areas[lt_gls_areaIndex].AreaModel.GeoLayoutCommands_ForDump);
-            else if (currentTextbox.Name.Equals("lt_f3d_textbox"))
-                organizeCurrentFast3DScript(level.Areas[lt_f3d_areaIndex].
+            //Console.WriteLine(currentTextbox.Name);
+            if (currentTextbox.Name.EndsWith("_ls_textbox"))
+            {
+                if (sd_tabs.SelectedIndex == 0)
+                    organizeCurrentLevelScript(level.LevelScriptCommands_ForDump);
+            }
+            else if (currentTextbox.Name.EndsWith("_gls_textbox"))
+            {
+                if (sd_tabs.SelectedIndex == 0)
+                    organizeCurrentGeoLayoutScript(level.Areas[lt_gls_areaIndex].AreaModel.GeoLayoutCommands_ForDump);
+                else 
+                    if (listBoxObjects.SelectedIndex > -1)
+                    {
+                        ushort key = objectCombos[listBoxObjects.SelectedIndex].ModelID;;
+                        if (level.ModelIDs.ContainsKey(key) && level.ModelIDs[key].GeoLayoutCommands_ForDump.Count > 0)
+                        {
+                            organizeCurrentGeoLayoutScript(level.ModelIDs[key].GeoLayoutCommands_ForDump);
+                        }
+                        else
+                        {
+                            currentTextbox.ResetText();
+                            currentTextbox.Text = "<No script found>";
+                        }
+                    }
+            }
+            else if (currentTextbox.Name.EndsWith("_f3d_textbox"))
+            {
+                if (sd_tabs.SelectedIndex == 0)
+                    organizeCurrentFast3DScript(level.Areas[lt_f3d_areaIndex].
                     AreaModel.Fast3DCommands_ForDump[lt_f3d_listbox.SelectedIndex]);
+                else
+                    if (listBoxObjects.SelectedIndex > -1)
+                    {
+                        ushort key = objectCombos[listBoxObjects.SelectedIndex].ModelID;
+                        if (level.ModelIDs.ContainsKey(key) && ot_f3d_listbox.SelectedIndex > -1)
+                        {
+                            
+                            organizeCurrentFast3DScript(level.ModelIDs[key].Fast3DCommands_ForDump[ot_f3d_listbox.SelectedIndex]);
+                        }
+                        else
+                        {
+                            currentTextbox.ResetText();
+                            currentTextbox.Text = "<No script found>";
+                        }
+                    }
+            }
+            else if (currentTextbox.Name.EndsWith("_beh_textbox"))
+            {
+                if (sd_tabs.SelectedIndex == 1 && listBoxObjects.SelectedIndex > -1)
+                {
+                    //ushort key = objectCombos[listBoxObjects.SelectedIndex].ModelID;
+                   // if (objectCombos.Count)
+                   // {
+                        List<ScriptDumpCommandInfo> behaviorDump = new List<ScriptDumpCommandInfo>();
+                        BehaviorScripts.parse(ref behaviorDump, objectCombos[listBoxObjects.SelectedIndex].Behavior);
+                        organizeCurrentBehaviorScript(behaviorDump);
+                   // }
+                    //else
+                    //{
+                     //   currentTextbox.ResetText();
+                     //   currentTextbox.Text = "<No script found>";
+                    //}
+                }
+            }
             SetScrollPos(scrollPos, currentTextbox);
             EndUpdate(currentTextbox);
         }
@@ -141,6 +205,24 @@ namespace Quad64.src.Forms
                     break;
                 case 2:
                     switchTextBoxes(lt_f3d_textbox);
+                    break;
+            }
+        }
+
+        private void sd_tabs_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            // Switching between level tab and objects tab
+            switch (sd_tabs.SelectedIndex)
+            {
+                case 0:
+                    lastTextBoxForObjectsTab = currentTextbox;
+                    switchTextBoxes(lastTextBoxForLevelTab);
+                    break;
+                case 1:
+                    lastTextBoxForLevelTab = currentTextbox;
+                    if (listBoxObjects.SelectedIndex == -1 && listBoxObjects.Items.Count > 0)
+                        listBoxObjects.SelectedIndex = 0;
+                    switchTextBoxes(lastTextBoxForObjectsTab);
                     break;
             }
         }

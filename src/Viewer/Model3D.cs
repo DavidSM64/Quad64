@@ -1,9 +1,13 @@
-﻿using OpenTK;
+﻿using Collada141;
+using OpenTK;
 using OpenTK.Graphics.OpenGL;
 using Quad64.src.Scripts;
-using Quad64.src.Viewer;
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Text;
+using System.Threading.Tasks;
+
 namespace Quad64
 {
     class Model3D
@@ -21,7 +25,7 @@ namespace Quad64
                 return "Texture [ID/W/H]: [" + texture.ID + "/" + texture.Width + "/" + texture.Height + "]";
             }
         }
-        Vector3 center = new Vector3(0, 0, 0);
+        //Vector3 center = new Vector3(0, 0, 0);
         Vector3 upper = new Vector3(0, 0, 0);
         Vector3 lower = new Vector3(0, 0, 0);
         public Vector3 UpperBoundary { get { return upper; } }
@@ -51,10 +55,8 @@ namespace Quad64
         {
             float max_x = -1, min_x = -1, max_y = -1, min_y = -1, max_z = -1, min_z = -1;
             uint count = 0;
-            foreach (MeshData md in meshes)
-            {
-                foreach (Vector3 vec in md.vertices)
-                {
+            foreach (MeshData md in meshes){
+                foreach (Vector3 vec in md.vertices) {
                     if (count == 0)
                     {
                         min_x = vec.X; max_x = vec.X;
@@ -80,7 +82,7 @@ namespace Quad64
                     count++;
                 }
             }
-            center = new Vector3((max_x+min_x) / 2, (max_y + min_y) / 2, (max_z + min_z) / 2);
+            //center = new Vector3((max_x+min_x) / 2, (max_y + min_y) / 2, (max_z + min_z) / 2);
             upper = new Vector3(max_x, max_y, max_z);
             lower = new Vector3(min_x, min_y, min_z);
         }
@@ -92,11 +94,11 @@ namespace Quad64
             atlas.outputToPNG(filename);
         }
 
-        public void buildBuffers() {
-            builder.BuildData(meshes);
+        public void buildBuffers()
+        {
+            builder.BuildData(ref meshes);
             //Console.WriteLine("#meshes = " + meshes.Count);
-            for (int i = 0; i < meshes.Count; i++)
-            {
+            for (int i = 0; i < meshes.Count; i++) {
                 MeshData m = meshes[i];
                 m.vertices = builder.getVertices(i);
                 m.texCoord = builder.getTexCoords(i);
@@ -197,6 +199,74 @@ namespace Quad64
             GL.PopMatrix();
         }
 
+        public void dumpModelToCOLLADA(float scale)
+        {
+            DumpModel.dumpModelToCOLLADA(this, scale);
+        }
+
+        public void dumpModelToOBJ(float scale)
+        {
+            StringBuilder objModel = new StringBuilder();
+            StringBuilder objMtl = new StringBuilder();
+            objModel.Append("mtllib Level.mtl" + Environment.NewLine);
+           // string objModel = "mtllib Level.mtl" + Environment.NewLine;
+           // string objMtl = "";
+            int index_offset = 1;
+            int img_index = 0;
+            
+            foreach(System.Drawing.Bitmap bmp in builder.TextureImages)
+            {
+                string filepath = Directory.GetCurrentDirectory() + "\\Level\\" + img_index + ".png";
+                (new FileInfo(filepath)).Directory.Create();
+                bmp.Save(filepath, System.Drawing.Imaging.ImageFormat.Png);
+                objMtl.Append("newmtl Tex_" + img_index + Environment.NewLine);
+                objMtl.Append("Ka 0.000000 0.000000 0.000000" + Environment.NewLine +
+                    "Kd 1.000000 1.000000 1.000000" + Environment.NewLine +
+                    "Ks 0.000000 0.000000 0.000000" + Environment.NewLine);
+                objMtl.Append("map_Kd Level/" + img_index + ".png" + Environment.NewLine);
+                img_index++;
+            }
+
+            for (int i = 0; i < meshes.Count; i++)
+            {
+                MeshData m = meshes[i];
+                if (m.vertices.Length < 1)
+                    continue;
+                objModel.Append("usemtl Tex_" + i + Environment.NewLine);
+
+                foreach (Vector3 vert in m.vertices)
+                {
+                    objModel.Append("v " + (vert.X * scale) + " " + (vert.Y * scale) + " " + (vert.Z * scale));
+                    objModel.Append(Environment.NewLine);
+                }
+
+                foreach (Vector2 texCoord in m.texCoord)
+                {
+                    float X = texCoord.X, Y = texCoord.Y;
+                    if (m.texture.TextureParamS == (int)All.ClampToEdge)
+                        X = (X > 1.0f ? 1.0f : (X < 0.0f ? 0.0f : X));
+                    if (m.texture.TextureParamT == (int)All.ClampToEdge)
+                        Y = (Y > 1.0f ? 1.0f : (Y < 0.0f ? 0.0f : Y));
+                    objModel.Append("vt " + X + " " + -Y + Environment.NewLine);
+                }
+
+                int largest_value = index_offset;
+                for (int j = 0; j < m.indices.Length/3; j++)
+                {
+                    int v1 = (int)m.indices[(j * 3) + 0] + index_offset;
+                    int v2 = (int)m.indices[(j * 3) + 1] + index_offset;
+                    int v3 = (int)m.indices[(j * 3) + 2] + index_offset;
+                    objModel.Append("f " + v1 + "/" + v1 + " " + v2 + "/" + v2 + " " + v3 + "/" + v3 + Environment.NewLine);
+
+                    largest_value = Math.Max(v1, largest_value);
+                    largest_value = Math.Max(v2, largest_value);
+                    largest_value = Math.Max(v3, largest_value);
+                }
+                index_offset = largest_value + 1;
+            }
+            File.WriteAllText("Level.obj", objModel.ToString());
+            File.WriteAllText("Level.mtl", objMtl.ToString());
+        }
 
     }
 }

@@ -2,6 +2,7 @@
 using Quad64.src.LevelInfo;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace Quad64.src.Scripts
 {
@@ -313,8 +314,7 @@ namespace Quad64.src.Scripts
             // Don't bother processing duplicate display lists.
             if (!mdl.hasGeoDisplayList(off))
             {
-                Globals.DEBUG_PDL = bytesToInt(cmd, 4, 4);
-                Fast3DScripts.parse(ref mdl, ref lvl, seg, off);
+                Fast3DScripts.parse(ref mdl, ref lvl, seg, off); 
             }
 
             lvl.temp_bgInfo.usesFog = mdl.builder.UsesFog;

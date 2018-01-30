@@ -1,6 +1,7 @@
 ﻿using Quad64.src.JSON;
 using Quad64.src.LevelInfo;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
 using System.Reflection;
@@ -124,6 +125,12 @@ namespace Quad64
         [DisplayName("Behavior")]
         [ReadOnly(true)]
         public string Behavior_ReadOnly { get; set; }
+        
+        [CustomSortedCategory("Behavior", 5, NUM_OF_CATERGORIES)]
+        [Browsable(true)]
+        [DisplayName("Beh. Name")]
+        [ReadOnly(true)]
+        public string Behavior_Name { get; set; }
 
         // default names
         private const string BP1DNAME = "B.Param 1";
@@ -234,11 +241,24 @@ namespace Quad64
         {
             Behavior = "0x"+address.ToString("X8");
             Behavior_ReadOnly = Behavior;
+            Behavior_Name = Globals.getBehaviorNameEntryFromSegAddress(address).Name;
         }
 
         public uint getBehaviorAddress()
         {
-            return uint.Parse(Behavior.Substring(2), NumberStyles.HexNumber);
+            uint value = 0;
+            bool succeded = false;
+            if(Behavior.ToUpper().StartsWith("0X"))
+                succeded = uint.TryParse(Behavior.Substring(2), NumberStyles.HexNumber, new CultureInfo("en-US"), out value);
+            else if (Behavior.ToUpper().StartsWith("$"))
+                succeded = uint.TryParse(Behavior.Substring(1), NumberStyles.HexNumber, new CultureInfo("en-US"), out value);
+            else
+                succeded = uint.TryParse(Behavior, out value);
+
+            if (succeded)
+                return value;
+            else
+                return 0;
         }
 
         public void updateROMData()
@@ -553,22 +573,54 @@ namespace Quad64
             Flags &= ~(ulong)flag;
         }
 
+        public void renameObjectCombo(string newName)
+        {
+            string oldComboName = Title;
+            Title = newName;
+            bool undefinedToDefined = oldComboName.StartsWith("Undefined Combo (") 
+                && !newName.StartsWith("Undefined Combo (");
+
+            if (!undefinedToDefined) // simple re-define
+            {
+                if (objectComboEntry != null)
+                    objectComboEntry.Name = newName;
+            }
+            else
+            {
+                uint modelAddress = 0;
+                if (level.ModelIDs.ContainsKey(ModelID))
+                    modelAddress = level.ModelIDs[ModelID].GeoDataSegAddress;
+                ObjectComboEntry newOCE = new ObjectComboEntry(newName, ModelID, modelAddress, getBehaviorAddress());
+                objectComboEntry = newOCE;
+                Globals.objectComboEntries.Add(newOCE);
+                level.LevelObjectCombos.Add(newOCE);
+            }
+
+            ModelComboFile.writeObjectCombosFile(Globals.getDefaultObjectComboPath());
+        }
+
         public string getObjectComboName()
         {
             uint behaviorAddr = getBehaviorAddress();
+            uint modelSegmentAddress = 0;
             for (int i = 0; i < Globals.objectComboEntries.Count; i++)
             {
                 ObjectComboEntry entry = Globals.objectComboEntries[i];
-                uint modelSegmentAddress = 0;
+                modelSegmentAddress = 0;
                 if (level.ModelIDs.ContainsKey(ModelID))
                     modelSegmentAddress = level.ModelIDs[ModelID].GeoDataSegAddress;
-                if (entry.ModelID == ModelID && entry.Behavior == behaviorAddr && entry.ModelSegmentAddress == modelSegmentAddress)
+                if (entry.ModelID == ModelID && entry.Behavior == behaviorAddr 
+                    && entry.ModelSegmentAddress == modelSegmentAddress)
                 {
                     objectComboEntry = entry;
+                    Title = entry.Name;
                     return entry.Name;
                 }
             }
-            return "Unknown Combo";
+
+            objectComboEntry = null;
+            Title = "Undefined Combo (0x" + modelID.ToString("X2") + ", 0x" + behaviorAddr.ToString("X8") + ")";
+            return Title;
         }
 
         public bool isPropertyShown(FLAGS flag)

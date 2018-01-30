@@ -135,8 +135,6 @@ namespace Quad64.src.Forms
 
         private void organizeCurrentFast3DScript(List<ScriptDumpCommandInfo> f3dList)
         {
-            // Apparently "RichTextBox.AppendText()" is a REALLY slow function, but luckly you can just give the RichTextBox a string in RTF format. This will drastically speed up performance.
-
             bool showROMAddr = showRomCB.Checked;
             bool showSegAddr = SegAddrCB.Checked;
             bool showComments = CommCB.Checked;
