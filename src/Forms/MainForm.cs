@@ -534,6 +534,14 @@ namespace Quad64
             area.Objects[index].setBehaviorFromAddress(comboWindow.ReturnObjectCombo.Behavior);
             treeView1.Nodes[0].Nodes[index].Text = area.Objects[index].getObjectComboName();
             area.Objects[index].SetBehaviorParametersToZero();
+            area.Objects[index].Act1 = true;
+            area.Objects[index].Act2 = true;
+            area.Objects[index].Act3 = true;
+            area.Objects[index].Act4 = true;
+            area.Objects[index].Act5 = true;
+            area.Objects[index].Act6 = false;
+            area.Objects[index].AllActs = true;
+            area.Objects[index].ShowHideActs(true);
             area.Objects[index].UpdateProperties();
         }
 
@@ -680,6 +688,8 @@ namespace Quad64
             glControl1.Invalidate();
             propertyGrid1.Refresh();
             glControl1.Update(); // Needed after calling propertyGrid1.Refresh();
+            updateSelectedObjectsInROM();
+            Globals.needToSave = true;
         }
 
         private void Form1_Shown(object sender, EventArgs e)
@@ -1123,7 +1133,24 @@ namespace Quad64
                         if (e.ChangedItem.Label.Equals("Behavior"))
                             if (!obj.canEditBehavior)
                                 continue;
-                        
+
+                        if (e.ChangedItem.Label.Equals("All Acts"))
+                        {
+                            bool isAllActs = (bool)e.ChangedItem.Value;
+                            obj.ShowHideActs(isAllActs);
+
+                            if (isAllActs)
+                            {
+                                obj.Act1 = true;
+                                obj.Act2 = true;
+                                obj.Act3 = true;
+                                obj.Act4 = true;
+                                obj.Act5 = true;
+                                obj.Act6 = false;
+                            }
+
+                            propertyGrid1.Refresh();
+                        }
                         obj.updateROMData();
                     }
                 }
