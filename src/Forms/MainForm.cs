@@ -508,7 +508,7 @@ namespace Quad64
 
         private void saveROMToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            ROM.Instance.saveFileAs(ROM.Instance.Filepath, ROM.Instance.Endian);
+            ROM.Instance.saveFile();
         }
         
         private void settingsToolStripMenuItem_Click(object sender, EventArgs e)
