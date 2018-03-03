@@ -42,6 +42,7 @@ namespace Quad64
         public string filepath = "";
         public string Filepath { get { return filepath; } }
         private byte[] bytes;
+        private byte[] writeMask;
         private uint[] segStart = new uint[0x20];
         private bool[] segIsMIO0 = new bool[0x20];
         private byte[][] segData = new byte[0x20][];
@@ -134,6 +135,10 @@ namespace Quad64
                 byte temp = bytes[i];
                 bytes[i] = bytes[i + 1];
                 bytes[i + 1] = temp;
+
+                temp = writeMask[i];
+                writeMask[i] = writeMask[i + 1];
+                writeMask[i + 1] = temp;
             }
         }
 
@@ -150,6 +155,15 @@ namespace Quad64
                 bytes[i + 1] = temp[2];
                 bytes[i + 2] = temp[1];
                 bytes[i + 3] = temp[0];
+
+                temp[0] = writeMask[i + 0];
+                temp[1] = writeMask[i + 1];
+                temp[2] = writeMask[i + 2];
+                temp[3] = writeMask[i + 3];
+                writeMask[i + 0] = temp[3];
+                writeMask[i + 1] = temp[2];
+                writeMask[i + 2] = temp[1];
+                writeMask[i + 3] = temp[0];
             }
         }
 
@@ -211,10 +225,26 @@ namespace Quad64
             return System.Text.Encoding.Default.GetString(getSubArray_safe(Bytes, 0x20, 20));
         }
 
+        public void WriteToFileEx()
+        {
+            FileStream stream = File.OpenWrite(filepath);
+            for (int i = 0; i < bytes.Length; i++)
+            {
+                if (writeMask[i] != 0)
+                {
+                    writeMask[i] = 0;
+                    stream.Seek(i, SeekOrigin.Begin);
+                    stream.WriteByte(bytes[i]);
+                }
+            }
+            stream.Close();
+        }
+
         public void readFile(string filename)
         {
             filepath = filename;
             bytes = File.ReadAllBytes(filename);
+            writeMask = new byte[bytes.Length];
             checkROM();
             Globals.pathToAutoLoadROM = filepath;
             Globals.needToSave = false;
@@ -226,18 +256,18 @@ namespace Quad64
             if (Endian == ROM_Endian.MIXED)
             {
                 swapMixedBig();
-                File.WriteAllBytes(filepath, bytes);
+                WriteToFileEx();
                 swapMixedBig();
             }
             else if (Endian == ROM_Endian.LITTLE)
             {
                 swapLittleBig();
-                File.WriteAllBytes(filepath, bytes);
+                WriteToFileEx();
                 swapLittleBig();
             }
             else // Save as big endian by default
             {
-                File.WriteAllBytes(filepath, bytes);
+                WriteToFileEx();
             }
             Globals.pathToAutoLoadROM = filepath;
             Globals.needToSave = false;
@@ -458,13 +488,21 @@ namespace Quad64
             return -1;
         }
 
+        private void addToWriteMask(uint start, int length)
+        {
+            for (int i = 0; i < length; i++)
+                writeMask[i + start] = 1;
+        }
+
         public void writeByteArray(uint offset, byte[] arr)
         {
+            addToWriteMask(offset, arr.Length);
             Array.Copy(arr, 0, bytes, offset, arr.Length);
         }
 
         public void writeByteArray(uint offset, byte[] arr, int arr_offset, int arr_length)
         {
+            addToWriteMask(offset, arr.Length);
             Array.Copy(arr, arr_offset, bytes, offset, arr_length);
         }
 
@@ -477,6 +515,7 @@ namespace Quad64
 
         public void writeWord(uint offset, int word)
         {
+            addToWriteMask(offset, 4);
             bytes[offset + 0] = (byte)(word >> 24);
             bytes[offset + 1] = (byte)(word >> 16);
             bytes[offset + 2] = (byte)(word >> 8);
@@ -490,6 +529,7 @@ namespace Quad64
 
         public void writeHalfword(uint offset, short half)
         {
+            addToWriteMask(offset, 2);
             bytes[offset + 0] = (byte)(half >> 8);
             bytes[offset + 1] = (byte)(half);
         }
@@ -501,6 +541,7 @@ namespace Quad64
 
         public void writeByte(uint offset, byte b)
         {
+            addToWriteMask(offset, 1);
             bytes[offset] = b;
         }
 
@@ -631,37 +672,37 @@ namespace Quad64
 
         public Dictionary<string, ushort> levelIDs = new Dictionary<string, ushort>
         {
-            { "Big Boo's Haunt", 0x04 },
-            { "Cool Cool Mountain", 0x05 },
-            { "Inside Castle", 0x06 },
-            { "Hazy Maze Cave", 0x07 },
-            { "Shifting Sand Land", 0x08 },
-            { "Bob-omb Battlefield", 0x09 },
-            { "Snowman's Land", 0x0A },
-            { "Wet Dry World", 0x0B },
-            { "Jolly Roger Bay", 0x0C },
-            { "Tiny Huge Island", 0x0D },
-            { "Tick Tock Clock", 0x0E },
-            { "Rainbow Ride", 0x0F },
-            { "Castle Grounds", 0x10 },
-            { "Bowser Course 1", 0x11 },
-            { "Vanish Cap", 0x12 },
-            { "Bowser Course 2", 0x13 },
-            { "Secret Aquarium", 0x14 },
-            { "Bowser Course 3", 0x15 },
-            { "Lethal Lava Land", 0x16 },
-            { "Dire Dire Docks", 0x17 },
-            { "Whomp's Fortress", 0x18 },
-            { "End Cake Picture", 0x19 },
-            { "Castle Courtyard", 0x1A },
-            { "Peach's Secret Slide", 0x1B },
-            { "Metal Cap", 0x1C },
-            { "Wing Cap", 0x1D },
-            { "Bowser Battle 1", 0x1E },
-            { "Rainbow Clouds", 0x1F },
-            { "Bowser Battle 2", 0x21 },
-            { "Bowser Battle 3", 0x22 },
-            { "Tall Tall Mountain", 0x24 }
+            { "[C01] Bob-omb Battlefield", 0x09 },
+            { "[C02] Whomp's Fortress", 0x18 },
+            { "[C03] Jolly Roger Bay", 0x0C },
+            { "[C04] Cool Cool Mountain", 0x05 },
+            { "[C05] Big Boo's Haunt", 0x04 },
+            { "[C06] Hazy Maze Cave", 0x07 },
+            { "[C07] Lethal Lava Land", 0x16 },
+            { "[C08] Shifting Sand Land", 0x08 },
+            { "[C09] Dire Dire Docks", 0x17 },
+            { "[C10] Snowman's Land", 0x0A },
+            { "[C11] Wet Dry World", 0x0B },
+            { "[C12] Tall Tall Mountain", 0x24 },
+            { "[C13] Tiny Huge Island", 0x0D },
+            { "[C14] Tick Tock Clock", 0x0E },
+            { "[C15] Rainbow Ride", 0x0F },
+            { "[OW1] Castle Grounds", 0x10 },
+            { "[OW2] Inside Castle", 0x06 },
+            { "[OW3] Castle Courtyard", 0x1A },
+            { "[BC1] Bowser Course 1", 0x11 },
+            { "[BC2] Bowser Course 2", 0x13 },
+            { "[BC3] Bowser Course 3", 0x15 },
+            { "[MCL] Metal Cap", 0x1C },
+            { "[WCL] Wing Cap", 0x1D },
+            { "[VCL] Vanish Cap", 0x12 },
+            { "[BB1] Bowser Battle 1", 0x1E },
+            { "[BB2] Bowser Battle 2", 0x21 },
+            { "[BB3] Bowser Battle 3", 0x22 },
+            { "[SC1] Secret Aquarium", 0x14 },
+            { "[SC2] Rainbow Clouds", 0x1F },
+            { "[SC3] End Cake Picture", 0x19 },
+            { "[SlC] Peach's Secret Slide", 0x1B }
         };
         
     }
