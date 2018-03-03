@@ -1069,7 +1069,19 @@ namespace Quad64
                     if (obj == null) return;
                     if (label.Equals("All Acts"))
                     {
-                        obj.ShowHideActs((bool)e.ChangedItem.Value);
+                        bool isAllActs = (bool)e.ChangedItem.Value;
+                        obj.ShowHideActs(isAllActs);
+
+                        if (isAllActs)
+                        {
+                            obj.Act1 = true;
+                            obj.Act2 = true;
+                            obj.Act3 = true;
+                            obj.Act4 = true;
+                            obj.Act5 = true;
+                            obj.Act6 = false;
+                        }
+
                         propertyGrid1.Refresh();
                     }
                     else if (label.Equals("Behavior") || label.Equals("Model ID"))
