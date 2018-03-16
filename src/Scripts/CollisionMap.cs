@@ -135,15 +135,20 @@ namespace Quad64.src.Scripts
             }
             if (found.Count == 0)
                 return (short)pos.Y;
-
-            float highestY = -0x2000;
+            
+            int closest_index = 0;
+            float closest_abs = 9999999.0f;
             // Console.WriteLine("Found " + found.Count + " triangles under position");
             for (int i = 0; i < found.Count; i++)
             {
-                if (found[i] > highestY)
-                    highestY = found[i];
+                float abs = Math.Abs(pos.Y - found[i]);
+                if(abs < closest_abs)
+                {
+                    closest_abs = abs;
+                    closest_index = i;
+                }
             }
-            return (short)highestY;
+            return (short)found[closest_index];
         }
 
         public void buildCollisionMap()

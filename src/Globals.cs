@@ -43,6 +43,7 @@ namespace Quad64
         public static bool isMultiSelected = false;
         public static bool isMultiSelectedFromMultipleLists = false;
         public static bool isMultiSelectedFromSpecialObjects = false;
+        public static bool isMultiSelectedFromBothNormalWarpsAndInstantWarps = false;
         public static List<List<int>> multi_selected_nodes = new List<List<int>>();
 
         // Keeps track if the user needs to save their changes.

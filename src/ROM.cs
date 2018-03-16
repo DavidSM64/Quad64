@@ -239,7 +239,7 @@ namespace Quad64
             }
             stream.Close();
         }
-
+        
         public void readFile(string filename)
         {
             filepath = filename;

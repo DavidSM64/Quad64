@@ -10,7 +10,15 @@ namespace Quad64
     enum CameraMode
     {
         FLY = 0,
-        ORBIT = 1
+        ORBIT = 1,
+        LOOK_DIRECTION = 2
+    }
+
+    enum LookDirection
+    {
+        TOP, BOTTOM,
+        LEFT, RIGHT,
+        FRONT, BACK
     }
 
     class Camera
@@ -43,6 +51,17 @@ namespace Quad64
 
         private float orbitDistance = 500.0f;
         private float orbitTheta = 0.0f, orbitPhi = 0.0f;
+
+        private LookDirection currentLookDirection;
+        private Vector3[] lookPositions = new Vector3[]
+        {
+            new Vector3(0, 12500, 0), // top
+            new Vector3(0, -12500, 0), // bottom
+            new Vector3(-12500, 0, 0), // left
+            new Vector3(12500, 0, 0), // right
+            new Vector3(0, 0, 12500), // front
+            new Vector3(0, 0, -12500)  // back
+        };
 
         public Camera()
         {
@@ -159,10 +178,57 @@ namespace Quad64
             }
         }
 
+        public void setCameraMode_LookDirection(LookDirection dir, ref Matrix4 cameraMatrix)
+        {
+            camMode = CameraMode.LOOK_DIRECTION;
+            currentLookDirection = dir;
+            switch (currentLookDirection)
+            {
+                case LookDirection.TOP:
+                    pos = lookPositions[(int)LookDirection.TOP];
+                    lookat = new Vector3(pos.X, -25000, pos.Z - 1);
+                    cameraMatrix = Matrix4.LookAt(pos.X, pos.Y, pos.Z, lookat.X, lookat.Y, lookat.Z, 0, 1, 0);
+                    setRotationFromLookAt();
+                    break;
+                case LookDirection.BOTTOM:
+                    pos = lookPositions[(int)LookDirection.BOTTOM];
+                    lookat = new Vector3(pos.X, 25000, pos.Z + 1);
+                    cameraMatrix = Matrix4.LookAt(pos.X, pos.Y, pos.Z, lookat.X, lookat.Y, lookat.Z, 0, 1, 0);
+                    setRotationFromLookAt();
+                    break;
+                case LookDirection.LEFT:
+                    pos = lookPositions[(int)LookDirection.LEFT];
+                    lookat = new Vector3(25000, pos.Y, pos.Z);
+                    cameraMatrix = Matrix4.LookAt(pos.X, pos.Y, pos.Z, lookat.X, lookat.Y, lookat.Z, 0, 1, 0);
+                    setRotationFromLookAt();
+                    break;
+                case LookDirection.RIGHT:
+                    pos = lookPositions[(int)LookDirection.RIGHT];
+                    lookat = new Vector3(-25000, pos.Y, pos.Z);
+                    cameraMatrix = Matrix4.LookAt(pos.X, pos.Y, pos.Z, lookat.X, lookat.Y, lookat.Z, 0, 1, 0);
+                    setRotationFromLookAt();
+                    break;
+                case LookDirection.FRONT:
+                    pos = lookPositions[(int)LookDirection.FRONT];
+                    lookat = new Vector3(pos.X, pos.Y, -25000);
+                    cameraMatrix = Matrix4.LookAt(pos.X, pos.Y, pos.Z, lookat.X, lookat.Y, lookat.Z, 0, 1, 0);
+                    setRotationFromLookAt();
+                    break;
+                case LookDirection.BACK:
+                    pos = lookPositions[(int)LookDirection.BACK];
+                    lookat = new Vector3(pos.X, pos.Y, 25000);
+                    cameraMatrix = Matrix4.LookAt(pos.X, pos.Y, pos.Z, lookat.X, lookat.Y, lookat.Z, 0, 1, 0);
+                    setRotationFromLookAt();
+                    break;
+            }
+        }
+
         public void updateCameraMatrixWithMouse(int mouseX, int mouseY, ref Matrix4 cameraMatrix)
         {
             if (camMode == CameraMode.ORBIT && Globals.item_selected > -1)
                 updateCameraMatrixWithMouse_ORBIT(mouseX, mouseY, ref cameraMatrix);
+            else if (camMode == CameraMode.LOOK_DIRECTION)
+                updateCameraMatrixWithMouse_LOOK(pos, mouseX, mouseY, ref cameraMatrix);
             else
                 updateCameraMatrixWithMouse_FLY(mouseX, mouseY, ref cameraMatrix);
         }
@@ -171,6 +237,8 @@ namespace Quad64
         {
             if (camMode == CameraMode.ORBIT && Globals.item_selected > -1)
                 updateCameraOffsetWithMouse_ORBIT(mouseX, mouseY, ref cameraMatrix);
+            else if (camMode == CameraMode.LOOK_DIRECTION)
+                updateCameraMatrixWithMouse_LOOK(pos, mouseX, mouseY, ref cameraMatrix);
             else
                 updateCameraOffsetWithMouse_FLY(orgPos, mouseX, mouseY, w, h, ref cameraMatrix);
         }
@@ -179,6 +247,8 @@ namespace Quad64
         {
             if (camMode == CameraMode.ORBIT && Globals.item_selected > -1)
                 updateCameraMatrixWithScrollWheel_ORBIT(amt, ref cameraMatrix);
+            else if (camMode == CameraMode.LOOK_DIRECTION)
+                updateCameraMatrixWithScrollWheel_LOOK(amt, ref cameraMatrix);
             else
                 updateCameraMatrixWithScrollWheel_FLY(amt, ref cameraMatrix);
         }
@@ -193,6 +263,97 @@ namespace Quad64
         public void updateMatrix(ref Matrix4 cameraMatrix)
         {
             cameraMatrix = Matrix4.LookAt(pos.X, pos.Y, pos.Z, lookat.X, lookat.Y, lookat.Z, 0, 1, 0);
+        }
+
+        private void updateCameraMatrixWithScrollWheel_LOOK(int amt, ref Matrix4 cameraMatrix)
+        {
+            offsetCam(amt, amt, amt);
+            orientateCam(CamAngleX, CamAngleY);
+            switch (currentLookDirection)
+            {
+                case LookDirection.TOP:
+                    cameraMatrix = Matrix4.LookAt(pos.X, pos.Y, pos.Z, lookat.X, lookat.Y, lookat.Z - 1, 0, 1, 0);
+                    break;
+                case LookDirection.BOTTOM:
+                    cameraMatrix = Matrix4.LookAt(pos.X, pos.Y, pos.Z, lookat.X, lookat.Y, lookat.Z + 1, 0, 1, 0);
+                    break;
+                default:
+                    cameraMatrix = Matrix4.LookAt(pos.X, pos.Y, pos.Z, lookat.X, lookat.Y, lookat.Z, 0, 1, 0);
+                    break;
+            }
+        }
+
+        private void updateCameraMatrixWithMouse_LOOK(Vector3 orgPos, int mouseX, int mouseY, ref Matrix4 cameraMatrix)
+        {
+            if (resetMouse)
+            {
+                lastMouseX = mouseX;
+                lastMouseY = mouseY;
+                resetMouse = false;
+            }
+            int MousePosX = mouseX - lastMouseX;
+            int MousePosY = mouseY - lastMouseY;
+
+            double pitch = CamAngleY - (Math.PI / 2);
+            double yaw = CamAngleX - (Math.PI / 2);
+            float CamLX = (float)Math.Sin(yaw);
+            float CamLY = (float)Math.Cos(pitch);
+            float CamLZ = (float)-Math.Cos(yaw);
+
+            float m = 8f;
+
+            switch (currentLookDirection)
+            {
+            case LookDirection.TOP:
+                pos.X = orgPos.X - ((MousePosX * Globals.camSpeedMultiplier) * (CamLX) * m) -
+                    ((MousePosY * Globals.camSpeedMultiplier) * (CamLZ) * m);
+                pos.Z = orgPos.Z - ((MousePosX * Globals.camSpeedMultiplier) * (CamLZ) * m) -
+                    ((MousePosY * Globals.camSpeedMultiplier) * (CamLX) * m);
+                cameraMatrix = Matrix4.LookAt(pos.X, pos.Y, pos.Z, pos.X, pos.Y - 1000, pos.Z - 1, 0, 1, 0);
+                lookPositions[(int)currentLookDirection] = pos;
+                break;
+            case LookDirection.BOTTOM:
+                pos.X = orgPos.X - ((MousePosX * Globals.camSpeedMultiplier) * (CamLX) * m) +
+                    ((MousePosY * Globals.camSpeedMultiplier) * (CamLZ) * m);
+                pos.Z = orgPos.Z - ((MousePosX * Globals.camSpeedMultiplier) * (CamLZ) * m) +
+                    ((MousePosY * Globals.camSpeedMultiplier) * (CamLX) * m);
+                cameraMatrix = Matrix4.LookAt(pos.X, pos.Y, pos.Z, pos.X, pos.Y + 1000, pos.Z + 1, 0, 1, 0);
+                lookPositions[(int)currentLookDirection] = pos;
+                break;
+            case LookDirection.LEFT:
+                pos.X = orgPos.X - ((MousePosX * Globals.camSpeedMultiplier) * (CamLX) * m);
+                pos.Y = orgPos.Y - ((MousePosY * Globals.camSpeedMultiplier) * (-1f) * m);
+                pos.Z = orgPos.Z - ((MousePosX * Globals.camSpeedMultiplier) * (CamLZ) * m);
+                cameraMatrix = Matrix4.LookAt(pos.X, pos.Y, pos.Z, pos.X + 12500, pos.Y, pos.Z, 0, 1, 0);
+                    lookPositions[(int)currentLookDirection] = pos;
+                    break;
+           case LookDirection.RIGHT:
+                pos.X = orgPos.X - ((MousePosX * Globals.camSpeedMultiplier) * (CamLX) * m);
+                pos.Y = orgPos.Y - ((MousePosY * Globals.camSpeedMultiplier) * (-1f) * m);
+                pos.Z = orgPos.Z - ((MousePosX * Globals.camSpeedMultiplier) * (CamLZ) * m);
+                cameraMatrix = Matrix4.LookAt(pos.X, pos.Y, pos.Z, pos.X - 12500, pos.Y, pos.Z, 0, 1, 0);
+                lookPositions[(int)currentLookDirection] = pos;
+                break;
+            case LookDirection.FRONT:
+                pos.X = orgPos.X - ((MousePosX * Globals.camSpeedMultiplier) * (CamLX) * m);
+                pos.Y = orgPos.Y - ((MousePosY * Globals.camSpeedMultiplier) * (-1f) * m);
+                pos.Z = orgPos.Z - ((MousePosX * Globals.camSpeedMultiplier) * (CamLZ) * m);
+                cameraMatrix = Matrix4.LookAt(pos.X, pos.Y, pos.Z, pos.X, pos.Y, pos.Z - 12500, 0, 1, 0);
+                lookPositions[(int)currentLookDirection] = pos;
+                break;
+            case LookDirection.BACK:
+                pos.X = orgPos.X - ((MousePosX * Globals.camSpeedMultiplier) * (CamLX) * m);
+                pos.Y = orgPos.Y - ((MousePosY * Globals.camSpeedMultiplier) * (-1f) * m);
+                pos.Z = orgPos.Z - ((MousePosX * Globals.camSpeedMultiplier) * (CamLZ) * m);
+                cameraMatrix = Matrix4.LookAt(pos.X, pos.Y, pos.Z, pos.X, pos.Y, pos.Z + 12500, 0, 1, 0);
+                lookPositions[(int)currentLookDirection] = pos;
+                break;
+            }
+
+            lastMouseX = mouseX;
+            lastMouseY = mouseY;
+            //Console.WriteLine("CamAngleX = " + CamAngleX + ", CamAngleY = " + CamAngleY);
+            //setRotationFromLookAt();
         }
 
         private void updateCameraMatrixWithMouse_FLY(int mouseX, int mouseY, ref Matrix4 cameraMatrix)

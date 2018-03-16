@@ -462,7 +462,6 @@ namespace Quad64.Scripts
             if (modelID == 0x7A)
                 Globals.DEBUG_PARSING_DL = true;
             
-
             desc = "Define Model ID 0x" + modelID.ToString("X2") + "; Load Geometry layout from 0x" + seg.ToString("X2") + off.ToString("X6");
 
             //Console.WriteLine("Size of seg 0x"+seg.ToString("X2")+" = " + rom.getSegment(seg).Length);

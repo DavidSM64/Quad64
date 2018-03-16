@@ -58,7 +58,7 @@ namespace Quad64
             treeView1.Nodes.Add(makeTreeNode("Macro 3D Objects", Color.FromArgb(0, 0, 192)));
             treeView1.Nodes.Add(makeTreeNode("Special 3D Objects", Color.FromArgb(0, 192, 0)));
             treeView1.Nodes.Add(makeTreeNode("Warps", Color.FromArgb(0, 0, 0)));
-            treeView1.Anchor = (AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left| AnchorStyles.Right );
+            treeView1.Anchor = (AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right);
             treeView1.Size = new Size(217, 206);
             treeView1.TabIndex = 0;
             treeView1.TabStop = false;
@@ -80,7 +80,7 @@ namespace Quad64
             glControl1.CreateControl();
             SettingsFile.LoadGlobalSettings("default");
             glControl1.MouseWheel += new MouseEventHandler(glControl1_Wheel);
-            ProjMatrix = Matrix4.CreatePerspectiveFieldOfView(FOV, (float)glControl1.Width/(float)glControl1.Height, 100f, 100000f);
+            ProjMatrix = Matrix4.CreatePerspectiveFieldOfView(FOV, (float)glControl1.Width / (float)glControl1.Height, 100f, 100000f);
             glControl1.Enabled = false;
             KeyPreview = true;
             treeView1.HideSelection = false;
@@ -121,7 +121,7 @@ namespace Quad64
             BehaviorNameFile.parseBehaviorNames(Globals.getDefaultBehaviorNamesPath());
             ModelComboFile.parseObjectCombos(Globals.getDefaultObjectComboPath());
             rom.setSegment(0x15, Globals.seg15_location[0], Globals.seg15_location[1], false);
-            rom.setSegment(0x02, Globals.seg02_location[0], Globals.seg02_location[1], 
+            rom.setSegment(0x02, Globals.seg02_location[0], Globals.seg02_location[1],
                 rom.isSegmentMIO0(0x02), rom.Seg02_isFakeMIO0, rom.Seg02_uncompressedOffset);
             level = new Level(0x10, 1);
             LevelScripts.parse(ref level, 0x15, 0);
@@ -155,7 +155,7 @@ namespace Quad64
             {
                 obj.Title = obj.getObjectComboName();
                 objects.Nodes.Add(obj.Title);
-               // objects.Nodes.Add("0x" + obj.Behavior.ToString("X8"));
+                // objects.Nodes.Add("0x" + obj.Behavior.ToString("X8"));
             }
 
             TreeNode macro_objects = treeView1.Nodes[1];
@@ -192,7 +192,7 @@ namespace Quad64
             }
             EndUpdate(treeView1);
         }
-        
+
         private void glControl1_Paint(object sender, PaintEventArgs e)
         {
             GL.ClearColor(bgColor);
@@ -237,7 +237,7 @@ namespace Quad64
             GL.ReadPixels(mx, h - my, 1, 1, PixelFormat.Rgba, PixelType.UnsignedByte, pixel);
             if (pixel[0] == pixel[1] && pixel[1] == pixel[2])
             {
-                if(pixel[2] == 255 || pixel[2] == 0)
+                if (pixel[2] == 255 || pixel[2] == 0)
                     return; // If a pixel is fully white or fully black, then ignore picking.
             }
             if (pixel[2] > 0 && pixel[2] < 4)
@@ -249,7 +249,7 @@ namespace Quad64
                     bool setSelected = !treeViewAlreadyHasNodeSelected(treeView1.Nodes[Globals.list_selected].Nodes[Globals.item_selected]);
                     treeView1.ToggleNode(treeView1.Nodes[Globals.list_selected].Nodes[Globals.item_selected],
                     setSelected);
-                    if(setSelected)
+                    if (setSelected)
                         updateAfterSelect(treeView1.Nodes[Globals.list_selected].Nodes[Globals.item_selected]);
                     else
                         treeView1_updateMultiselection();
@@ -259,7 +259,7 @@ namespace Quad64
                     treeView1.SelectSingleNode(treeView1.Nodes[Globals.list_selected].Nodes[Globals.item_selected]);
                     updateAfterSelect(treeView1.Nodes[Globals.list_selected].Nodes[Globals.item_selected]);
                 }
-                
+
                 if (camera.isOrbitCamera())
                 {
                     camera.updateOrbitCamera(ref camMtx);
@@ -334,10 +334,10 @@ namespace Quad64
                 case Keys.A: isADown = false; break;
                 case Keys.D: isDDown = false; break;
             }
-            if(!isWDown && !isSDown && !isADown && !isDDown)
+            if (!isWDown && !isSDown && !isADown && !isDDown)
                 myTimer.Enabled = false;
         }
-        
+
         private void glControl1_Leave(object sender, EventArgs e)
         {
             isWDown = false;
@@ -386,34 +386,6 @@ namespace Quad64
             isControlDown = e.Control;
             switch (e.KeyCode)
             {
-                case Keys.P:
-                    /*
-                    if (Globals.list_selected != -1 && Globals.item_selected != -1)
-                    {
-                        int listSel = Globals.list_selected;
-                        int objSel = Globals.item_selected;
-                        Object3D obj = getSelectedObject();
-                        if (obj == null) return;
-                        string newName = Prompts.ShowInputDialog("Type the new combo name", "New combo name");
-                        if (newName.Length > 0)
-                        {
-                            obj.Title = newName;
-                            uint segmentAddress = 0;
-                            if (level.ModelIDs.ContainsKey(obj.ModelID))
-                                segmentAddress = level.ModelIDs[obj.ModelID].GeoDataSegAddress;
-                            ObjectComboEntry oce = new ObjectComboEntry(newName, obj.ModelID,
-                                segmentAddress, obj.getBehaviorAddress());
-                            Globals.insertNewEntry(oce);
-                            refreshObjectsInList();
-                            treeView1.SelectedNode = treeView1.Nodes[listSel].Nodes[objSel];
-                            Globals.list_selected = listSel;
-                            Globals.item_selected = objSel;
-                            propertyGrid1.Refresh();
-                        }
-                        ModelComboFile.writeObjectCombosFile(Globals.getDefaultObjectComboPath());
-                        Console.WriteLine("Saved Object Combos!");
-                    }*/
-                    break;
                 case Keys.W:
                     isWDown = true;
                     myTimer.Enabled = true;
@@ -468,7 +440,7 @@ namespace Quad64
             GL.Enable(EnableCap.Texture2D);
             GL.Enable(EnableCap.AlphaTest);
             GL.AlphaFunc(AlphaFunction.Gequal, 0.5f);
-            
+
             if (Globals.doBackfaceCulling)
                 GL.Enable(EnableCap.CullFace);
             else
@@ -479,14 +451,14 @@ namespace Quad64
         {
             glControl1.Context.Update(glControl1.WindowInfo);
             GL.Viewport(0, 0, glControl1.Width, glControl1.Height);
-            ProjMatrix = Matrix4.CreatePerspectiveFieldOfView(FOV, (float)glControl1.Width/(float)glControl1.Height, 100f, 100000f);
+            ProjMatrix = Matrix4.CreatePerspectiveFieldOfView(FOV, (float)glControl1.Width / (float)glControl1.Height, 100f, 100000f);
             glControl1.Invalidate();
         }
-        
+
         private void loadROMToolStripMenuItem_Click(object sender, EventArgs e)
         {
             DialogResult saveResult = Prompts.ShowShouldSaveDialog();
-            if(saveResult != DialogResult.Cancel)
+            if (saveResult != DialogResult.Cancel)
                 loadROM(false);
         }
 
@@ -497,7 +469,7 @@ namespace Quad64
             DialogResult result = saveFileDialog1.ShowDialog();
             if (result == DialogResult.OK) // Test result.
             {
-                if(saveFileDialog1.FilterIndex == 1 || saveFileDialog1.FilterIndex == 4)
+                if (saveFileDialog1.FilterIndex == 1 || saveFileDialog1.FilterIndex == 4)
                     ROM.Instance.saveFileAs(saveFileDialog1.FileName, ROM_Endian.BIG);
                 else if (saveFileDialog1.FilterIndex == 2)
                     ROM.Instance.saveFileAs(saveFileDialog1.FileName, ROM_Endian.MIXED);
@@ -510,7 +482,7 @@ namespace Quad64
         {
             ROM.Instance.saveFile();
         }
-        
+
         private void settingsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             SettingsForm settings = new SettingsForm();
@@ -578,7 +550,45 @@ namespace Quad64
                 = area.SpecialObjects[index].getObjectComboName();
             area.SpecialObjects[index].UpdateProperties();
         }
-        
+
+        private void replaceWarp(int index, ref EditWarp editWarpWindow)
+        {
+            //Console.WriteLine(comboWindow.ReturnPresetMacro.PresetID);
+            Area area = level.getCurrentArea();
+            area.Warps[index].WarpFrom_ID = editWarpWindow.fromID;
+            area.Warps[index].WarpTo_AreaID = editWarpWindow.toArea;
+            area.Warps[index].WarpTo_LevelID = editWarpWindow.toLevel;
+            area.Warps[index].WarpTo_WarpID = editWarpWindow.toID;
+            
+            treeView1.Nodes[3].Nodes[index].Text = area.Warps[index].ToString();
+            //  area.SpecialObjects[index].UpdateProperties();
+        }
+
+        private void replacePaintingWarp(int index, ref EditWarp editWarpWindow)
+        {
+            //Console.WriteLine(comboWindow.ReturnPresetMacro.PresetID);
+            Area area = level.getCurrentArea();
+            area.PaintingWarps[index].WarpFrom_ID = editWarpWindow.fromID;
+            area.PaintingWarps[index].WarpTo_AreaID = editWarpWindow.toArea;
+            area.PaintingWarps[index].WarpTo_LevelID = editWarpWindow.toLevel;
+            area.PaintingWarps[index].WarpTo_WarpID = editWarpWindow.toID;
+
+            treeView1.Nodes[3].Nodes[index].Text = area.Warps[index].ToString();
+            //  area.SpecialObjects[index].UpdateProperties();
+        }
+
+        private void replaceInstantWarp(int index, ref EditWarp editWarpWindow)
+        {
+            //Console.WriteLine(comboWindow.ReturnPresetMacro.PresetID);
+            Area area = level.getCurrentArea();
+            area.InstantWarps[index].AreaID = editWarpWindow.toArea;
+            area.InstantWarps[index].TriggerID = editWarpWindow.triggerID;
+            area.InstantWarps[index].TeleX = editWarpWindow.tX;
+            area.InstantWarps[index].TeleY = editWarpWindow.tY;
+            area.InstantWarps[index].TeleZ = editWarpWindow.tZ;
+            treeView1.Nodes[3].Nodes[index].Text = area.InstantWarps[index].ToString();
+        }
+
         private void behaviorToolStripMenuItem_Click(object sender, EventArgs e)
         {
             SelectBehavior behWindow = new SelectBehavior();
@@ -597,7 +607,7 @@ namespace Quad64
                 glControl1.Update(); // Needed after calling propertyGrid1.Refresh();
             }
         }
-        
+
         private void objectComboNameToolStripMenuItem_Click(object sender, EventArgs e)
         {
             RenameObjectCombo roc = new RenameObjectCombo(getSelectedObject().Title);
@@ -621,8 +631,8 @@ namespace Quad64
                             area.SpecialObjects[node.Index].renameObjectCombo(roc.ReturnName);
                     }
                 }
-               // Console.WriteLine("Changed object combo name to " + roc.ReturnName);
-               
+                // Console.WriteLine("Changed object combo name to " + roc.ReturnName);
+
                 updateSelectedObjectsInROM();
                 glControl1.Invalidate();
                 propertyGrid1.Refresh();
@@ -641,7 +651,7 @@ namespace Quad64
                     comboWindow =
                         new SelectComboPreset(level, 0, "Select Object Combos", Color.DarkRed);
                     comboWindow.ShowDialog();
-                    if(comboWindow.ClickedSelect)
+                    if (comboWindow.ClickedSelect)
                     {
                         if (!Globals.isMultiSelected)
                             replaceObject(Globals.item_selected, ref comboWindow);
@@ -692,17 +702,66 @@ namespace Quad64
             Globals.needToSave = true;
         }
 
+
+        private void warpToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            int warpIndex = 0;
+            bool isPaintingWarp = false;
+            object warp = getSelectedWarp(out warpIndex, out isPaintingWarp);
+            Area area = level.getCurrentArea();
+            if (warp is Warp)
+            {
+                Warp w = (Warp)warp;
+                string title = "Update Painting Warp";
+                if (w.ToString().StartsWith("Warp "))
+                    title = "Update Warp";
+
+                EditWarp editWarpWindow = new EditWarp(title, w.WarpFrom_ID, w.WarpTo_LevelID, w.WarpTo_AreaID, w.WarpTo_WarpID);
+                editWarpWindow.ShowDialog();
+                if (editWarpWindow.pressedSaved)
+                {
+                    if(isPaintingWarp)
+                        replacePaintingWarp(warpIndex - area.Warps.Count, ref editWarpWindow);
+                    else
+                        replaceWarp(warpIndex, ref editWarpWindow);
+                    updateSelectedWarpsInROM();
+                    glControl1.Invalidate();
+                    propertyGrid1.Refresh();
+                    glControl1.Update(); // Needed after calling propertyGrid1.Refresh();
+                    Globals.needToSave = true;
+                }
+            }
+            else if (warp is WarpInstant)
+            {
+                WarpInstant w = (WarpInstant)warp;
+                EditWarp editWarpWindow = new EditWarp(w.TriggerID, w.AreaID, w.TeleX, w.TeleY, w.TeleZ);
+                editWarpWindow.ShowDialog();
+                if (editWarpWindow.pressedSaved)
+                {
+                    replaceInstantWarp(warpIndex - area.Warps.Count - area.PaintingWarps.Count, ref editWarpWindow);
+                    updateSelectedWarpsInROM();
+                    glControl1.Invalidate();
+                    propertyGrid1.Refresh();
+                    glControl1.Update(); // Needed after calling propertyGrid1.Refresh();
+                    Globals.needToSave = true;
+                }
+            }
+
+            //EditWarp editWarpWindow = new EditWarp();
+            //editWarpWindow.ShowDialog();
+        }
+
         private void Form1_Shown(object sender, EventArgs e)
         {
             string glString = GL.GetString(StringName.Version).Split(' ')[0];
             if (glString.StartsWith("1."))
             {
                 MessageBox.Show(
-                    "Error: You have an outdated version of OpenGL, which is not supported by this program."+
+                    "Error: You have an outdated version of OpenGL, which is not supported by this program." +
                     " The program will now exit.\n\n" +
                     "OpenGL version: [" + GL.GetString(StringName.Version) + "]\n",
-                    "OpenGL version error", 
-                    MessageBoxButtons.OK, 
+                    "OpenGL version error",
+                    MessageBoxButtons.OK,
                     MessageBoxIcon.Error
                 );
                 Close();
@@ -741,7 +800,7 @@ namespace Quad64
 
         private void Form1_KeyDown(object sender, KeyEventArgs e)
         {
-            
+
         }
 
         private void resetObjectVariables()
@@ -792,8 +851,7 @@ namespace Quad64
                 switchLevel(newLevel.levelID);
             }
         }
-
-
+        
         private void testROMToolStripMenuItem_Click(object sender, EventArgs e)
         {
             LaunchROM.OpenEmulator();
@@ -838,12 +896,15 @@ namespace Quad64
 
                 Globals.isMultiSelected = false;
                 Globals.isMultiSelectedFromMultipleLists = false;
+                Globals.isMultiSelectedFromSpecialObjects = false;
+                Globals.isMultiSelectedFromBothNormalWarpsAndInstantWarps = false;
                 propertyGrid1.SelectedObject = null;
                 Globals.list_selected = -1;
                 Globals.item_selected = -1;
                 objectComboPresetToolStripMenuItem.Enabled = false;
                 objectComboNameToolStripMenuItem.Enabled = false;
                 behaviorToolStripMenuItem.Enabled = false;
+                warpToolStripMenuItem.Enabled = false;
 
                 glControl1.Invalidate();
                 glControl1.Update();
@@ -853,24 +914,29 @@ namespace Quad64
                 objectComboPresetToolStripMenuItem.Enabled = true;
                 objectComboNameToolStripMenuItem.Enabled = true;
                 behaviorToolStripMenuItem.Enabled = true;
+                warpToolStripMenuItem.Enabled = false;
                 if (treeView1.SelectedNodes.Count > 1)
                 {
                     Area area = level.getCurrentArea();
                     string parent_text = treeView1.SelectedNodes[0].Parent.Text;
-                    
+
                     if (parent_text.Equals("3D Objects"))
                         Globals.list_selected = 0;
                     else if (parent_text.Equals("Macro 3D Objects"))
                         Globals.list_selected = 1;
                     else if (parent_text.Equals("Special 3D Objects"))
                         Globals.list_selected = 2;
-                    
-                    if(Globals.list_selected != 0)
+                    else if (parent_text.Equals("Warps"))
+                        Globals.list_selected = 3;
+
+                    if (Globals.list_selected != 0)
                         behaviorToolStripMenuItem.Enabled = false;
 
                     Globals.isMultiSelectedFromMultipleLists = false;
                     Globals.isMultiSelectedFromSpecialObjects = false;
                     bool hasSO_8 = false, hasSO_10 = false, hasSO_12 = false;
+                    Globals.isMultiSelectedFromBothNormalWarpsAndInstantWarps = false;
+                    bool hasRegularWarp = false, hasInstantWarp = false;
                     if (Globals.list_selected == 2)
                     {
                         Object3D obj3d_0 = area.SpecialObjects[treeView1.SelectedNodes[0].Index];
@@ -897,6 +963,7 @@ namespace Quad64
                             objectComboPresetToolStripMenuItem.Enabled = false;
                             objectComboNameToolStripMenuItem.Enabled = false;
                             behaviorToolStripMenuItem.Enabled = false;
+                            warpToolStripMenuItem.Enabled = false;
                             if (Globals.list_selected != 2 || (Globals.list_selected == 2 && Globals.isMultiSelectedFromSpecialObjects))
                                 break;
                         }
@@ -918,22 +985,25 @@ namespace Quad64
                             }
 
                             //Console.WriteLine(hasSO_8 + "/" + hasSO_10 + "/" + hasSO_12);
-                            if (atLeastTwoBools(hasSO_8, hasSO_10, hasSO_12)) {
+                            if (atLeastTwoBools(hasSO_8, hasSO_10, hasSO_12))
+                            {
                                 Globals.isMultiSelectedFromSpecialObjects = true;
                                 objectComboPresetToolStripMenuItem.Enabled = false;
                                 objectComboNameToolStripMenuItem.Enabled = false;
                                 behaviorToolStripMenuItem.Enabled = false;
+                                warpToolStripMenuItem.Enabled = false;
                                 if (Globals.isMultiSelectedFromMultipleLists)
                                     break;
                             }
                         }
                     }
-                    
+
                     Object3D[] selectedObjs = new Object3D[treeView1.SelectedNodes.Count];
+                    object[] selectedWarps = new object[treeView1.SelectedNodes.Count];
                     Object3D.FLAGS showFlags =
                         Object3D.FLAGS.POSITION_X | Object3D.FLAGS.POSITION_Y | Object3D.FLAGS.POSITION_Z |
-                        Object3D.FLAGS.ROTATION_Y | Object3D.FLAGS.BPARAM_1 | Object3D.FLAGS.BPARAM_2;
-                    
+                        Object3D.FLAGS.ROTATION_Y | Object3D.FLAGS.BPARAM_1 | Object3D.FLAGS.BPARAM_2;;
+
                     for (int i = 0; i < treeView1.SelectedNodes.Count; i++)
                     {
                         string local_parent_text = treeView1.SelectedNodes[i].Parent.Text;
@@ -952,20 +1022,32 @@ namespace Quad64
                             else if (selectedObjs[i].createdFromLevelScriptCommand == Object3D.FROM_LS_CMD.CMD_2E_10)
                                 showFlags &= ~(Object3D.FLAGS.BPARAM_1 | Object3D.FLAGS.BPARAM_2);
                         }
+                        else if (local_parent_text.Equals("Warps"))
+                        {
+                            if (treeView1.SelectedNodes[i].Index < area.Warps.Count)
+                                selectedWarps[i] = area.Warps[treeView1.SelectedNodes[i].Index];
+                            else if (treeView1.SelectedNodes[i].Index < area.Warps.Count + area.PaintingWarps.Count)
+                                selectedWarps[i] = area.PaintingWarps[treeView1.SelectedNodes[i].Index - area.Warps.Count];
+                            else
+                                selectedWarps[i] = area.InstantWarps[treeView1.SelectedNodes[i].Index - area.Warps.Count - area.PaintingWarps.Count];
+                        }
                     }
                     for (int i = 0; i < selectedObjs.Length; i++)
                     {
                         {
                             selectedObjs[i].RevealTemporaryHiddenFields();
-                           // Console.WriteLine(Globals.isMultiSelectedFromSpecialObjects);
+                            // Console.WriteLine(Globals.isMultiSelectedFromSpecialObjects);
                             if (Globals.isMultiSelectedFromMultipleLists || Globals.isMultiSelectedFromSpecialObjects)
                             {
                                 selectedObjs[i].HideFieldsTemporarly(showFlags);
                             }
                         }
                     }
-                    
-                    propertyGrid1.SelectedObjects = selectedObjs;
+
+                    if(Globals.list_selected == 3)
+                        propertyGrid1.SelectedObjects = selectedWarps;
+                    else
+                        propertyGrid1.SelectedObjects = selectedObjs;
 
                     treeView1_updateMultiselection();
                     Globals.isMultiSelected = true;
@@ -973,7 +1055,7 @@ namespace Quad64
                     glControl1.Update();
                     return;
                 }
-               // Console.WriteLine("Single Node!");
+                // Console.WriteLine("Single Node!");
                 Globals.isMultiSelected = false;
                 Globals.isMultiSelectedFromMultipleLists = false;
                 Globals.isMultiSelectedFromSpecialObjects = false;
@@ -981,6 +1063,7 @@ namespace Quad64
                 if (node.Parent.Text.Equals("3D Objects"))
                 {
                     behaviorToolStripMenuItem.Enabled = true;
+                    warpToolStripMenuItem.Enabled = false;
                     Globals.list_selected = 0;
                     Globals.item_selected = node.Index;
                     propertyGrid1.SelectedObject = level.getCurrentArea().Objects[node.Index];
@@ -995,6 +1078,7 @@ namespace Quad64
                 else if (node.Parent.Text.Equals("Macro 3D Objects"))
                 {
                     behaviorToolStripMenuItem.Enabled = false;
+                    warpToolStripMenuItem.Enabled = false;
                     Globals.list_selected = 1;
                     Globals.item_selected = node.Index;
                     propertyGrid1.SelectedObject = level.getCurrentArea().MacroObjects[node.Index];
@@ -1009,6 +1093,7 @@ namespace Quad64
                 else if (node.Parent.Text.Equals("Special 3D Objects"))
                 {
                     behaviorToolStripMenuItem.Enabled = false;
+                    warpToolStripMenuItem.Enabled = false;
                     Globals.list_selected = 2;
                     Globals.item_selected = node.Index;
                     propertyGrid1.SelectedObject = level.getCurrentArea().SpecialObjects[node.Index];
@@ -1023,6 +1108,8 @@ namespace Quad64
                 else if (node.Parent.Text.Equals("Warps"))
                 {
                     behaviorToolStripMenuItem.Enabled = false;
+                    objectComboNameToolStripMenuItem.Enabled = false;
+                    warpToolStripMenuItem.Enabled = true;
                     Globals.list_selected = 3;
                     Globals.item_selected = node.Index;
                     Area area = level.getCurrentArea();
@@ -1034,7 +1121,7 @@ namespace Quad64
                         propertyGrid1.SelectedObject = area.InstantWarps[node.Index - area.Warps.Count - area.PaintingWarps.Count];
                 }
             }
-            
+
             Object3D obj = getSelectedObject();
             if (obj != null)
             {
@@ -1060,12 +1147,14 @@ namespace Quad64
 
         private void trackBar1_ValueChanged(object sender, EventArgs e)
         {
+            /*
             fovText.Text = "FOV: " + trackBar_FOV.Value + "°";
             FOV = trackBar_FOV.Value * ((float)Math.PI/180.0f);
             if (FOV < 0.1f)
                 FOV = 0.1f;
             ProjMatrix = Matrix4.CreatePerspectiveFieldOfView(FOV, (float)glControl1.Width / (float)glControl1.Height, 100f, 100000f);
             glControl1.Invalidate();
+            */
         }
 
         private void propertyGrid1_PropertyValueChanged(object s, PropertyValueChangedEventArgs e)
@@ -1120,7 +1209,7 @@ namespace Quad64
 
                         if (obj == null)
                             continue;
-                        
+
                         Object3D.FLAGS flag = obj.getFlagFromDisplayName(e.ChangedItem.Label);
                         if (flag != 0)
                             if (!obj.isPropertyShown(flag))
@@ -1162,7 +1251,9 @@ namespace Quad64
             }
             else if (Globals.list_selected == 3)
             {
-                object warp = getSelectedWarp();
+                int index = 0;
+                bool isPaintingWarp = false;
+                object warp = getSelectedWarp(out index, out isPaintingWarp);
                 string warpTypeName = warp.GetType().Name;
                 if (warpTypeName.Equals("Warp"))
                 {
@@ -1209,7 +1300,7 @@ namespace Quad64
                 e.DrawDefault = true;
             }
         }
-        
+
         private void radioButton2_CheckedChanged(object sender, EventArgs e)
         {
             if (radioButton2.Checked)
@@ -1230,6 +1321,66 @@ namespace Quad64
             }
         }
 
+
+        private void radioButton4_CheckedChanged(object sender, EventArgs e)
+        {
+            if (radioButton_bottom.Checked)
+            {
+                camera.setCameraMode_LookDirection(LookDirection.BOTTOM, ref camMtx);
+                camera.updateMatrix(ref camMtx);
+                glControl1.Invalidate();
+            }
+        }
+
+        private void radioButton5_CheckedChanged(object sender, EventArgs e)
+        {
+            if (radioButton_top.Checked)
+            {
+                camera.setCameraMode_LookDirection(LookDirection.TOP, ref camMtx);
+                camera.updateMatrix(ref camMtx);
+                glControl1.Invalidate();
+            }
+        }
+
+        private void radioButton_left_CheckedChanged(object sender, EventArgs e)
+        {
+            if (radioButton_left.Checked)
+            {
+                camera.setCameraMode_LookDirection(LookDirection.LEFT, ref camMtx);
+                camera.updateMatrix(ref camMtx);
+                glControl1.Invalidate();
+            }
+        }
+
+        private void radioButton_right_CheckedChanged(object sender, EventArgs e)
+        {
+            if (radioButton_right.Checked)
+            {
+                camera.setCameraMode_LookDirection(LookDirection.RIGHT, ref camMtx);
+                camera.updateMatrix(ref camMtx);
+                glControl1.Invalidate();
+            }
+        }
+
+        private void radioButton_front_CheckedChanged(object sender, EventArgs e)
+        {
+            if (radioButton_front.Checked)
+            {
+                camera.setCameraMode_LookDirection(LookDirection.FRONT, ref camMtx);
+                camera.updateMatrix(ref camMtx);
+                glControl1.Invalidate();
+            }
+        }
+
+        private void radioButton_back_CheckedChanged(object sender, EventArgs e)
+        {
+            if (radioButton_back.Checked)
+            {
+                camera.setCameraMode_LookDirection(LookDirection.BACK, ref camMtx);
+                camera.updateMatrix(ref camMtx);
+                glControl1.Invalidate();
+            }
+        }
 
         private void starAct_CheckedChanged(object sender, EventArgs e)
         {
@@ -1263,7 +1414,7 @@ namespace Quad64
                 glControl1.Invalidate();
             }
         }
-        
+
         bool moveCam_strafe_mouseDown = false;
         private void moveCam_strafe_MouseDown(object sender, MouseEventArgs e)
         {
@@ -1285,7 +1436,7 @@ namespace Quad64
                 glControl1.Invalidate();
             }
         }
-        
+
         private Object3D getSelectedObject()
         {
             if (Globals.list_selected == -1 || Globals.item_selected == -1)
@@ -1320,22 +1471,28 @@ namespace Quad64
             }
         }
 
-        private object getSelectedWarp()
+        private object getSelectedWarp(out int warpIndex, out bool isPaintingWarp)
         {
+            isPaintingWarp = false;
             if (Globals.list_selected == -1 || Globals.item_selected == -1)
+            {
+                warpIndex = -1;
                 return null;
+            }
             switch (Globals.list_selected)
             {
                 case 3:
                     {
                         Area area = level.getCurrentArea();
                         int index = Globals.item_selected;
+                        warpIndex = index;
                         if (index < area.Warps.Count)
                         {
                             propertyGrid1.SelectedObject = area.Warps[index];
                         }
                         else if (index < area.Warps.Count + area.PaintingWarps.Count)
                         {
+                            isPaintingWarp = true;
                             propertyGrid1.SelectedObject = area.PaintingWarps[index - area.Warps.Count];
                         }
                         else
@@ -1345,7 +1502,37 @@ namespace Quad64
                         return propertyGrid1.SelectedObject;
                     }
                 default:
-                    return null;
+                    {
+                        warpIndex = -1;
+                        return null;
+                    }
+            }
+        }
+
+        void updateSelectedWarpsInROM()
+        {
+            if (!Globals.isMultiSelected)
+            {
+                int index = 0;
+                bool isPaintingWarp = false;
+                object warp = getSelectedWarp(out index, out isPaintingWarp);
+                if (warp is Warp)
+                    ((Warp)warp).updateROMData();
+                else if (warp is WarpInstant)
+                    ((WarpInstant)warp).updateROMData();
+            }
+            else
+            {
+                Area area = level.getCurrentArea();
+                foreach (int index in Globals.multi_selected_nodes[3])
+                {
+                    if (index < area.Warps.Count)
+                        area.Warps[index].updateROMData();
+                    else if (index < area.Warps.Count + area.PaintingWarps.Count)
+                        area.PaintingWarps[index - area.Warps.Count].updateROMData();
+                    else
+                        area.InstantWarps[index - area.Warps.Count - area.PaintingWarps.Count].updateROMData();
+                }
             }
         }
 
@@ -1948,6 +2135,7 @@ namespace Quad64
             objSpeedLabel.Text = (int)(newValue) + "%";
             Globals.objSpeedMultiplier = newValue / 100.0f;
         }
+
 
         private const int WM_USER = 0x0400;
         private const int EM_SETEVENTMASK = (WM_USER + 69);

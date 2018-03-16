@@ -41,7 +41,7 @@
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
+    <PlatformTarget>x86</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -81,6 +81,12 @@
   <ItemGroup>
     <Compile Include="src\COLLADA\collada_schema_1_4.cs" />
     <Compile Include="src\COLLADA\DumpModel.cs" />
+    <Compile Include="src\Forms\EditWarp.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="src\Forms\EditWarp.Designer.cs">
+      <DependentUpon>EditWarp.cs</DependentUpon>
+    </Compile>
     <Compile Include="src\Forms\MultiselectTree\MultiselectTreeView.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -207,6 +213,9 @@
     <Compile Include="src\Viewer\ModelTexture.cs" />
     <Compile Include="src\Viewer\SimpleDraw.cs" />
     <Compile Include="src\Viewer\TextureAtlas.cs" />
+    <EmbeddedResource Include="src\Forms\EditWarp.resx">
+      <DependentUpon>EditWarp.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="src\Forms\MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
     </EmbeddedResource>
