@@ -157,10 +157,10 @@ namespace Quad64.src.Scripts
                 int x = i % texture.Width;
                 int y = i / texture.Width;
                 Color pix = texture.GetPixel(x, y);
-                byte red = (byte)((int)((pix.R / 255.0f) * 32.0) & 0x1F);
-                byte green = (byte)((int)((pix.G / 255.0f) * 32.0f) & 0x1F);
-                byte blue = (byte)((int)((pix.B / 255.0f) * 32.0f) & 0x1F);
-                byte alpha = (byte)(pix.A == 255 ? 1 : 0);
+                byte red = (byte)((pix.R / 256.0f) * 32.0f);
+                byte green = (byte)((pix.G / 256.0f) * 32.0f);
+                byte blue = (byte)((pix.B / 256.0f) * 32.0f);
+                byte alpha = (byte)(pix.A >= 128.0f ? 1 : 0);
                 
                 data[i * 2] = (byte)((red << 3) | (green >> 2));
                 data[(i * 2) + 1] = (byte)(((green & 3) << 6) | (blue << 1) | alpha);
