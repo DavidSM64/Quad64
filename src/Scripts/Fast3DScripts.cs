@@ -219,7 +219,7 @@ namespace Quad64.src.Scripts
                 {
                     if (!mdl.builder.hasTexture(temp.segOff))
                     {
-                        if (temp.segOff != 0)
+                        if (temp.segOff != 0 && temp.w != 0 && temp.h != 0)
                         {
                             mdl.builder.AddTexture(
                                 TextureFormats.decodeTexture(
