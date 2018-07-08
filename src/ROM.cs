@@ -308,7 +308,7 @@ namespace Quad64
 
         public void setSegment(uint index, uint segmentStart, uint segmentEnd, bool isMIO0, bool fakeMIO0, uint uncompressedOffset)
         {
-            if (segmentStart > segmentEnd)
+            if (segmentStart > segmentEnd || index > segData.Length)
                 return;
 
             if (!isMIO0)
@@ -344,6 +344,9 @@ namespace Quad64
 
         public byte[] cloneSegment(byte segment)
         {
+            if (segment > segData.Length)
+                return null;
+
             byte[] copy = new byte[segData[segment].Length];
             Array.Copy(segData[segment], copy, segData[segment].Length);
             return copy;
@@ -351,11 +354,17 @@ namespace Quad64
 
         public byte[] getSegment(ushort seg)
         {
+            if (seg > segData.Length)
+                return null;
+
             return segData[seg];
         }
 
         public uint getSegmentStart(ushort seg)
         {
+            if (seg > segData.Length)
+                return 0;
+
             return segStart[seg];
         }
 
@@ -371,6 +380,9 @@ namespace Quad64
 
         public uint decodeSegmentAddress(byte segment, uint offset)
         {
+            if (segment > segData.Length)
+                return 0;
+
             if (segIsMIO0[segment])
                 throw new System.ArgumentException("Cannot decode segment address (0x" + segment.ToString("X2") + offset.ToString("X6") + ") from MIO0 data. (decodeSegmentAddress 2)");
             return segStart[segment] + offset;
@@ -389,6 +401,9 @@ namespace Quad64
 
         public uint decodeSegmentAddress_safe(byte segment, uint offset)
         {
+            if (segment > segIsMIO0.Length)
+                return 0;
+
             if (segIsMIO0[segment])
                 return 0xFFFFFFFF;
             return segStart[segment] + offset;
