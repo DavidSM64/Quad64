@@ -609,7 +609,8 @@ namespace Quad64
                 case ROM_Region.NORTH_AMERICA:
                     func_calls = ar.findJALsInFunction(Globals.seg02_init_NA, Globals.RAMtoROM_NA);
                     for (int i = 0; i < func_calls.Count; i++)
-                        if(func_calls[i].JAL_ADDRESS == Globals.seg02_alloc_NA && func_calls[i].a0 == 0x2)
+                    {
+                        if (func_calls[i].a0 == 0x2)
                         {
                             Globals.seg02_location = new[] { func_calls[i].a1, func_calls[i].a2 };
                             if (readWordUnsigned(func_calls[i].a1) == 0x4D494F30)
@@ -624,11 +625,12 @@ namespace Quad64
                                 seg02_uncompressedOffset = readWordUnsigned(func_calls[i].a1 + 0xC);
                             }
                         }
+                    }
                     break;
                 case ROM_Region.EUROPE:
                     func_calls = ar.findJALsInFunction(Globals.seg02_init_EU, Globals.RAMtoROM_EU);
                     for (int i = 0; i < func_calls.Count; i++)
-                        if (func_calls[i].JAL_ADDRESS == Globals.seg02_alloc_EU && func_calls[i].a0 == 0x2)
+                        if (func_calls[i].a0 == 0x2)
                         {
                             Globals.seg02_location = new[] { func_calls[i].a1, func_calls[i].a2 };
                             if (readWordUnsigned(func_calls[i].a1) == 0x4D494F30)
@@ -647,7 +649,7 @@ namespace Quad64
                 case ROM_Region.JAPAN:
                     func_calls = ar.findJALsInFunction(Globals.seg02_init_JP, Globals.RAMtoROM_JP);
                     for (int i = 0; i < func_calls.Count; i++)
-                        if (func_calls[i].JAL_ADDRESS == Globals.seg02_alloc_JP && func_calls[i].a0 == 0x2)
+                        if (func_calls[i].a0 == 0x2)
                         {
                             Globals.seg02_location = new[] { func_calls[i].a1, func_calls[i].a2 };
                             if (readWordUnsigned(func_calls[i].a1) == 0x4D494F30)
@@ -666,7 +668,7 @@ namespace Quad64
                 case ROM_Region.JAPAN_SHINDOU:
                     func_calls = ar.findJALsInFunction(Globals.seg02_init_JS, Globals.RAMtoROM_JS);
                     for (int i = 0; i < func_calls.Count; i++)
-                        if (func_calls[i].JAL_ADDRESS == Globals.seg02_alloc_JS && func_calls[i].a0 == 0x2)
+                        if (func_calls[i].a0 == 0x2)
                         {
                             Globals.seg02_location = new[] { func_calls[i].a1, func_calls[i].a2 };
                             if (readWordUnsigned(func_calls[i].a1) == 0x4D494F30)
