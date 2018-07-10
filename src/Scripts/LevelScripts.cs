@@ -470,8 +470,12 @@ namespace Quad64.Scripts
             lvl.AddObjectCombos(modelID, newModel.GeoDataSegAddress);
             if (rom.getSegment(seg) != null)
             {
-                GeoScripts.resetNodes();
-                GeoScripts.parse(ref newModel, ref lvl, seg, off);
+                try
+                {
+                    GeoScripts.resetNodes();
+                    GeoScripts.parse(ref newModel, ref lvl, seg, off);
+                }
+                catch (Exception) { }
             }
             if (lvl.ModelIDs.ContainsKey(modelID))
                 lvl.ModelIDs.Remove(modelID);
