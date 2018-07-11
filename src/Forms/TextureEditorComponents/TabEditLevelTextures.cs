@@ -25,8 +25,8 @@ namespace Quad64.src.Forms
             info_bitmapImage.BackgroundImage = button.BitmapImage;
             info_SegmentAddress.Text = "Seg Addr: " + button.Address.ToString("X8");
             byte segment = (byte)(button.Address >> 24);
-            if (!ROM.Instance.isSegmentMIO0(segment))
-                info_Address.Text = "ROM Address: " + (rom.decodeSegmentAddress(button.Address)).ToString("X");
+            if (!ROM.Instance.isSegmentMIO0(segment, (byte)level.CurrentAreaID))
+                info_Address.Text = "ROM Address: " + (rom.decodeSegmentAddress(button.Address, (byte)level.CurrentAreaID)).ToString("X");
             else
                 info_Address.Text = "ROM Address: N/A";
 
