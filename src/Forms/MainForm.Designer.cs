@@ -46,6 +46,7 @@
             this.bParam2ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.bParam3ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.bParam4ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.warpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
             this.objectComboNameToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.levelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -66,8 +67,6 @@
             this.rOMInfoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.scriptsDumpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.statusStrip1 = new System.Windows.Forms.StatusStrip();
-            this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.panel1 = new System.Windows.Forms.Panel();
             this.panel2 = new System.Windows.Forms.Panel();
             this.act6 = new System.Windows.Forms.RadioButton();
@@ -80,16 +79,12 @@
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
             this.splitContainer3 = new System.Windows.Forms.SplitContainer();
             this.panel3 = new System.Windows.Forms.Panel();
-            this.radioButton_front = new System.Windows.Forms.RadioButton();
-            this.radioButton_back = new System.Windows.Forms.RadioButton();
-            this.radioButton_top = new System.Windows.Forms.RadioButton();
-            this.radioButton_bottom = new System.Windows.Forms.RadioButton();
-            this.radioButton_left = new System.Windows.Forms.RadioButton();
-            this.radioButton_right = new System.Windows.Forms.RadioButton();
+            this.gridSize = new System.Windows.Forms.NumericUpDown();
+            this.gridButton = new System.Windows.Forms.CheckBox();
+            this.label4 = new System.Windows.Forms.Label();
+            this.cameraMode = new System.Windows.Forms.ComboBox();
             this.keepOnGround = new System.Windows.Forms.CheckBox();
             this.dropToGround = new System.Windows.Forms.Button();
-            this.radioButton2 = new System.Windows.Forms.RadioButton();
-            this.radioButton1 = new System.Windows.Forms.RadioButton();
             this.camSpeedLabel = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
             this.trackBar_camSpeed = new System.Windows.Forms.TrackBar();
@@ -109,9 +104,7 @@
             this.moveObj = new System.Windows.Forms.PictureBox();
             this.movObj_UpDown = new System.Windows.Forms.PictureBox();
             this.glControl1 = new OpenTK.GLControl();
-            this.warpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
-            this.statusStrip1.SuspendLayout();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).BeginInit();
@@ -122,6 +115,7 @@
             this.splitContainer3.Panel2.SuspendLayout();
             this.splitContainer3.SuspendLayout();
             this.panel3.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.gridSize)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.trackBar_camSpeed)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.trackBar_moveSpeed)).BeginInit();
             this.moveCamPanel.SuspendLayout();
@@ -146,7 +140,7 @@
             this.helpToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(266, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(174, 24);
             this.menuStrip1.TabIndex = 1;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -253,26 +247,34 @@
             // bParam1ToolStripMenuItem
             // 
             this.bParam1ToolStripMenuItem.Name = "bParam1ToolStripMenuItem";
-            this.bParam1ToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.bParam1ToolStripMenuItem.Size = new System.Drawing.Size(130, 22);
             this.bParam1ToolStripMenuItem.Text = "B. Param 1";
             // 
             // bParam2ToolStripMenuItem
             // 
             this.bParam2ToolStripMenuItem.Name = "bParam2ToolStripMenuItem";
-            this.bParam2ToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.bParam2ToolStripMenuItem.Size = new System.Drawing.Size(130, 22);
             this.bParam2ToolStripMenuItem.Text = "B. Param 2";
             // 
             // bParam3ToolStripMenuItem
             // 
             this.bParam3ToolStripMenuItem.Name = "bParam3ToolStripMenuItem";
-            this.bParam3ToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.bParam3ToolStripMenuItem.Size = new System.Drawing.Size(130, 22);
             this.bParam3ToolStripMenuItem.Text = "B. Param 3";
             // 
             // bParam4ToolStripMenuItem
             // 
             this.bParam4ToolStripMenuItem.Name = "bParam4ToolStripMenuItem";
-            this.bParam4ToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.bParam4ToolStripMenuItem.Size = new System.Drawing.Size(130, 22);
             this.bParam4ToolStripMenuItem.Text = "B. Param 4";
+            // 
+            // warpToolStripMenuItem
+            // 
+            this.warpToolStripMenuItem.Enabled = false;
+            this.warpToolStripMenuItem.Name = "warpToolStripMenuItem";
+            this.warpToolStripMenuItem.Size = new System.Drawing.Size(189, 22);
+            this.warpToolStripMenuItem.Text = "Warp";
+            this.warpToolStripMenuItem.Click += new System.EventHandler(this.warpToolStripMenuItem_Click);
             // 
             // toolStripSeparator5
             // 
@@ -425,24 +427,6 @@
             this.scriptsDumpToolStripMenuItem.Text = "Script Dumps";
             this.scriptsDumpToolStripMenuItem.Click += new System.EventHandler(this.scriptsDumpToolStripMenuItem_Click);
             // 
-            // statusStrip1
-            // 
-            this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripStatusLabel1});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 516);
-            this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Size = new System.Drawing.Size(880, 22);
-            this.statusStrip1.SizingGrip = false;
-            this.statusStrip1.TabIndex = 2;
-            this.statusStrip1.Text = "statusStrip1";
-            // 
-            // toolStripStatusLabel1
-            // 
-            this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
-            this.toolStripStatusLabel1.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.toolStripStatusLabel1.Size = new System.Drawing.Size(39, 17);
-            this.toolStripStatusLabel1.Text = "Ready";
-            // 
             // panel1
             // 
             this.panel1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
@@ -471,7 +455,7 @@
             // act6
             // 
             this.act6.Appearance = System.Windows.Forms.Appearance.Button;
-            this.act6.BackgroundImage = global::Quad64.Properties.Resources.icon_Star1_gray;
+            this.act6.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("act6.BackgroundImage")));
             this.act6.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
             this.act6.FlatAppearance.BorderSize = 0;
             this.act6.FlatAppearance.CheckedBackColor = System.Drawing.SystemColors.Control;
@@ -482,7 +466,6 @@
             this.act6.Name = "act6";
             this.act6.Size = new System.Drawing.Size(16, 16);
             this.act6.TabIndex = 5;
-            this.act6.TabStop = true;
             this.act6.UseVisualStyleBackColor = true;
             this.act6.Visible = false;
             this.act6.CheckedChanged += new System.EventHandler(this.starAct_CheckedChanged);
@@ -490,7 +473,7 @@
             // act5
             // 
             this.act5.Appearance = System.Windows.Forms.Appearance.Button;
-            this.act5.BackgroundImage = global::Quad64.Properties.Resources.icon_Star1_gray;
+            this.act5.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("act5.BackgroundImage")));
             this.act5.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
             this.act5.FlatAppearance.BorderSize = 0;
             this.act5.FlatAppearance.CheckedBackColor = System.Drawing.SystemColors.Control;
@@ -501,7 +484,6 @@
             this.act5.Name = "act5";
             this.act5.Size = new System.Drawing.Size(16, 16);
             this.act5.TabIndex = 4;
-            this.act5.TabStop = true;
             this.act5.UseVisualStyleBackColor = true;
             this.act5.Visible = false;
             this.act5.CheckedChanged += new System.EventHandler(this.starAct_CheckedChanged);
@@ -509,7 +491,7 @@
             // act4
             // 
             this.act4.Appearance = System.Windows.Forms.Appearance.Button;
-            this.act4.BackgroundImage = global::Quad64.Properties.Resources.icon_Star1_gray;
+            this.act4.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("act4.BackgroundImage")));
             this.act4.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
             this.act4.FlatAppearance.BorderSize = 0;
             this.act4.FlatAppearance.CheckedBackColor = System.Drawing.SystemColors.Control;
@@ -520,7 +502,6 @@
             this.act4.Name = "act4";
             this.act4.Size = new System.Drawing.Size(16, 16);
             this.act4.TabIndex = 3;
-            this.act4.TabStop = true;
             this.act4.UseVisualStyleBackColor = true;
             this.act4.Visible = false;
             this.act4.CheckedChanged += new System.EventHandler(this.starAct_CheckedChanged);
@@ -528,7 +509,7 @@
             // act3
             // 
             this.act3.Appearance = System.Windows.Forms.Appearance.Button;
-            this.act3.BackgroundImage = global::Quad64.Properties.Resources.icon_Star1_gray;
+            this.act3.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("act3.BackgroundImage")));
             this.act3.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
             this.act3.FlatAppearance.BorderSize = 0;
             this.act3.FlatAppearance.CheckedBackColor = System.Drawing.SystemColors.Control;
@@ -539,7 +520,6 @@
             this.act3.Name = "act3";
             this.act3.Size = new System.Drawing.Size(16, 16);
             this.act3.TabIndex = 2;
-            this.act3.TabStop = true;
             this.act3.UseVisualStyleBackColor = true;
             this.act3.Visible = false;
             this.act3.CheckedChanged += new System.EventHandler(this.starAct_CheckedChanged);
@@ -547,7 +527,7 @@
             // act2
             // 
             this.act2.Appearance = System.Windows.Forms.Appearance.Button;
-            this.act2.BackgroundImage = global::Quad64.Properties.Resources.icon_Star1_gray;
+            this.act2.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("act2.BackgroundImage")));
             this.act2.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
             this.act2.FlatAppearance.BorderSize = 0;
             this.act2.FlatAppearance.CheckedBackColor = System.Drawing.SystemColors.Control;
@@ -558,7 +538,6 @@
             this.act2.Name = "act2";
             this.act2.Size = new System.Drawing.Size(16, 16);
             this.act2.TabIndex = 1;
-            this.act2.TabStop = true;
             this.act2.UseVisualStyleBackColor = true;
             this.act2.Visible = false;
             this.act2.CheckedChanged += new System.EventHandler(this.starAct_CheckedChanged);
@@ -566,8 +545,9 @@
             // act1
             // 
             this.act1.Appearance = System.Windows.Forms.Appearance.Button;
-            this.act1.BackgroundImage = global::Quad64.Properties.Resources.icon_Star1_gray;
+            this.act1.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("act1.BackgroundImage")));
             this.act1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
+            this.act1.Checked = true;
             this.act1.FlatAppearance.BorderSize = 0;
             this.act1.FlatAppearance.CheckedBackColor = System.Drawing.SystemColors.Control;
             this.act1.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Gray;
@@ -590,12 +570,14 @@
             this.propertyGrid1.CommandsBackColor = System.Drawing.SystemColors.Control;
             this.propertyGrid1.CommandsDisabledLinkColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
             this.propertyGrid1.Font = new System.Drawing.Font("Courier New", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.propertyGrid1.HelpVisible = false;
             this.propertyGrid1.LineColor = System.Drawing.Color.LightGray;
             this.propertyGrid1.Location = new System.Drawing.Point(0, 0);
             this.propertyGrid1.Name = "propertyGrid1";
-            this.propertyGrid1.PropertySort = System.Windows.Forms.PropertySort.Categorized;
-            this.propertyGrid1.Size = new System.Drawing.Size(216, 276);
+            this.propertyGrid1.PropertySort = System.Windows.Forms.PropertySort.NoSort;
+            this.propertyGrid1.Size = new System.Drawing.Size(216, 261);
             this.propertyGrid1.TabIndex = 0;
+            this.propertyGrid1.ToolbarVisible = false;
             this.propertyGrid1.UseCompatibleTextRendering = true;
             this.propertyGrid1.PropertyValueChanged += new System.Windows.Forms.PropertyValueChangedEventHandler(this.propertyGrid1_PropertyValueChanged);
             this.propertyGrid1.PropertySortChanged += new System.EventHandler(this.propertyGrid1_PropertySortChanged);
@@ -617,7 +599,7 @@
             this.splitContainer2.Panel2.Controls.Add(this.panel3);
             this.splitContainer2.Panel2.Controls.Add(this.glControl1);
             this.splitContainer2.Panel2MinSize = 600;
-            this.splitContainer2.Size = new System.Drawing.Size(879, 491);
+            this.splitContainer2.Size = new System.Drawing.Size(879, 456);
             this.splitContainer2.SplitterDistance = 219;
             this.splitContainer2.TabIndex = 0;
             this.splitContainer2.TabStop = false;
@@ -632,8 +614,8 @@
             // splitContainer3.Panel2
             // 
             this.splitContainer3.Panel2.Controls.Add(this.propertyGrid1);
-            this.splitContainer3.Size = new System.Drawing.Size(219, 491);
-            this.splitContainer3.SplitterDistance = 208;
+            this.splitContainer3.Size = new System.Drawing.Size(219, 456);
+            this.splitContainer3.SplitterDistance = 188;
             this.splitContainer3.TabIndex = 0;
             this.splitContainer3.TabStop = false;
             // 
@@ -642,16 +624,12 @@
             this.panel3.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.panel3.BackColor = System.Drawing.Color.Gray;
-            this.panel3.Controls.Add(this.radioButton_front);
-            this.panel3.Controls.Add(this.radioButton_back);
-            this.panel3.Controls.Add(this.radioButton_top);
-            this.panel3.Controls.Add(this.radioButton_bottom);
-            this.panel3.Controls.Add(this.radioButton_left);
-            this.panel3.Controls.Add(this.radioButton_right);
+            this.panel3.Controls.Add(this.gridSize);
+            this.panel3.Controls.Add(this.gridButton);
+            this.panel3.Controls.Add(this.label4);
+            this.panel3.Controls.Add(this.cameraMode);
             this.panel3.Controls.Add(this.keepOnGround);
             this.panel3.Controls.Add(this.dropToGround);
-            this.panel3.Controls.Add(this.radioButton2);
-            this.panel3.Controls.Add(this.radioButton1);
             this.panel3.Controls.Add(this.camSpeedLabel);
             this.panel3.Controls.Add(this.label6);
             this.panel3.Controls.Add(this.trackBar_camSpeed);
@@ -661,102 +639,84 @@
             this.panel3.Controls.Add(this.moveCamPanel);
             this.panel3.Controls.Add(this.rotateObjectPanel);
             this.panel3.Controls.Add(this.moveObjectPanel);
-            this.panel3.Location = new System.Drawing.Point(3, 370);
+            this.panel3.Location = new System.Drawing.Point(3, 333);
             this.panel3.MaximumSize = new System.Drawing.Size(10000, 120);
             this.panel3.MinimumSize = new System.Drawing.Size(600, 120);
             this.panel3.Name = "panel3";
             this.panel3.Size = new System.Drawing.Size(649, 120);
             this.panel3.TabIndex = 5;
             // 
-            // radioButton_front
+            // gridSize
             // 
-            this.radioButton_front.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.gridSize.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.radioButton_front.Appearance = System.Windows.Forms.Appearance.Button;
-            this.radioButton_front.Font = new System.Drawing.Font("Corbel", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.radioButton_front.Location = new System.Drawing.Point(561, 99);
-            this.radioButton_front.Name = "radioButton_front";
-            this.radioButton_front.Size = new System.Drawing.Size(44, 20);
-            this.radioButton_front.TabIndex = 22;
-            this.radioButton_front.Text = "Front";
-            this.radioButton_front.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.radioButton_front.UseVisualStyleBackColor = true;
-            this.radioButton_front.CheckedChanged += new System.EventHandler(this.radioButton_front_CheckedChanged);
+            this.gridSize.Enabled = false;
+            this.gridSize.Location = new System.Drawing.Point(603, 94);
+            this.gridSize.Minimum = new decimal(new int[] {
+            2,
+            0,
+            0,
+            0});
+            this.gridSize.Name = "gridSize";
+            this.gridSize.Size = new System.Drawing.Size(43, 20);
+            this.gridSize.TabIndex = 26;
+            this.gridSize.TabStop = false;
+            this.gridSize.Value = new decimal(new int[] {
+            100,
+            0,
+            0,
+            0});
+            this.gridSize.ValueChanged += new System.EventHandler(this.gridSize_ValueChanged);
             // 
-            // radioButton_back
+            // gridButton
             // 
-            this.radioButton_back.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.gridButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.radioButton_back.Appearance = System.Windows.Forms.Appearance.Button;
-            this.radioButton_back.Font = new System.Drawing.Font("Corbel", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.radioButton_back.Location = new System.Drawing.Point(604, 99);
-            this.radioButton_back.Name = "radioButton_back";
-            this.radioButton_back.Size = new System.Drawing.Size(44, 20);
-            this.radioButton_back.TabIndex = 21;
-            this.radioButton_back.Text = "Back";
-            this.radioButton_back.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.radioButton_back.UseVisualStyleBackColor = true;
-            this.radioButton_back.CheckedChanged += new System.EventHandler(this.radioButton_back_CheckedChanged);
+            this.gridButton.Appearance = System.Windows.Forms.Appearance.Button;
+            this.gridButton.Font = new System.Drawing.Font("Corbel", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.gridButton.Location = new System.Drawing.Point(561, 93);
+            this.gridButton.Name = "gridButton";
+            this.gridButton.Size = new System.Drawing.Size(40, 22);
+            this.gridButton.TabIndex = 25;
+            this.gridButton.TabStop = false;
+            this.gridButton.Text = "Grid";
+            this.gridButton.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.gridButton.UseVisualStyleBackColor = true;
+            this.gridButton.CheckedChanged += new System.EventHandler(this.gridButton_CheckedChanged);
             // 
-            // radioButton_top
+            // label4
             // 
-            this.radioButton_top.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.label4.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.radioButton_top.Appearance = System.Windows.Forms.Appearance.Button;
-            this.radioButton_top.Font = new System.Drawing.Font("Corbel", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.radioButton_top.Location = new System.Drawing.Point(561, 61);
-            this.radioButton_top.Name = "radioButton_top";
-            this.radioButton_top.Size = new System.Drawing.Size(44, 20);
-            this.radioButton_top.TabIndex = 20;
-            this.radioButton_top.Text = "Top";
-            this.radioButton_top.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.radioButton_top.UseVisualStyleBackColor = true;
-            this.radioButton_top.CheckedChanged += new System.EventHandler(this.radioButton5_CheckedChanged);
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(566, 47);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(76, 13);
+            this.label4.TabIndex = 24;
+            this.label4.Text = "Camera Mode:";
             // 
-            // radioButton_bottom
+            // cameraMode
             // 
-            this.radioButton_bottom.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.cameraMode.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.radioButton_bottom.Appearance = System.Windows.Forms.Appearance.Button;
-            this.radioButton_bottom.Font = new System.Drawing.Font("Corbel", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.radioButton_bottom.Location = new System.Drawing.Point(604, 61);
-            this.radioButton_bottom.Name = "radioButton_bottom";
-            this.radioButton_bottom.Size = new System.Drawing.Size(44, 20);
-            this.radioButton_bottom.TabIndex = 19;
-            this.radioButton_bottom.Text = "Bttm";
-            this.radioButton_bottom.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.radioButton_bottom.UseVisualStyleBackColor = true;
-            this.radioButton_bottom.CheckedChanged += new System.EventHandler(this.radioButton4_CheckedChanged);
-            // 
-            // radioButton_left
-            // 
-            this.radioButton_left.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.radioButton_left.Appearance = System.Windows.Forms.Appearance.Button;
-            this.radioButton_left.Font = new System.Drawing.Font("Corbel", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.radioButton_left.Location = new System.Drawing.Point(561, 80);
-            this.radioButton_left.Name = "radioButton_left";
-            this.radioButton_left.Size = new System.Drawing.Size(44, 20);
-            this.radioButton_left.TabIndex = 18;
-            this.radioButton_left.Text = "Left";
-            this.radioButton_left.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.radioButton_left.UseVisualStyleBackColor = true;
-            this.radioButton_left.CheckedChanged += new System.EventHandler(this.radioButton_left_CheckedChanged);
-            // 
-            // radioButton_right
-            // 
-            this.radioButton_right.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.radioButton_right.Appearance = System.Windows.Forms.Appearance.Button;
-            this.radioButton_right.Font = new System.Drawing.Font("Corbel", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.radioButton_right.Location = new System.Drawing.Point(604, 80);
-            this.radioButton_right.Name = "radioButton_right";
-            this.radioButton_right.Size = new System.Drawing.Size(44, 20);
-            this.radioButton_right.TabIndex = 17;
-            this.radioButton_right.Text = "Right";
-            this.radioButton_right.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.radioButton_right.UseVisualStyleBackColor = true;
-            this.radioButton_right.CheckedChanged += new System.EventHandler(this.radioButton_right_CheckedChanged);
+            this.cameraMode.DisplayMember = "1";
+            this.cameraMode.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cameraMode.Font = new System.Drawing.Font("Corbel", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.cameraMode.Items.AddRange(new object[] {
+            "Fly",
+            "Orbit",
+            "Top",
+            "Bottom",
+            "Left",
+            "Right",
+            "Front",
+            "Back"});
+            this.cameraMode.Location = new System.Drawing.Point(560, 63);
+            this.cameraMode.Name = "cameraMode";
+            this.cameraMode.Size = new System.Drawing.Size(87, 21);
+            this.cameraMode.TabIndex = 23;
+            this.cameraMode.TabStop = false;
+            this.cameraMode.SelectedIndexChanged += new System.EventHandler(this.cameraMode_SelectedIndexChanged);
             // 
             // keepOnGround
             // 
@@ -784,38 +744,6 @@
             this.dropToGround.Text = "Drop to ground";
             this.dropToGround.UseVisualStyleBackColor = true;
             this.dropToGround.Click += new System.EventHandler(this.dropToGround_Click);
-            // 
-            // radioButton2
-            // 
-            this.radioButton2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.radioButton2.Appearance = System.Windows.Forms.Appearance.Button;
-            this.radioButton2.Font = new System.Drawing.Font("Corbel", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.radioButton2.Location = new System.Drawing.Point(604, 42);
-            this.radioButton2.Name = "radioButton2";
-            this.radioButton2.Size = new System.Drawing.Size(44, 20);
-            this.radioButton2.TabIndex = 16;
-            this.radioButton2.Text = "Orbit";
-            this.radioButton2.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.radioButton2.UseVisualStyleBackColor = true;
-            this.radioButton2.CheckedChanged += new System.EventHandler(this.radioButton2_CheckedChanged);
-            // 
-            // radioButton1
-            // 
-            this.radioButton1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.radioButton1.Appearance = System.Windows.Forms.Appearance.Button;
-            this.radioButton1.Checked = true;
-            this.radioButton1.Font = new System.Drawing.Font("Corbel", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.radioButton1.Location = new System.Drawing.Point(561, 42);
-            this.radioButton1.Name = "radioButton1";
-            this.radioButton1.Size = new System.Drawing.Size(44, 20);
-            this.radioButton1.TabIndex = 15;
-            this.radioButton1.TabStop = true;
-            this.radioButton1.Text = "Fly";
-            this.radioButton1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.radioButton1.UseVisualStyleBackColor = true;
-            this.radioButton1.CheckedChanged += new System.EventHandler(this.radioButton1_CheckedChanged);
             // 
             // camSpeedLabel
             // 
@@ -922,7 +850,7 @@
             // 
             // moveCam_strafe
             // 
-            this.moveCam_strafe.BackgroundImage = global::Quad64.Properties.Resources.MoveCamera;
+            this.moveCam_strafe.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("moveCam_strafe.BackgroundImage")));
             this.moveCam_strafe.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.moveCam_strafe.Location = new System.Drawing.Point(2, 0);
             this.moveCam_strafe.MinimumSize = new System.Drawing.Size(0, 10);
@@ -936,7 +864,7 @@
             // 
             // moveCam_InOut
             // 
-            this.moveCam_InOut.BackgroundImage = global::Quad64.Properties.Resources.MoveCamera_Y;
+            this.moveCam_InOut.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("moveCam_InOut.BackgroundImage")));
             this.moveCam_InOut.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.moveCam_InOut.Location = new System.Drawing.Point(100, 0);
             this.moveCam_InOut.MinimumSize = new System.Drawing.Size(0, 10);
@@ -973,7 +901,7 @@
             // 
             // rotObj
             // 
-            this.rotObj.BackgroundImage = global::Quad64.Properties.Resources.RotateObject;
+            this.rotObj.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("rotObj.BackgroundImage")));
             this.rotObj.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.rotObj.Location = new System.Drawing.Point(3, 0);
             this.rotObj.MinimumSize = new System.Drawing.Size(0, 10);
@@ -987,7 +915,7 @@
             // 
             // rotObj_Yaw
             // 
-            this.rotObj_Yaw.BackgroundImage = global::Quad64.Properties.Resources.RotateObject_Y;
+            this.rotObj_Yaw.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("rotObj_Yaw.BackgroundImage")));
             this.rotObj_Yaw.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.rotObj_Yaw.Location = new System.Drawing.Point(101, 0);
             this.rotObj_Yaw.MinimumSize = new System.Drawing.Size(0, 10);
@@ -1022,7 +950,7 @@
             // 
             // moveObj
             // 
-            this.moveObj.BackgroundImage = global::Quad64.Properties.Resources.MoveObject;
+            this.moveObj.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("moveObj.BackgroundImage")));
             this.moveObj.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.moveObj.Location = new System.Drawing.Point(3, 0);
             this.moveObj.MinimumSize = new System.Drawing.Size(0, 10);
@@ -1036,7 +964,7 @@
             // 
             // movObj_UpDown
             // 
-            this.movObj_UpDown.BackgroundImage = global::Quad64.Properties.Resources.MoveObject_Y;
+            this.movObj_UpDown.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("movObj_UpDown.BackgroundImage")));
             this.movObj_UpDown.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.movObj_UpDown.Location = new System.Drawing.Point(101, 0);
             this.movObj_UpDown.MinimumSize = new System.Drawing.Size(0, 10);
@@ -1058,7 +986,7 @@
             this.glControl1.Location = new System.Drawing.Point(3, 2);
             this.glControl1.MinimumSize = new System.Drawing.Size(600, 120);
             this.glControl1.Name = "glControl1";
-            this.glControl1.Size = new System.Drawing.Size(649, 365);
+            this.glControl1.Size = new System.Drawing.Size(649, 329);
             this.glControl1.TabIndex = 0;
             this.glControl1.TabStop = false;
             this.glControl1.VSync = false;
@@ -1073,34 +1001,24 @@
             this.glControl1.MouseUp += new System.Windows.Forms.MouseEventHandler(this.glControl1_MouseUp);
             this.glControl1.Resize += new System.EventHandler(this.glControl1_Resize);
             // 
-            // warpToolStripMenuItem
-            // 
-            this.warpToolStripMenuItem.Enabled = false;
-            this.warpToolStripMenuItem.Name = "warpToolStripMenuItem";
-            this.warpToolStripMenuItem.Size = new System.Drawing.Size(189, 22);
-            this.warpToolStripMenuItem.Text = "Warp";
-            this.warpToolStripMenuItem.Click += new System.EventHandler(this.warpToolStripMenuItem_Click);
-            // 
             // MainForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(880, 538);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
+            this.BackColor = System.Drawing.Color.White;
+            this.ClientSize = new System.Drawing.Size(880, 483);
             this.Controls.Add(this.splitContainer2);
             this.Controls.Add(this.panel1);
-            this.Controls.Add(this.statusStrip1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menuStrip1;
             this.MinimumSize = new System.Drawing.Size(820, 522);
             this.Name = "MainForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Quad64 v0.2 (Beta build 3)";
+            this.Text = "Quad64 v0.2 (Beta build 4)";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
             this.Shown += new System.EventHandler(this.Form1_Shown);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
-            this.statusStrip1.ResumeLayout(false);
-            this.statusStrip1.PerformLayout();
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
             this.panel2.ResumeLayout(false);
@@ -1113,6 +1031,7 @@
             this.splitContainer3.ResumeLayout(false);
             this.panel3.ResumeLayout(false);
             this.panel3.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.gridSize)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.trackBar_camSpeed)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.trackBar_moveSpeed)).EndInit();
             this.moveCamPanel.ResumeLayout(false);
@@ -1128,7 +1047,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.moveObj)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.movObj_UpDown)).EndInit();
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
@@ -1138,8 +1056,6 @@
         private System.Windows.Forms.ToolStripMenuItem loadROMToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem saveROMToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem levelToolStripMenuItem;
-        private System.Windows.Forms.StatusStrip statusStrip1;
-        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
         private System.Windows.Forms.ToolStripMenuItem selectAreaToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem settingsToolStripMenuItem;
@@ -1169,8 +1085,6 @@
         private System.Windows.Forms.Label camSpeedLabel;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.TrackBar trackBar_camSpeed;
-        private System.Windows.Forms.RadioButton radioButton2;
-        private System.Windows.Forms.RadioButton radioButton1;
         private System.Windows.Forms.ToolStripMenuItem rOMInfoToolStripMenuItem;
         private System.Windows.Forms.Button dropToGround;
         private System.Windows.Forms.CheckBox keepOnGround;
@@ -1207,13 +1121,11 @@
         private System.Windows.Forms.ToolStripMenuItem bParam4ToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator5;
         private System.Windows.Forms.ToolStripMenuItem objectComboNameToolStripMenuItem;
-        private System.Windows.Forms.RadioButton radioButton_right;
-        private System.Windows.Forms.RadioButton radioButton_front;
-        private System.Windows.Forms.RadioButton radioButton_back;
-        private System.Windows.Forms.RadioButton radioButton_top;
-        private System.Windows.Forms.RadioButton radioButton_bottom;
-        private System.Windows.Forms.RadioButton radioButton_left;
         private System.Windows.Forms.ToolStripMenuItem warpToolStripMenuItem;
+        private System.Windows.Forms.ComboBox cameraMode;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.CheckBox gridButton;
+        private System.Windows.Forms.NumericUpDown gridSize;
     }
 }
 

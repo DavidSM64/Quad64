@@ -24,6 +24,12 @@ namespace Quad64
             {
                 comboBox1.Items.Add(entry.Key + " (0x" + entry.Value.ToString("X2") + ")");
             }
+
+            foreach (ushort entry in rom.extra_levelIDs)
+            {
+                comboBox1.Items.Add("[EXT] Extra Level (0x" + entry.ToString("X2") + ")");
+            }
+
             //comboBox1.Items.Add("Custom ID value");
             comboBox1.SelectedIndex = rom.getLevelIndexById(levelID);
         }

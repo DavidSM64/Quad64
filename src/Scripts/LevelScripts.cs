@@ -346,11 +346,20 @@ namespace Quad64.Scripts
             byte operation = cmd[2];
             desc = "Jump to address 0x" + bytesToInt(cmd, 8, 4).ToString("X8") + " " + getCondition(operation, lvlcheck, false);
             addLSCommandToDump(ref lvl, cmd, org_seg, org_off, desc);
-            if (lvlcheck == lvl.LevelID)
+
+            if (org_seg == 0x15)
             {
-                byte seg = cmd[8];
-                uint off = bytesToInt(cmd, 9, 3);
-                parse(ref lvl, seg, off);
+                if (lvlcheck == lvl.LevelID)
+                {
+                    byte seg = cmd[8];
+                    uint off = bytesToInt(cmd, 9, 3);
+                    parse(ref lvl, seg, off);
+                }
+
+                if (!ROM.Instance.hasLookedAtLevelIDs)
+                {
+                    ROM.Instance.checkIfLevelIDIsInDictionary((ushort)lvlcheck);
+                }
             }
         }
 

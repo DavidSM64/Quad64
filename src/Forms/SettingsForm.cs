@@ -57,6 +57,8 @@ namespace Quad64.src.Forms
         
         private CheckBox enableWireframe, enableBFculling, drawObjMdls, autoLoadROM;
         private ComboBox renderMap, useHex;
+        private TrackBar fovBar;
+        private Label fovBarDisplay = new Label();
         private void AddBasicSettings()
         {
             int xOffset = 3, yOffset = 5, SeperatorWidth = Basic.Width - 6;
@@ -78,6 +80,11 @@ namespace Quad64.src.Forms
                 xOffset, yOffset, (Globals.renderCollisionMap ? 1 : 0));
             renderMap = (ComboBox)Basic.Controls[Basic.Controls.Count - 1];
             yOffset += 35;
+            
+            AddTrackBarSetting(Basic, "Field of view: ", ref fovBarDisplay, xOffset, yOffset, 10, 170, Globals.FOV);
+            fovBar = (TrackBar)Basic.Controls[Basic.Controls.Count - 1];
+            yOffset += 50;
+
             Basic.Controls.Add(newLineSeparator(xOffset, yOffset, SeperatorWidth));
             yOffset += 10;
             Basic.Controls.Add(newFancyLabel("Editor Settings", 0,
@@ -90,6 +97,32 @@ namespace Quad64.src.Forms
                 new string[] { "No (Decimal Only)", "Yes (Signed Hex)", "Yes (Unsigned Hex)" }, 
                 xOffset, yOffset, (!Globals.useHexadecimal ? 0 : (Globals.useSignedHex ? 1 : 2)));
             useHex = (ComboBox)Basic.Controls[Basic.Controls.Count - 1];
+
+            yOffset += 30;
+            Basic.Controls.Add(newLineSeparator(xOffset, yOffset, SeperatorWidth));
+        }
+
+        private void trackBar_updateLabelValue(object sender, EventArgs e)
+        {
+            TrackBar bar = (TrackBar)sender;
+            ((Label)(bar.Tag)).Text = bar.Value.ToString();
+        }
+
+        private void AddTrackBarSetting(TabPage page, string label, ref Label updateDisplay, int x, int y, int min, int max, int currentValue)
+        {
+            Label tbl = newLabel(label, x, y + 3);
+            tbl.Width = 70;
+            updateDisplay.Location = new Point(x, y + 20);
+            updateDisplay.TextAlign = ContentAlignment.MiddleCenter;
+            updateDisplay.Text = currentValue.ToString();
+            updateDisplay.Width = 74;
+            TrackBar tb = newTrackBar(x + tbl.Width, y, min, max, currentValue);
+            tb.BackColor = page.BackColor;
+            tb.Tag = updateDisplay;
+            tb.ValueChanged += new EventHandler(trackBar_updateLabelValue);
+            page.Controls.Add(tbl);
+            page.Controls.Add(updateDisplay);
+            page.Controls.Add(tb);
         }
 
         private void AddComboBoxSetting(TabPage page, string label, string[] options, int x, int y, int selectedIndex)
@@ -182,6 +215,18 @@ namespace Quad64.src.Forms
             return box;
         }
 
+        private TrackBar newTrackBar(int x, int y, int minValue, int maxValue, int currentValue)
+        {
+            TrackBar bar = new TrackBar();
+            bar.Minimum = minValue;
+            bar.Maximum = maxValue;
+            bar.Value = currentValue;
+            bar.TickFrequency = 10;
+            bar.Left = x;
+            bar.Top = y;
+            return bar;
+        }
+
         private void updateGlobalSettings()
         {
             Globals.doWireframe = enableWireframe.Checked;
@@ -192,6 +237,7 @@ namespace Quad64.src.Forms
             Globals.useHexadecimal = (useHex.SelectedIndex != 0);
             Globals.useSignedHex = (useHex.SelectedIndex == 1);
             Globals.autoSaveWhenClickEmulator = autoSaveWithEmulatorBox.Checked;
+            Globals.FOV = fovBar.Value;
 
             if (Globals.doBackfaceCulling)
                 GL.Enable(EnableCap.CullFace);

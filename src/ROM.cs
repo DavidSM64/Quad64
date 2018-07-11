@@ -119,7 +119,8 @@ namespace Quad64
                 type = ROM_Type.EXTENDED;
             else
                 type = ROM_Type.VANILLA;
-            
+
+            hasLookedAtLevelIDs = false;
 
             Console.WriteLine("ROM = " + filepath);
             Console.WriteLine("ROM Endian = " + endian);
@@ -483,6 +484,10 @@ namespace Quad64
 
         public ushort getLevelIdFromIndex(int index)
         {
+            if (index >= levelIDs.Count)
+            {
+                return extra_levelIDs[index - levelIDs.Count];
+            }
             return levelIDs.Values.ElementAt<ushort>(index);
         }
 
@@ -686,6 +691,23 @@ namespace Quad64
                     break;
             }
         }
+
+
+        public bool hasLookedAtLevelIDs = false;
+        public void checkIfLevelIDIsInDictionary(ushort id)
+        {
+                foreach (KeyValuePair<string, ushort> level_id in levelIDs)
+                {
+                    if (level_id.Value == id)
+                        return;
+                }
+
+                Console.WriteLine("Found an extra level ID! 0x" + id.ToString("X8"));
+            
+                extra_levelIDs.Add(id);
+        }
+
+        public List<ushort> extra_levelIDs = new List<ushort>();
 
         public Dictionary<string, ushort> levelIDs = new Dictionary<string, ushort>
         {

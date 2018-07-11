@@ -54,23 +54,23 @@
             // Basic
             // 
             this.Basic.AutoScroll = true;
+            this.Basic.BackColor = System.Drawing.Color.White;
             this.Basic.Location = new System.Drawing.Point(4, 22);
             this.Basic.Name = "Basic";
             this.Basic.Padding = new System.Windows.Forms.Padding(3);
             this.Basic.Size = new System.Drawing.Size(466, 261);
             this.Basic.TabIndex = 0;
             this.Basic.Text = "Basic";
-            this.Basic.UseVisualStyleBackColor = true;
             // 
             // Advanced
             // 
+            this.Advanced.BackColor = System.Drawing.Color.White;
             this.Advanced.Location = new System.Drawing.Point(4, 22);
             this.Advanced.Name = "Advanced";
             this.Advanced.Padding = new System.Windows.Forms.Padding(3);
-            this.Advanced.Size = new System.Drawing.Size(466, 241);
+            this.Advanced.Size = new System.Drawing.Size(466, 261);
             this.Advanced.TabIndex = 1;
             this.Advanced.Text = "Advanced";
-            this.Advanced.UseVisualStyleBackColor = true;
             // 
             // saveButton
             // 

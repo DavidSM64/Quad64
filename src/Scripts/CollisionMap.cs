@@ -183,7 +183,7 @@ namespace Quad64.src.Scripts
             GL.PushMatrix();
             GL.EnableClientState(ArrayCap.VertexArray);
             if (drawAsBlack) // Used as part of color picking
-                GL.BlendFunc(BlendingFactorSrc.Zero, BlendingFactorDest.Zero);
+                GL.BlendFunc(BlendingFactor.Zero, BlendingFactor.Zero);
             for (int i = 0; i < triangles.Count; i++)
             {
                 CollisionTriangleList l = triangles[i];
@@ -204,7 +204,7 @@ namespace Quad64.src.Scripts
                     GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
             }
             if (drawAsBlack)
-                GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
+                GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
             GL.DisableClientState(ArrayCap.VertexArray);
             GL.PopMatrix();
 
@@ -216,7 +216,7 @@ namespace Quad64.src.Scripts
         {
             GL.PushMatrix();
             GL.EnableClientState(ArrayCap.VertexArray);
-            GL.BlendFunc(BlendingFactorSrc.Zero, BlendingFactorDest.Zero);
+            GL.BlendFunc(BlendingFactor.Zero, BlendingFactor.Zero);
             for (int i = 0; i < triangles.Count; i++)
             {
                 CollisionTriangleList l = triangles[i];
@@ -231,7 +231,7 @@ namespace Quad64.src.Scripts
                     DrawElementsType.UnsignedInt, IntPtr.Zero);
                 GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
             }
-            GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
+            GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
             GL.DisableClientState(ArrayCap.VertexArray);
             GL.PopMatrix();
         }

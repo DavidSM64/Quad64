@@ -22,6 +22,7 @@ namespace Quad64
         public static bool drawObjectModels = true;
         public static bool renderCollisionMap = false;
         public static bool doBackfaceCulling = false;
+        public static int FOV = 60; // field of view (in degrees)
 
         // Editor Options
         public static bool autoLoadROMOnStartup = false;

@@ -25,9 +25,9 @@ namespace Quad64
         MultiselectTreeView treeView1;
         readonly System.Windows.Forms.Timer myTimer = new System.Windows.Forms.Timer();
         bool isMouseDown = false, isShiftDown = false, isControlDown = false, moveState = false;
+        bool gridEnabled = false;
         static Level level;
-        float FOV = 1.048f;
-
+        
         public Level getLevelData { get { return level; } }
 
         public object SettingsForms { get; private set; }
@@ -80,7 +80,12 @@ namespace Quad64
             glControl1.CreateControl();
             SettingsFile.LoadGlobalSettings("default");
             glControl1.MouseWheel += new MouseEventHandler(glControl1_Wheel);
-            ProjMatrix = Matrix4.CreatePerspectiveFieldOfView(FOV, (float)glControl1.Width / (float)glControl1.Height, 100f, 100000f);
+            ProjMatrix = Matrix4.CreatePerspectiveFieldOfView(
+                Globals.FOV * ((float)Math.PI / 180.0f), 
+                (float)glControl1.Width / (float)glControl1.Height, 
+                100f, 
+                100000f
+            );
             glControl1.Enabled = false;
             KeyPreview = true;
             treeView1.HideSelection = false;
@@ -88,7 +93,7 @@ namespace Quad64
             myTimer.Tick += updateWASDControls;
             myTimer.Interval = 10;
             myTimer.Enabled = false;
-            //foreach(ObjectComboEntry entry in Globals.objectComboEntries) Console.WriteLine(entry.ToString());
+            cameraMode.SelectedIndex = 0;
         }
 
         private void loadROM(bool startingUp)
@@ -132,6 +137,8 @@ namespace Quad64
             bgColor = Color.CornflowerBlue;
             camera.setLevel(level);
             updateAreaButtons();
+
+            rom.hasLookedAtLevelIDs = true;
 
             //stopWatch.Stop();
             //Console.WriteLine("Startup time: " + stopWatch.Elapsed.Milliseconds + "ms");
@@ -193,19 +200,60 @@ namespace Quad64
             EndUpdate(treeView1);
         }
 
+        private void drawGrid()
+        {
+            int w = glControl1.Width;
+            int h = glControl1.Height;
+
+            GL.Disable(EnableCap.DepthTest);
+
+            GL.MatrixMode(MatrixMode.Projection);
+            GL.LoadIdentity();
+            GL.Ortho(0, w, h, 0, -1, 1000);
+
+            GL.MatrixMode(MatrixMode.Modelview);
+            GL.LoadIdentity();
+            GL.PushMatrix();
+
+            GL.Color3(Color.Black);
+            float numberLines = (int)gridSize.Value;
+            float lineWidthOffset = (float)w / numberLines;
+            float lineHeightOffset = (float)h / numberLines;
+            GL.Begin(PrimitiveType.Lines);
+            for (int i = 0; i < numberLines; i++)
+            {
+                // draw vertical line
+                GL.Vertex2(lineWidthOffset * i, 0);
+                GL.Vertex2(lineWidthOffset * i, h);
+
+                // draw horizontal line
+                GL.Vertex2(0, lineHeightOffset * i);
+                GL.Vertex2(w, lineHeightOffset * i);
+            }
+            GL.End();
+            
+            GL.PopMatrix();
+            GL.Enable(EnableCap.DepthTest);
+        }
+
         private void glControl1_Paint(object sender, PaintEventArgs e)
         {
             GL.ClearColor(bgColor);
             if (level != null)
             {
                 GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+
+
                 GL.MatrixMode(MatrixMode.Projection);
                 GL.LoadMatrix(ref ProjMatrix);
                 GL.MatrixMode(MatrixMode.Modelview);
                 GL.LoadMatrix(ref camMtx);
-
+                
                 //level.getCurrentArea().drawPicking();
                 level.getCurrentArea().drawEverything();
+
+                if (gridEnabled)
+                    drawGrid();
 
                 glControl1.SwapBuffers();
             }
@@ -432,7 +480,7 @@ namespace Quad64
         private void glControl1_Load(object sender, EventArgs e)
         {
             GL.Enable(EnableCap.Blend);
-            GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
+            GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
 
             GL.Enable(EnableCap.DepthTest);
             GL.DepthFunc(DepthFunction.Lequal);
@@ -451,7 +499,9 @@ namespace Quad64
         {
             glControl1.Context.Update(glControl1.WindowInfo);
             GL.Viewport(0, 0, glControl1.Width, glControl1.Height);
-            ProjMatrix = Matrix4.CreatePerspectiveFieldOfView(FOV, (float)glControl1.Width / (float)glControl1.Height, 100f, 100000f);
+            ProjMatrix = Matrix4.CreatePerspectiveFieldOfView(Globals.FOV * ((float)Math.PI / 180.0f), (float)glControl1.Width / (float)glControl1.Height, 100f, 100000f);
+            //ProjMatrix = Matrix4.CreateOrthographic(1000f, 1000f, 100f, 100000f);
+
             glControl1.Invalidate();
         }
 
@@ -487,6 +537,7 @@ namespace Quad64
         {
             SettingsForm settings = new SettingsForm();
             settings.ShowDialog();
+            updateFieldOfView();
             glControl1.Invalidate();
             propertyGrid1.Refresh();
             glControl1.Update(); // Needed after calling propertyGrid1.Refresh();
@@ -805,7 +856,8 @@ namespace Quad64
 
         private void resetObjectVariables()
         {
-            radioButton1.Checked = true;
+            cameraMode.SelectedIndex = 0;
+
             treeView1.SelectedNode = null;
             Globals.list_selected = -1;
             Globals.item_selected = -1;
@@ -816,6 +868,7 @@ namespace Quad64
         private void switchLevel(ushort levelID)
         {
             Level testLevel = new Level(levelID, 1);
+            LevelScripts.parse(ref testLevel, 0x15, 0);
             //Stopwatch stopWatch = new Stopwatch();
             //stopWatch.Start();
             LevelScripts.parse(ref testLevel, 0x15, 0);
@@ -936,7 +989,6 @@ namespace Quad64
                     Globals.isMultiSelectedFromSpecialObjects = false;
                     bool hasSO_8 = false, hasSO_10 = false, hasSO_12 = false;
                     Globals.isMultiSelectedFromBothNormalWarpsAndInstantWarps = false;
-                    bool hasRegularWarp = false, hasInstantWarp = false;
                     if (Globals.list_selected == 2)
                     {
                         Object3D obj3d_0 = area.SpecialObjects[treeView1.SelectedNodes[0].Index];
@@ -1145,6 +1197,12 @@ namespace Quad64
             updateAfterSelect(e.Node);
         }
 
+        void updateFieldOfView()
+        {
+            ProjMatrix = Matrix4.CreatePerspectiveFieldOfView(Globals.FOV * ((float)Math.PI / 180.0f), (float)glControl1.Width / (float)glControl1.Height, 100f, 100000f);
+            glControl1.Invalidate();
+        }
+
         private void trackBar1_ValueChanged(object sender, EventArgs e)
         {
             /*
@@ -1300,86 +1358,52 @@ namespace Quad64
                 e.DrawDefault = true;
             }
         }
-
-        private void radioButton2_CheckedChanged(object sender, EventArgs e)
+        
+        private void cameraMode_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (radioButton2.Checked)
-            {
-                camera.setCameraMode(CameraMode.ORBIT, ref camMtx);
-                camera.updateMatrix(ref camMtx);
-                glControl1.Invalidate();
+            switch (cameraMode.SelectedIndex) {
+                case 0: // Fly
+                    camera.setCameraMode(CameraMode.FLY, ref camMtx);
+                    break;
+                case 1: // Orbit
+                    camera.setCameraMode(CameraMode.ORBIT, ref camMtx);
+                    break;
+                case 2: // Top
+                    camera.setCameraMode_LookDirection(LookDirection.TOP, ref camMtx);
+                    break;
+                case 3: // Bottom
+                    camera.setCameraMode_LookDirection(LookDirection.BOTTOM, ref camMtx);
+                    break;
+                case 4: // Left
+                    camera.setCameraMode_LookDirection(LookDirection.LEFT, ref camMtx);
+                    break;
+                case 5: // Right
+                    camera.setCameraMode_LookDirection(LookDirection.RIGHT, ref camMtx);
+                    break;
+                case 6: // Front
+                    camera.setCameraMode_LookDirection(LookDirection.FRONT, ref camMtx);
+                    break;
+                case 7: // Back
+                    camera.setCameraMode_LookDirection(LookDirection.BACK, ref camMtx);
+                    break;
             }
+            camera.updateMatrix(ref camMtx);
+            glControl1.Invalidate();
         }
-
-        private void radioButton1_CheckedChanged(object sender, EventArgs e)
+        
+        private void gridButton_CheckedChanged(object sender, EventArgs e)
         {
-            if (radioButton1.Checked)
+            if (gridButton.Checked)
             {
-                camera.setCameraMode(CameraMode.FLY, ref camMtx);
-                camera.updateMatrix(ref camMtx);
-                glControl1.Invalidate();
+                gridSize.Enabled = true;
+                gridEnabled = true;
             }
-        }
-
-
-        private void radioButton4_CheckedChanged(object sender, EventArgs e)
-        {
-            if (radioButton_bottom.Checked)
+            else
             {
-                camera.setCameraMode_LookDirection(LookDirection.BOTTOM, ref camMtx);
-                camera.updateMatrix(ref camMtx);
-                glControl1.Invalidate();
+                gridSize.Enabled = false;
+                gridEnabled = false;
             }
-        }
-
-        private void radioButton5_CheckedChanged(object sender, EventArgs e)
-        {
-            if (radioButton_top.Checked)
-            {
-                camera.setCameraMode_LookDirection(LookDirection.TOP, ref camMtx);
-                camera.updateMatrix(ref camMtx);
-                glControl1.Invalidate();
-            }
-        }
-
-        private void radioButton_left_CheckedChanged(object sender, EventArgs e)
-        {
-            if (radioButton_left.Checked)
-            {
-                camera.setCameraMode_LookDirection(LookDirection.LEFT, ref camMtx);
-                camera.updateMatrix(ref camMtx);
-                glControl1.Invalidate();
-            }
-        }
-
-        private void radioButton_right_CheckedChanged(object sender, EventArgs e)
-        {
-            if (radioButton_right.Checked)
-            {
-                camera.setCameraMode_LookDirection(LookDirection.RIGHT, ref camMtx);
-                camera.updateMatrix(ref camMtx);
-                glControl1.Invalidate();
-            }
-        }
-
-        private void radioButton_front_CheckedChanged(object sender, EventArgs e)
-        {
-            if (radioButton_front.Checked)
-            {
-                camera.setCameraMode_LookDirection(LookDirection.FRONT, ref camMtx);
-                camera.updateMatrix(ref camMtx);
-                glControl1.Invalidate();
-            }
-        }
-
-        private void radioButton_back_CheckedChanged(object sender, EventArgs e)
-        {
-            if (radioButton_back.Checked)
-            {
-                camera.setCameraMode_LookDirection(LookDirection.BACK, ref camMtx);
-                camera.updateMatrix(ref camMtx);
-                glControl1.Invalidate();
-            }
+            glControl1.Invalidate();
         }
 
         private void starAct_CheckedChanged(object sender, EventArgs e)
@@ -2136,6 +2160,11 @@ namespace Quad64
             Globals.objSpeedMultiplier = newValue / 100.0f;
         }
 
+        private void gridSize_ValueChanged(object sender, EventArgs e)
+        {
+            glControl1.Invalidate();
+        }
+        
 
         private const int WM_USER = 0x0400;
         private const int EM_SETEVENTMASK = (WM_USER + 69);
