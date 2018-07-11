@@ -12,7 +12,7 @@ The main focus of the tool is to be like Toads Tool 64, but with better ROM comp
 * Supports most of the N64 texture formats: RGBA16, RGBA32, IA16, IA8, IA4, I8, and I4. (CI textures will be interpreted as grayscale)
 
 Note: Macro & Special objects are not editable with the vanilla 8MB ROM, since they are MIO0 compressed. 
-You can use <a href="http://origami64.net/showthread.php?tid=97">queueRAM's sm64extend tool</a> to extend any vanilla ROM file, which will let you edit these objects.
+You can use <a href="https://github.com/queueRAM/sm64tools/releases/tag/sm64extendv0.3.1">queueRAM's sm64extend tool</a> to extend any vanilla ROM file, which will let you edit these objects.
 
 
 # Required Libraries
