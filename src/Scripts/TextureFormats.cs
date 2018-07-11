@@ -111,12 +111,7 @@ namespace Quad64.src.Scripts
                     return encodeI4(texture);
                 case 0x40:
                 case 0x48:
-                    MessageBox.Show("CI texture encoding is not currently supported in this version.",
-                        "Notice",
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Exclamation,
-                        MessageBoxDefaultButton.Button1);
-                    return null;
+                    throw new ArgumentException("CI texture encoding is not currently supported in this version.");
             }
         }
         
@@ -167,8 +162,7 @@ namespace Quad64.src.Scripts
             }
             return data;
         }
-
-
+        
         public static byte[] encodeRGBA32(Bitmap texture)
         {
             int data_size = (texture.Width * texture.Height) * 4;

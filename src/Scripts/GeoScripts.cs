@@ -49,16 +49,16 @@ namespace Quad64.src.Scripts
             nodeCurrent = rootNode;
         }
 
-        public static void parse(ref Model3D mdl, ref Level lvl, byte seg, uint off)
+        public static void parse(ref Model3D mdl, ref Level lvl, byte seg, uint off, byte? areaID)
         {
             if (seg == 0)  return;
             ROM rom = ROM.Instance;
-            byte[] data = rom.getSegment(seg);
+            byte[] data = rom.getSegment(seg, areaID);
             bool end = false;
             while (!end)
             {
                 byte cmdLen = getCmdLength(data[off]);
-                byte[] cmd = rom.getSubArray(data, off, cmdLen);
+                byte[] cmd = rom.getSubArray_safe(data, off, cmdLen);
                 string desc = "Unknown command";
                 bool alreadyAdded = false;
                 //rom.printArray(cmd, cmdLen);
@@ -86,9 +86,9 @@ namespace Quad64.src.Scripts
                         break;
                     case 0x02:
                         desc = "Branch geometry layout to address 0x" + bytesToInt(cmd, 4, 4).ToString("X8");
-                        addGLSCommandToDump(ref mdl, cmd, seg, off, desc);
+                        addGLSCommandToDump(ref mdl, cmd, seg, off, desc, areaID);
                         alreadyAdded = true;
-                        CMD_02(ref mdl, ref lvl, cmd);
+                        CMD_02(ref mdl, ref lvl, cmd, areaID);
                         break;
                     case 0x03:
                         desc = "Return from branch";
@@ -151,7 +151,7 @@ namespace Quad64.src.Scripts
                             "," + (short)bytesToInt(cmd, 2, 2) + 
                             ")";
                         //rom.printArray(cmd, cmdLen);
-                        CMD_13(ref mdl, ref lvl, cmd);
+                        CMD_13(ref mdl, ref lvl, cmd, areaID);
                         break;
                     case 0x14:
                         desc = "Billboard Model";
@@ -160,7 +160,7 @@ namespace Quad64.src.Scripts
                     case 0x15:
                         desc = "Load display list 0x" + bytesToInt(cmd, 4, 4).ToString("X8") +
                             " into layer " + cmd[1];
-                        CMD_15(ref mdl, ref lvl, cmd);
+                        CMD_15(ref mdl, ref lvl, cmd, areaID);
                        // rom.printArray(cmd, cmdLen);
                         break;
                     case 0x16:
@@ -192,7 +192,7 @@ namespace Quad64.src.Scripts
                             desc = "Draw background image. bgID = " + bytesToInt(cmd, 2, 2) + 
                                 ", calls ASM function 0x" + bytesToInt(cmd, 4, 4).ToString("X8");
                         }
-                        CMD_19(ref mdl, ref lvl, cmd, rom.decodeSegmentAddress(seg, off));
+                        CMD_19(ref mdl, ref lvl, cmd, rom.decodeSegmentAddress(seg, off, areaID));
                         // rom.printArray(cmd, cmdLen);
                         break;
                     case 0x1D:
@@ -209,28 +209,28 @@ namespace Quad64.src.Scripts
                         break;
                 }
                 if (!alreadyAdded)
-                    addGLSCommandToDump(ref mdl, cmd, seg, off, desc);
+                    addGLSCommandToDump(ref mdl, cmd, seg, off, desc, areaID);
                 off += cmdLen;
                 if (nodeCurrent.isSwitch)
                     nodeCurrent.switchPos++;
             }
         }
 
-        private static void addGLSCommandToDump(ref Model3D mdl, byte[] cmd, byte seg, uint offset, string description)
+        private static void addGLSCommandToDump(ref Model3D mdl, byte[] cmd, byte seg, uint offset, string description, byte? areaID)
         {
             ScriptDumpCommandInfo info = new ScriptDumpCommandInfo();
             info.data = cmd;
             info.description = description;
             info.segAddress = (uint)(seg << 24) | offset;
-            info.romAddress = ROM.Instance.decodeSegmentAddress_safe(seg, offset);
+            info.romAddress = ROM.Instance.decodeSegmentAddress_safe(seg, offset, areaID);
             mdl.GeoLayoutCommands_ForDump.Add(info);
         }
 
-        private static void CMD_02(ref Model3D mdl, ref Level lvl, byte[] cmd)
+        private static void CMD_02(ref Model3D mdl, ref Level lvl, byte[] cmd, byte? areaID)
         {
             byte seg = cmd[4];
             uint off = bytesToInt(cmd, 5, 3);
-            parse(ref mdl, ref lvl, seg, off);
+            parse(ref mdl, ref lvl, seg, off, areaID);
         }
 
 
@@ -272,7 +272,7 @@ namespace Quad64.src.Scripts
             short z = (short)bytesToInt(cmd, 6, 2);
             //mdl.builder.GeoLayoutOffset += new OpenTK.Vector3(x, y, z);
         }
-        private static void CMD_13(ref Model3D mdl, ref Level lvl, byte[] cmd)
+        private static void CMD_13(ref Model3D mdl, ref Level lvl, byte[] cmd, byte? areaID)
         {
             byte drawLayer = cmd[1];
             short x = (short)bytesToInt(cmd, 2, 2);
@@ -289,7 +289,7 @@ namespace Quad64.src.Scripts
             {
                 if (!mdl.hasGeoDisplayList(off))
                 {
-                    Fast3DScripts.parse(ref mdl, ref lvl, seg, off);
+                    Fast3DScripts.parse(ref mdl, ref lvl, seg, off, areaID);
                 }
                 lvl.temp_bgInfo.usesFog = mdl.builder.UsesFog;
                 lvl.temp_bgInfo.fogColor = mdl.builder.FogColor;
@@ -301,7 +301,7 @@ namespace Quad64.src.Scripts
             }
         }
 
-        private static void CMD_15(ref Model3D mdl, ref Level lvl, byte[] cmd)
+        private static void CMD_15(ref Model3D mdl, ref Level lvl, byte[] cmd, byte? areaID)
         {
            // if (bytesToInt(cmd, 4, 4) != 0x07006D70) return;
             byte drawLayer = cmd[1];
@@ -314,7 +314,7 @@ namespace Quad64.src.Scripts
             // Don't bother processing duplicate display lists.
             if (!mdl.hasGeoDisplayList(off))
             {
-                Fast3DScripts.parse(ref mdl, ref lvl, seg, off); 
+                Fast3DScripts.parse(ref mdl, ref lvl, seg, off, areaID);
             }
 
             lvl.temp_bgInfo.usesFog = mdl.builder.UsesFog;

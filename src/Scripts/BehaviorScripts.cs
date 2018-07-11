@@ -28,12 +28,12 @@ namespace Quad64.src.Scripts
         {
             if (seg == 0)  return;
             ROM rom = ROM.Instance;
-            byte[] data = rom.getSegment(seg);
+            byte[] data = rom.getSegment(seg, null);
             bool end = false;
             while (!end)
             {
                 byte cmdLen = getCmdLength(data[off]);
-                byte[] cmd = rom.getSubArray(data, off, cmdLen);
+                byte[] cmd = rom.getSubArray_safe(data, off, cmdLen);
                 //rom.printArray(cmd, cmdLen);
                 string desc = "Unknown command";
                 bool alreadyAdded = false;
@@ -230,7 +230,7 @@ namespace Quad64.src.Scripts
             info.data = cmd;
             info.description = description;
             info.segAddress = (uint)(seg << 24) | offset;
-            info.romAddress = ROM.Instance.decodeSegmentAddress_safe(seg, offset);
+            info.romAddress = ROM.Instance.decodeSegmentAddress_safe(seg, offset, null);
             dump.Add(info);
         }
         
