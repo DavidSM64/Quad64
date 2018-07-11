@@ -1014,7 +1014,7 @@
             this.MinimumSize = new System.Drawing.Size(820, 522);
             this.Name = "MainForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Quad64 v0.2 (Beta build 4)";
+            this.Text = "Quad64 v0.2 (Beta build 4, Hotfix 1)";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
             this.Shown += new System.EventHandler(this.Form1_Shown);
             this.menuStrip1.ResumeLayout(false);

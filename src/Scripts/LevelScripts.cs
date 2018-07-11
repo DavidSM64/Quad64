@@ -763,7 +763,7 @@ namespace Quad64.Scripts
             }
 
         }
-        
+
         private static void CMD_2F(ref Level lvl, ref string desc, byte[] cmd)
         {
             ROM rom = ROM.Instance;
@@ -771,7 +771,7 @@ namespace Quad64.Scripts
             byte seg = cmd[4];
             uint off = bytesToInt(cmd, 5, 3);
             uint len = lvl.getCurrentArea().collision.getTriangleCount();
-            byte[] data = rom.getSubArray(rom.getSegment(seg), off, len);
+            //byte[] data = rom.getSubArray(rom.getSegment(seg), off, len); 
             //Console.WriteLine("Num triangles = 0x" + len.ToString("X8") + ": ");
             //rom.printArray(data);
         }
