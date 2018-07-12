@@ -871,7 +871,6 @@ namespace Quad64
             LevelScripts.parse(ref testLevel, 0x15, 0);
             //Stopwatch stopWatch = new Stopwatch();
             //stopWatch.Start();
-            LevelScripts.parse(ref testLevel, 0x15, 0);
             //stopWatch.Stop();
             //Console.WriteLine("RunTime (LevelScripts.parse): " + stopWatch.Elapsed.Milliseconds + "ms");
 
