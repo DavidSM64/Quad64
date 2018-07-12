@@ -54,7 +54,7 @@ namespace Quad64.src.Forms
             while (!end)
             {
                 byte cmdLen = data[off + 1];
-                byte[] cmd = rom.getSubArray(data, off, cmdLen);
+                byte[] cmd = rom.getSubArray_safe(data, off, cmdLen);
                 //rom.printArray(cmd, cmdLen);
                 switch (cmd[0])
                 {
@@ -125,7 +125,7 @@ namespace Quad64.src.Forms
                         l_end = bytesToInt(cmd, 8, 4);
                         if (l_start < l_end)
                         {
-                            byte[] MIO0_header = rom.getSubArray(rom.Bytes, l_start, 0x10);
+                            byte[] MIO0_header = rom.getSubArray_safe(rom.Bytes, l_start, 0x10);
                             if (bytesToInt(MIO0_header, 0, 4) == 0x4D494F30) // Check MIO0 signature
                             {
                                 int compressedOffset = (int)bytesToInt(MIO0_header, 0x8, 4);
@@ -175,9 +175,9 @@ namespace Quad64.src.Forms
                         tempSegmentStarts[i] = 0;
                     }
                     tempSegments[0x00] = rom.Bytes;
-                    tempSegments[0x15] = rom.cloneSegment(0x15);
+                    tempSegments[0x15] = rom.cloneSegment(0x15, (byte)level.CurrentAreaID);
                     tempSegmentStarts[0x15] = Globals.seg15_location[0];
-                    tempSegments[0x02] = rom.cloneSegment(0x02);
+                    tempSegments[0x02] = rom.cloneSegment(0x02, (byte)level.CurrentAreaID);
                     tempSegmentStarts[0x02] = Globals.seg02_location[0];
                     tempSegmentsAreMIO0[0x02] = !rom.Seg02_isFakeMIO0;
                     //Console.WriteLine("SegOff:0x{0}", segmentAddressForLoadingData.ToString("X8"));
@@ -196,7 +196,7 @@ namespace Quad64.src.Forms
                         {
                             uint segOffset = uint.Parse(obj["FromSegmentAddress"].ToString(), NumberStyles.HexNumber);
                             if (segmentAddressForLoadingData == 0)
-                                data = rom.getDataFromSegmentAddress_safe(segOffset, dataSize);
+                                data = rom.getDataFromSegmentAddress_safe(segOffset, dataSize, (byte)level.CurrentAreaID);
                             else
                             {
                                 byte segment = (byte)(segOffset >> 24);
@@ -226,9 +226,9 @@ namespace Quad64.src.Forms
 
                             if (segmentAddressForLoadingData == 0)
                             {
-                                if (!rom.isSegmentMIO0((byte)(segOff >> 24)))
+                                if (!rom.isSegmentMIO0((byte)(segOff >> 24), (byte)level.CurrentAreaID))
                                 {
-                                    tags[tags.Length - 3] = "ROM Address: " + rom.decodeSegmentAddress(segOff).ToString("X");
+                                    tags[tags.Length - 3] = "ROM Address: " + rom.decodeSegmentAddress(segOff, (byte)level.CurrentAreaID).ToString("X");
                                 }
                                 else
                                     tags[tags.Length - 3] = "ROM Address: N/A";

@@ -175,7 +175,7 @@ namespace Quad64.src.Forms
                     objectCombos = objectCombos.OrderBy(o => o.Behavior).ToList();
                     break;
                 case 6:
-                    objectCombos = objectCombos.OrderBy(o => ROM.Instance.decodeSegmentAddress_safe(o.Behavior)).ToList();
+                    objectCombos = objectCombos.OrderBy(o => ROM.Instance.decodeSegmentAddress_safe(o.Behavior, null)).ToList();
                     break;
             }
             

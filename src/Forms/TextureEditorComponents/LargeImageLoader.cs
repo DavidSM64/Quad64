@@ -6,7 +6,7 @@ namespace Quad64.src.Forms.TextureEditorComponents
     {
         private static void parseRGBA16Section(ref Bitmap map, uint address, int x, int y, int w, int h)
         {
-            byte[] data = ROM.Instance.getSubArray(ROM.Instance.Bytes, address, (uint)((w + 1) * (h + 1) * 2));
+            byte[] data = ROM.Instance.getSubArray_safe(ROM.Instance.Bytes, address, (uint)((w + 1) * (h + 1) * 2));
             for (int yy = 0; yy < h; ++yy)
             {
                 for (int xx = 0; xx < w; ++xx)
@@ -52,7 +52,7 @@ namespace Quad64.src.Forms.TextureEditorComponents
 
         public static void importSkyboxImage(ref Bitmap img, uint seg_address)
         {
-            uint rom_address = ROM.Instance.decodeSegmentAddress(seg_address);
+            uint rom_address = ROM.Instance.decodeSegmentAddress(seg_address, null);
 
             int wTiles = img.Width / 31;
             int hTiles = img.Height / 31;
@@ -90,9 +90,9 @@ namespace Quad64.src.Forms.TextureEditorComponents
 
         public static Bitmap getSkyboxImage(uint seg_address, int w, int h)
         {
-            if (!ROM.Instance.isSegmentMIO0((byte)(seg_address >> 24)))
+            if (!ROM.Instance.isSegmentMIO0((byte)(seg_address >> 24), null))
             {
-                uint rom_address = ROM.Instance.decodeSegmentAddress(seg_address);
+                uint rom_address = ROM.Instance.decodeSegmentAddress(seg_address, null);
                 uint current_address = rom_address;
                 Bitmap img = new Bitmap(w, h);
                 for (int y = 0; y < (h/31); y++)

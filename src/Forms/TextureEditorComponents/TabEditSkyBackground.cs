@@ -51,7 +51,7 @@ namespace Quad64.src.Forms
                     }
                     else
                     {
-                        int segA_size = ROM.Instance.getSegment(0xA).Length;
+                        int segA_size = ROM.Instance.getSegment(0xA, (byte)level.CurrentAreaID).Length;
                         int skybox_width = 248;
                         int skybox_height = ((segA_size - 0x140) / 256 / 2 / 32) * 31;
                         img = new Bitmap(Image.FromFile(openImgDialog.FileName), new Size(skybox_width, skybox_height));
@@ -80,7 +80,7 @@ namespace Quad64.src.Forms
 
         private ushort getSkyboxConfigurationID()
         {
-            int sizeOfSegmentA = ROM.Instance.getSegment(0xA).Length;
+            int sizeOfSegmentA = ROM.Instance.getSegment(0xA, (byte)level.CurrentAreaID).Length;
             int skybox_height = ((sizeOfSegmentA - 0x140) / 256 / 2 / 32) * 32;
 
             switch (skybox_height)
@@ -145,7 +145,7 @@ namespace Quad64.src.Forms
 
         private void updateSkyboxTexture()
         {
-            int sizeOfSegmentA = ROM.Instance.getSegment(0xA).Length;
+            int sizeOfSegmentA = ROM.Instance.getSegment(0xA, (byte)level.CurrentAreaID).Length;
             int skybox_width = 248;
             int skybox_height = ((sizeOfSegmentA - 0x140) / 256 / 2 / 32) * 31;
             Bitmap org = LargeImageLoader.getSkyboxImage(0x0A000000, skybox_width, skybox_height);
@@ -192,7 +192,7 @@ namespace Quad64.src.Forms
             LevelInfo.AreaBackgroundInfo bgInfo = level.getCurrentArea().bgInfo;
             checkBox_matchFogColor.Enabled = bgInfo.usesFog && (bgInfo.fogColor_romLocation.Count > 0);
             //Console.WriteLine("BG info address = 0x{0}", bgInfo.address.ToString("X8"));
-            int segA_size = ROM.Instance.getSegment(0xA).Length;
+            int segA_size = ROM.Instance.getSegment(0xA, (byte)level.CurrentAreaID).Length;
             // Console.WriteLine("Segment 0xA size: " + ROM.Instance.getSegment(0xA).Length);
             if (segA_size == 0)
                 sb_useTexture.Enabled = false;

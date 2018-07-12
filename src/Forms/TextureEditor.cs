@@ -47,7 +47,7 @@ namespace Quad64.src.Forms
             texButton.FlatAppearance.BorderColor = Color.Black;
 
             byte segment = (byte)(address >> 24);
-            if (!ROM.Instance.isSegmentMIO0(segment))
+            if (!ROM.Instance.isSegmentMIO0(segment, (byte)level.CurrentAreaID))
             {
                 texButton.FlatAppearance.MouseOverBackColor = Color.Goldenrod;
                 texButton.FlatAppearance.CheckedBackColor = Color.Gold;
@@ -184,7 +184,7 @@ namespace Quad64.src.Forms
                     uint seg_offset = 
                         uint.Parse(ot_info_SegAddress.Text.Substring(ot_info_SegAddress.Text.LastIndexOf(" ") + 1), System.Globalization.NumberStyles.HexNumber);
                     ROM.Instance.writeByteArray(rom_offset, data);
-                    ROM.Instance.writeByteArrayToSegment(seg_offset, data);
+                    ROM.Instance.writeByteArrayToSegment(seg_offset, data, (byte)level.CurrentAreaID);
                     Bitmap newImage = TextureFormats.decodeTexture(
                         format,
                         data,
@@ -233,7 +233,7 @@ namespace Quad64.src.Forms
                     uint rom_offset = uint.Parse(info_Address.Text.Substring(info_Address.Text.LastIndexOf(" ") + 1), System.Globalization.NumberStyles.HexNumber);
                     uint seg_offset = uint.Parse(info_SegmentAddress.Text.Substring(info_SegmentAddress.Text.LastIndexOf(" ") + 1), System.Globalization.NumberStyles.HexNumber);
                     ROM.Instance.writeByteArray(rom_offset, data);
-                    ROM.Instance.writeByteArrayToSegment(seg_offset, data);
+                    ROM.Instance.writeByteArrayToSegment(seg_offset, data, (byte)level.CurrentAreaID);
                     Bitmap newImage = TextureFormats.decodeTexture(
                         format,
                         data,

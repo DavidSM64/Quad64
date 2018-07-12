@@ -125,9 +125,9 @@ namespace Quad64
             Globals.behaviorNameEntries.Clear();
             BehaviorNameFile.parseBehaviorNames(Globals.getDefaultBehaviorNamesPath());
             ModelComboFile.parseObjectCombos(Globals.getDefaultObjectComboPath());
-            rom.setSegment(0x15, Globals.seg15_location[0], Globals.seg15_location[1], false);
+            rom.setSegment(0x15, Globals.seg15_location[0], Globals.seg15_location[1], false, null);
             rom.setSegment(0x02, Globals.seg02_location[0], Globals.seg02_location[1],
-                rom.isSegmentMIO0(0x02), rom.Seg02_isFakeMIO0, rom.Seg02_uncompressedOffset);
+                rom.isSegmentMIO0(0x02, null), rom.Seg02_isFakeMIO0, rom.Seg02_uncompressedOffset, null);
             level = new Level(0x10, 1);
             LevelScripts.parse(ref level, 0x15, 0);
             level.sortAndAddNoModelEntries();

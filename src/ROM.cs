@@ -43,9 +43,11 @@ namespace Quad64
         public string Filepath { get { return filepath; } }
         private byte[] bytes;
         private byte[] writeMask;
-        private uint[] segStart = new uint[0x20];
-        private bool[] segIsMIO0 = new bool[0x20];
-        private byte[][] segData = new byte[0x20][];
+        //private uint[] segStart = new uint[0x20];
+        //private bool[] segIsMIO0 = new bool[0x20];
+        //private byte[][] segData = new byte[0x20][];
+        private Dictionary<byte, SegBank> segData = new Dictionary<byte, SegBank>();
+        private Dictionary<byte, Dictionary<byte, SegBank>> areaSegData = new Dictionary<byte, Dictionary<byte, SegBank>>();
         private uint seg02_uncompressedOffset = 0;
         public uint Seg02_uncompressedOffset { get { return seg02_uncompressedOffset; } }
         private bool seg02_isFakeMIO0 = false;
@@ -86,21 +88,21 @@ namespace Quad64
             {
                 Globals.macro_preset_table = 0xEC7E0;
                 Globals.special_preset_table = 0xED350;
-               // Globals.seg02_location = new[] { (uint)0x108A40, (uint)0x114750 };
+                // Globals.seg02_location = new[] { (uint)0x108A40, (uint)0x114750 };
                 Globals.seg15_location = new[] { (uint)0x2ABCA0, (uint)0x2AC6B0 };
             }
             else if (region == ROM_Region.EUROPE)
             {
                 Globals.macro_preset_table = 0xBD590;
                 Globals.special_preset_table = 0xBE100;
-               // Globals.seg02_location = new[] { (uint)0xDE190, (uint)0xE49F0 };
+                // Globals.seg02_location = new[] { (uint)0xDE190, (uint)0xE49F0 };
                 Globals.seg15_location = new[] { (uint)0x28CEE0, (uint)0x28D8F0 };
             }
             else if (region == ROM_Region.JAPAN)
             {
                 Globals.macro_preset_table = 0xEB6D0;
                 Globals.special_preset_table = 0xEC240;
-               // Globals.seg02_location = new[] { (uint)0x1076D0, (uint)0x112B50 };
+                // Globals.seg02_location = new[] { (uint)0x1076D0, (uint)0x112B50 };
                 Globals.seg15_location = new[] { (uint)0x2AA240, (uint)0x2AAC50 };
             }
             else if (region == ROM_Region.JAPAN_SHINDOU)
@@ -131,7 +133,7 @@ namespace Quad64
 
         private void swapMixedBig()
         {
-            for (int i = 0; i < bytes.Length; i+=2)
+            for (int i = 0; i < bytes.Length; i += 2)
             {
                 byte temp = bytes[i];
                 bytes[i] = bytes[i + 1];
@@ -170,13 +172,11 @@ namespace Quad64
 
         public void clearSegments()
         {
-            for (int i = 0; i < 0x20; i++)
+            foreach (KeyValuePair <byte, SegBank> kvp in segData.ToArray())
             {
-                if (i == 2 || i == 0x15)
+                if ((new[] { 0x15, 2 }).Contains(kvp.Key))
                     continue;
-                segStart[i] = 0;
-                segIsMIO0[i] = false;
-                segData[i] = new byte[0];
+                segData.Remove(kvp.Key);
             }
         }
 
@@ -223,7 +223,7 @@ namespace Quad64
 
         public string getInternalName()
         {
-            return System.Text.Encoding.Default.GetString(getSubArray_safe(Bytes, 0x20, 20));
+            return System.Text.Encoding.Default.GetString(getSubArray_safe(Bytes, 0x20, (long)20));
         }
 
         public void WriteToFileEx()
@@ -240,7 +240,7 @@ namespace Quad64
             }
             stream.Close();
         }
-        
+
         public void readFile(string filename)
         {
             filepath = filename;
@@ -301,154 +301,194 @@ namespace Quad64
             Globals.pathToAutoLoadROM = filepath;
             SettingsFile.SaveGlobalSettings("default");
         }
-        
-        public void setSegment(uint index, uint segmentStart, uint segmentEnd, bool isMIO0)
+
+        public void setSegment(uint index, uint segmentStart, uint segmentEnd, bool isMIO0, byte? areaID)
         {
-            setSegment(index, segmentStart, segmentEnd, isMIO0, false, 0);
+            setSegment(index, segmentStart, segmentEnd, isMIO0, false, 0, areaID);
         }
 
-        public void setSegment(uint index, uint segmentStart, uint segmentEnd, bool isMIO0, bool fakeMIO0, uint uncompressedOffset)
+        public void setSegment(uint index, uint segmentStart, uint segmentEnd, bool isMIO0, bool fakeMIO0, uint uncompressedOffset, byte? areaID)
         {
-            if (segmentStart > segmentEnd || index > segData.Length)
+            if (segmentStart > segmentEnd)
                 return;
+
+            SegBank seg = new SegBank();
+            seg.SegID = (byte)index;
 
             if (!isMIO0)
             {
-                segStart[index] = segmentStart;
-                segIsMIO0[index] = false;
+                seg.SegStart = segmentStart;
+                seg.IsMIO0 = false;
                 uint size = segmentEnd - segmentStart;
-                segData[index] = new byte[size];
+                seg.Data = new byte[size];
                 for (uint i = 0; i < size; i++)
-                    segData[index][i] = bytes[segmentStart + i];
+                    seg.Data[i] = bytes[segmentStart + i];
             }
             else
             {
                 if (fakeMIO0)
                 {
-                    segStart[index] = segmentStart + uncompressedOffset;
-                    segIsMIO0[index] = false;
+                    seg.SegStart = segmentStart + uncompressedOffset;
+                    seg.IsMIO0 = false;
                 }
                 else
                 {
-                    segIsMIO0[index] = true;
+                    seg.IsMIO0 = true;
                 }
-                segData[index] = MIO0.mio0_decode(getSubArray(bytes, segmentStart, segmentEnd - segmentStart));
+                seg.Data = MIO0.mio0_decode(getSubArray_safe(bytes, segmentStart, segmentEnd - segmentStart));                
+            }
+
+            setSegment(index, seg, areaID);
+        }
+
+        private void setSegment(uint index, SegBank seg, byte? areaID)
+        {
+            if (areaID != null)
+            {
+                if (!areaSegData.ContainsKey(areaID.Value))
+                {
+                    Dictionary<byte, SegBank> dic = new Dictionary<byte, SegBank>();
+                    areaSegData.Add(areaID.Value, dic);
+                }
+                else if (areaSegData[areaID.Value].ContainsKey((byte)index))
+                {
+                    areaSegData[areaID.Value].Remove((byte)index);
+                }
+                areaSegData[areaID.Value].Add((byte)index, seg);
+            }
+            else
+            {
+                if (segData.ContainsKey((byte)index))
+                {
+                    segData.Remove((byte)index);
+                }
+                segData.Add((byte)index, seg);
             }
         }
 
         public byte[] getROMSection(uint start, uint end)
         {
-            byte[] data = new byte[end-start];
+            byte[] data = new byte[end - start];
             Array.Copy(bytes, start, data, 0, end - start);
             return data;
         }
 
-        public byte[] cloneSegment(byte segment)
+        public byte[] cloneSegment(byte segment, byte? areaID)
         {
-            if (segment > segData.Length)
-                return null;
-
-            byte[] copy = new byte[segData[segment].Length];
-            Array.Copy(segData[segment], copy, segData[segment].Length);
+            SegBank seg = GetSegBank(segment, areaID);
+            if (seg == null) return null;
+            
+            byte[] copy = new byte[seg.Data.Length];
+            Array.Copy(seg.Data, copy, seg.Data.Length);
             return copy;
         }
 
-        public byte[] getSegment(ushort seg)
+        public byte[] getSegment(ushort seg, byte? areaID)
         {
-            if (seg > segData.Length)
+            return GetSegBank(seg, areaID)?.Data;
+        }
+
+        private SegBank GetSegBank(ushort seg, byte? areaID)
+        {
+            if (areaID != null && areaSegData.ContainsKey(areaID.Value) && areaSegData[areaID.Value].ContainsKey((byte)(seg)))
+            {
+                return areaSegData[areaID.Value][(byte)seg];
+            }
+            else if (segData.ContainsKey((byte)seg))
+            {
+                return segData[(byte)seg];
+            }
+            else
+            {
                 return null;
-
-            return segData[seg];
+            }
         }
 
-        public uint getSegmentStart(ushort seg)
+        public uint getSegmentStart(ushort seg, byte? areaID)
         {
-            if (seg > segData.Length)
-                return 0;
-
-            return segStart[seg];
+            SegBank segBank = GetSegBank(seg, areaID);
+            if (segBank != null) return segBank.SegStart;
+            else return 0;
         }
 
-        public uint decodeSegmentAddress(uint segOffset)
-        {
-           // Console.WriteLine("Decoding segment address: " + segOffset.ToString("X8"));
-            byte seg = (byte)(segOffset >> 24);
-            if (segIsMIO0[seg])
-                throw new System.ArgumentException("Cannot decode segment address (0x"+segOffset.ToString("X8")+") from MIO0 data. (decodeSegmentAddress 1)");
-            uint off = segOffset & 0x00FFFFFF;
-            return segStart[seg] + off;
-        }
-
-        public uint decodeSegmentAddress(byte segment, uint offset)
-        {
-            if (segment > segData.Length)
-                return 0;
-
-            if (segIsMIO0[segment])
-                throw new System.ArgumentException("Cannot decode segment address (0x" + segment.ToString("X2") + offset.ToString("X6") + ") from MIO0 data. (decodeSegmentAddress 2)");
-            return segStart[segment] + offset;
-        }
-
-
-        public uint decodeSegmentAddress_safe(uint segOffset)
+        public uint decodeSegmentAddress(uint segOffset, byte? areaID)
         {
             // Console.WriteLine("Decoding segment address: " + segOffset.ToString("X8"));
             byte seg = (byte)(segOffset >> 24);
-            if (segIsMIO0[seg])
+            if (GetSegBank(seg, areaID).IsMIO0)
+                throw new System.ArgumentException("Cannot decode segment address (0x" + segOffset.ToString("X8") + ") from MIO0 data. (decodeSegmentAddress 1)");
+            uint off = segOffset & 0x00FFFFFF;
+            return GetSegBank(seg, areaID).SegStart + off;
+        }
+
+        public uint decodeSegmentAddress(byte segment, uint offset, byte? areaID)
+        {
+            SegBank seg = GetSegBank(segment, areaID);
+
+            if (seg.IsMIO0)
+                throw new System.ArgumentException("Cannot decode segment address (0x" + segment.ToString("X2") + offset.ToString("X6") + ") from MIO0 data. (decodeSegmentAddress 2)");
+            return seg.SegStart + offset;
+        }
+        
+        public uint decodeSegmentAddress_safe(uint segOffset, byte? areaID)
+        {
+            // Console.WriteLine("Decoding segment address: " + segOffset.ToString("X8"));
+            byte seg = (byte)(segOffset >> 24);
+            if (GetSegBank(seg, areaID).IsMIO0)
                 return 0xFFFFFFFF;
             uint off = segOffset & 0x00FFFFFF;
-            return segStart[seg] + off;
+            return GetSegBank(seg, areaID).SegStart + off;
         }
 
-        public uint decodeSegmentAddress_safe(byte segment, uint offset)
+        public uint decodeSegmentAddress_safe(byte segment, uint offset, byte? areaID)
         {
-            if (segment > segIsMIO0.Length)
-                return 0;
+            SegBank seg = GetSegBank(segment, areaID);
+            if (seg == null) return 0xFFFFFFFF;
 
-            if (segIsMIO0[segment])
+            if (seg.IsMIO0)
                 return 0xFFFFFFFF;
-            return segStart[segment] + offset;
+            return seg.SegStart + offset;
         }
 
-        public byte[] getDataFromSegmentAddress(uint segOffset, uint size)
+        public byte[] getDataFromSegmentAddress(uint segOffset, uint size, byte? areaID)
         {
             byte seg = (byte)(segOffset >> 24);
             uint off = segOffset & 0x00FFFFFF;
 
-            if(segData[seg].Length < off+size)
+            if (GetSegBank(seg, areaID).Data.Length < off + size)
                 return new byte[size];
 
-            return getSubArray(segData[seg], off, size);
+            return getSubArray_safe(GetSegBank(seg, areaID).Data, off, size);
         }
 
-        public byte[] getDataFromSegmentAddress_safe(uint segOffset, uint size)
+        public byte[] getDataFromSegmentAddress_safe(uint segOffset, uint size, byte? areaID)
         {
             byte seg = (byte)(segOffset >> 24);
             uint off = segOffset & 0x00FFFFFF;
-            if(segData[seg] != null)
-                return getSubArray_safe(segData[seg], off, size);
+            SegBank segBank = GetSegBank(seg, areaID);
+            if (segBank != null)
+                return getSubArray_safe(segBank.Data, off, (long)size);
             else
                 return new byte[size];
         }
-
 
         public byte[] getSubArray_safe(byte[] arr, uint offset, long size)
         {
             if (arr == null || arr.Length <= offset)
                 return new byte[size];
-            if((arr.Length - offset) < size)
+            if ((arr.Length - offset) < size)
                 size = (arr.Length - offset);
             byte[] newArr = new byte[size];
             Array.Copy(arr, offset, newArr, 0, size);
             return newArr;
         }
 
-        public byte[] getSubArray(byte[] arr, uint offset, uint size)
-        {
-            byte[] newArr = new byte[size];
-            Array.Copy(arr, offset, newArr, 0, size);
-            return newArr;
-        }
+        //public byte[] getSubArray_safe(byte[] arr, uint offset, uint size)
+        //{
+        //    byte[] newArr = new byte[size];
+        //    Array.Copy(arr, offset, newArr, 0, size);
+        //    return newArr;
+        //}
 
         public void printArray(byte[] arr)
         {
@@ -526,11 +566,11 @@ namespace Quad64
             Array.Copy(arr, arr_offset, bytes, offset, arr_length);
         }
 
-        public void writeByteArrayToSegment(uint segAddr, byte[] arr)
+        public void writeByteArrayToSegment(uint segAddr, byte[] arr, byte? areaID)
         {
             byte segment = (byte)((segAddr >> 24) & 0xFF);
             uint off = segAddr & 0x00FFFFFF;
-            Array.Copy(arr, 0, segData[segment], off, arr.Length);
+            Array.Copy(arr, 0, GetSegBank(segment, areaID).Data, off, arr.Length);
         }
 
         public void writeWord(uint offset, int word)
@@ -587,11 +627,13 @@ namespace Quad64
             return (uint)(bytes[0 + offset] << 24 | bytes[1 + offset] << 16
                 | bytes[2 + offset] << 8 | bytes[3 + offset]);
         }
-
-
-        public bool isSegmentMIO0(byte seg)
+        
+        public bool isSegmentMIO0(byte seg, byte? areaID)
         {
-            return segIsMIO0[seg];
+            SegBank segBank = GetSegBank(seg, areaID);
+            if (segBank != null)
+                return segBank.IsMIO0;
+            else return false;
         }
 
         public bool testIfMIO0IsFake(uint startAddr, int compOff, int uncompOff)
@@ -608,6 +650,7 @@ namespace Quad64
         {
             AssemblyReader ar = new AssemblyReader();
             List<AssemblyReader.JAL_CALL> func_calls;
+            SegBank seg = new SegBank();
             switch (region)
             {
                 default:
@@ -620,13 +663,13 @@ namespace Quad64
                             Globals.seg02_location = new[] { func_calls[i].a1, func_calls[i].a2 };
                             if (readWordUnsigned(func_calls[i].a1) == 0x4D494F30)
                             {
-                                segIsMIO0[0x02] = true;
+                                seg.IsMIO0 = true;
                                 seg02_isFakeMIO0 = testIfMIO0IsFake(
                                     func_calls[i].a1,
                                     readWord(func_calls[i].a1 + 0x8),
                                     readWord(func_calls[i].a1 + 0xC)
                                  );
-                                segStart[0x02] = func_calls[i].a1;
+                                seg.SegStart = func_calls[i].a1;
                                 seg02_uncompressedOffset = readWordUnsigned(func_calls[i].a1 + 0xC);
                             }
                         }
@@ -640,13 +683,13 @@ namespace Quad64
                             Globals.seg02_location = new[] { func_calls[i].a1, func_calls[i].a2 };
                             if (readWordUnsigned(func_calls[i].a1) == 0x4D494F30)
                             {
-                                segIsMIO0[0x02] = true;
+                                seg.IsMIO0 = true;
                                 seg02_isFakeMIO0 = testIfMIO0IsFake(
                                     func_calls[i].a1,
                                     readWord(func_calls[i].a1 + 0x8),
                                     readWord(func_calls[i].a1 + 0xC)
                                  );
-                                segStart[0x02] = func_calls[i].a1;
+                                seg.SegStart = func_calls[i].a1;
                                 seg02_uncompressedOffset = readWordUnsigned(func_calls[i].a1 + 0xC);
                             }
                         }
@@ -659,13 +702,13 @@ namespace Quad64
                             Globals.seg02_location = new[] { func_calls[i].a1, func_calls[i].a2 };
                             if (readWordUnsigned(func_calls[i].a1) == 0x4D494F30)
                             {
-                                segIsMIO0[0x02] = true;
+                                seg.IsMIO0 = true;
                                 seg02_isFakeMIO0 = testIfMIO0IsFake(
                                     func_calls[i].a1,
                                     readWord(func_calls[i].a1 + 0x8),
                                     readWord(func_calls[i].a1 + 0xC)
                                  );
-                                segStart[0x02] = func_calls[i].a1;
+                                seg.SegStart = func_calls[i].a1;
                                 seg02_uncompressedOffset = readWordUnsigned(func_calls[i].a1 + 0xC);
                             }
                         }
@@ -678,33 +721,33 @@ namespace Quad64
                             Globals.seg02_location = new[] { func_calls[i].a1, func_calls[i].a2 };
                             if (readWordUnsigned(func_calls[i].a1) == 0x4D494F30)
                             {
-                                segIsMIO0[0x02] = true;
+                                seg.IsMIO0 = true;
                                 seg02_isFakeMIO0 = testIfMIO0IsFake(
                                     func_calls[i].a1,
                                     readWord(func_calls[i].a1 + 0x8),
                                     readWord(func_calls[i].a1 + 0xC)
                                  );
-                                segStart[0x02] = func_calls[i].a1;
+                                seg.SegStart = func_calls[i].a1;
                                 seg02_uncompressedOffset = readWordUnsigned(func_calls[i].a1 + 0xC);
                             }
                         }
                     break;
             }
+            setSegment(0x2, seg, null);
         }
-
 
         public bool hasLookedAtLevelIDs = false;
         public void checkIfLevelIDIsInDictionary(ushort id)
         {
-                foreach (KeyValuePair<string, ushort> level_id in levelIDs)
-                {
-                    if (level_id.Value == id)
-                        return;
-                }
+            foreach (KeyValuePair<string, ushort> level_id in levelIDs)
+            {
+                if (level_id.Value == id)
+                    return;
+            }
 
-                Console.WriteLine("Found an extra level ID! 0x" + id.ToString("X8"));
-            
-                extra_levelIDs.Add(id);
+            Console.WriteLine("Found an extra level ID! 0x" + id.ToString("X8"));
+
+            extra_levelIDs.Add(id);
         }
 
         public List<ushort> extra_levelIDs = new List<ushort>();
@@ -743,6 +786,14 @@ namespace Quad64
             { "[SC3] End Cake Picture", 0x19 },
             { "[SlC] Peach's Secret Slide", 0x1B }
         };
-        
+
+    }
+
+    class SegBank
+    {
+        public byte[] Data { get; set; } = null;
+        public bool IsMIO0 { get; set; } = false;
+        public uint SegStart { get; set; } = 0;
+        public byte SegID { get; set; } = 0;
     }
 }
