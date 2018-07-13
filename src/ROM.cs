@@ -123,8 +123,6 @@ namespace Quad64
                 type = ROM_Type.VANILLA;
 
             hasLookedAtLevelIDs = false;
-            areaSegData.Clear();
-            segData.Clear();
 
             Console.WriteLine("ROM = " + filepath);
             Console.WriteLine("ROM Endian = " + endian);
@@ -180,6 +178,7 @@ namespace Quad64
                     continue;
                 segData.Remove(kvp.Key);
             }
+            areaSegData.Clear();
         }
 
         public string getROMFileName()
