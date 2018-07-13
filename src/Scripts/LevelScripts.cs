@@ -31,6 +31,7 @@ namespace Quad64.Scripts
                 //stopWatch.Start();
                 byte cmdLen = data[off + 1];
                 byte[] cmd = rom.getSubArray_safe(data, off, cmdLen);
+                //Console.WriteLine(rom.decodeSegmentAddress_safe(seg, off, null).ToString("X8"));
                 //rom.printArray(cmd, cmdLen);
                 string desc = "Unknown command";
                 bool alreadyAdded = false;
@@ -417,25 +418,25 @@ namespace Quad64.Scripts
             refAreaID = areaID;
 
             setAreaSegmented0xE(areaID, data);
-
+            
             desc = "Start area " + areaID + "; Load area geo layout from 0x" + seg.ToString("X2") + off.ToString("X6");
-
+            
             Area newArea = new Area(areaID, bytesToInt(cmd, 4, 4), lvl);
             GeoScripts.resetNodes();
             newArea.AreaModel.GeoDataSegAddress = bytesToInt(cmd, 4, 4);
 
-           // Globals.DEBUG_PARSING_LEVEL_AREA = true;
-           // Stopwatch stopWatch = new Stopwatch();
-           // stopWatch.Start();
+            // Globals.DEBUG_PARSING_LEVEL_AREA = true;
+            // Stopwatch stopWatch = new Stopwatch();
+            // stopWatch.Start();
             GeoScripts.parse(ref newArea.AreaModel, ref lvl, seg, off, areaID);
             lvl.setAreaBackgroundInfo(ref newArea);
             lvl.Areas.Add(newArea);
             lvl.CurrentAreaID = areaID;
-           // stopWatch.Stop();
-           // Console.WriteLine("RunTime (GeoScripts.parse): " + stopWatch.Elapsed.Milliseconds + "ms");
+            // stopWatch.Stop();
+            // Console.WriteLine("RunTime (GeoScripts.parse): " + stopWatch.Elapsed.Milliseconds + "ms");
 
             //stopWatch = new Stopwatch();
-           // stopWatch.Start();
+            // stopWatch.Start();
             newArea.AreaModel.buildBuffers();
             //if(areaID == 1) newArea.AreaModel.dumpModelToOBJ(1.0f/500.0f);
             //stopWatch.Stop();
@@ -649,6 +650,11 @@ namespace Quad64.Scripts
             uint off = bytesToInt(cmd, 5, 3);
             byte[] data = rom.getSegment(segment, areaID);
             sub_cmd = (ushort)bytesToInt(data, (int)off, 2);
+
+            // Check if the data is actually collision data.
+            if (data[off] != 0x00 || data[off+1] != 0x40)
+                return;
+
             CollisionMap cmap = lvl.getCurrentArea().collision;
             uint num_verts = (ushort)bytesToInt(data, (int)off + 2, 2);
 
