@@ -187,12 +187,18 @@ namespace Quad64.src.Forms
 
         private void loadBackgroundImage()
         {
-
             sb_useTexture.Enabled = true;
             LevelInfo.AreaBackgroundInfo bgInfo = level.getCurrentArea().bgInfo;
             checkBox_matchFogColor.Enabled = bgInfo.usesFog && (bgInfo.fogColor_romLocation.Count > 0);
             //Console.WriteLine("BG info address = 0x{0}", bgInfo.address.ToString("X8"));
-            int segA_size = ROM.Instance.getSegment(0xA, (byte)level.CurrentAreaID).Length;
+            
+            int segA_size = 0;
+            if (bgInfo.address != 0)
+            {
+                byte[] segA_data = ROM.Instance.getSegment(0xA, (byte)level.CurrentAreaID);
+                if(segA_data != null)
+                    segA_size = segA_data.Length;
+            }
             // Console.WriteLine("Segment 0xA size: " + ROM.Instance.getSegment(0xA).Length);
             if (segA_size == 0)
                 sb_useTexture.Enabled = false;
