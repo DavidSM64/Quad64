@@ -84,6 +84,50 @@ namespace Quad64.src.Forms
                 iw_ty.Value = tY;
                 iw_tz.Value = tZ;
             }
+
+            updateTheme();
+        }
+
+        private void updateLabelColor(ref Label label)
+        {
+            label.ForeColor = Theme.DEFAULT_TEXT;
+            label.BackColor = Theme.DEFAULT_PANEL_BACKGROUND;
+        }
+
+        private void updateUpDownColor(ref NumericUpDown upDown)
+        {
+            upDown.ForeColor = Theme.DEFAULT_UPDOWN_TEXT;
+            upDown.BackColor = Theme.DEFAULT_UPDOWN_BACKGROUND;
+        }
+
+        private void updateTheme()
+        {
+            BackColor = Theme.DEFAULT_BACKGROUND;
+            panel_instWarp_controls.BackColor = Theme.DEFAULT_PANEL_BACKGROUND;
+            panel_warp_controls.BackColor = Theme.DEFAULT_PANEL_BACKGROUND;
+            w_selectLevel.BackColor = Theme.DEFAULT_DROPDOWNLIST_BACKGROUND;
+            w_selectLevel.ForeColor = Theme.DEFAULT_DROPDOWNLIST_TEXT;
+            cancelButton.BackColor = Theme.DEFAULT_BUTTON_BACKGROUND;
+            cancelButton.ForeColor = Theme.DEFAULT_BUTTON_TEXT;
+            selectButton.BackColor = Theme.DEFAULT_BUTTON_BACKGROUND;
+            selectButton.ForeColor = Theme.DEFAULT_BUTTON_TEXT;
+            updateLabelColor(ref label1);
+            updateLabelColor(ref label2);
+            updateLabelColor(ref label3);
+            updateLabelColor(ref label4);
+            updateLabelColor(ref label5);
+            updateLabelColor(ref label6);
+            updateLabelColor(ref label7);
+            updateLabelColor(ref label9);
+            updateLabelColor(ref label10);
+            updateUpDownColor(ref iw_area);
+            updateUpDownColor(ref iw_trigger);
+            updateUpDownColor(ref iw_tx);
+            updateUpDownColor(ref iw_ty);
+            updateUpDownColor(ref iw_tz);
+            updateUpDownColor(ref w_warpFrom);
+            updateUpDownColor(ref w_warpToID);
+            updateUpDownColor(ref w_areaID);
         }
 
         private void cancelButton_Click(object sender, EventArgs e)

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Quad64.src;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
@@ -238,6 +239,7 @@ namespace Quad64
         {
             if (node == null || node.Parent == null)
             {
+                node.BackColor = Theme.MAIN_TREEVIEW_BACKGROUND;
                 SelectedNodes = null;
                 return;
             }
@@ -400,8 +402,8 @@ namespace Quad64
         public void SelectSingleNode( TreeNode node )
         {
             if ( node == null || node.Parent == null)
-			{
-				return;
+            {
+                return;
 			}
 
 			ClearSelectedNodes();
@@ -412,7 +414,9 @@ namespace Quad64
 		public void ToggleNode( TreeNode node, bool bSelectNode )
 		{
             if (node == null || node.Parent == null)
+            {
                 return;
+            }
 			if( bSelectNode )
 			{
 				m_SelectedNode = node;
@@ -420,7 +424,7 @@ namespace Quad64
 				{
 					m_SelectedNodes.Add( node );
 				}
-				node.BackColor = Color.FromArgb(0x70, 0xBB, 0xDB);
+				node.BackColor = Theme.MAIN_TREEVIEW_HIGHTLIGHT;
 
 				//node.ForeColor = SystemColors.HighlightText;
 			}

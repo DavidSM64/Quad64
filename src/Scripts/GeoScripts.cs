@@ -61,7 +61,6 @@ namespace Quad64.src.Scripts
                 byte[] cmd = rom.getSubArray_safe(data, off, cmdLen);
                 string desc = "Unknown command";
                 bool alreadyAdded = false;
-                //rom.printArray(cmd, cmdLen);
                 if (cmd[0] != 0x05 && nodeCurrent.isSwitch && nodeCurrent.switchPos != 1)
                 {
                     if (nodeCurrent.switchFunc == 0x8029DB48)
@@ -310,7 +309,6 @@ namespace Quad64.src.Scripts
                 return;
             uint off = bytesToInt(cmd, 5, 3);
             mdl.builder.Offset = getTotalOffset();
-
             // Don't bother processing duplicate display lists.
             if (!mdl.hasGeoDisplayList(off))
             {

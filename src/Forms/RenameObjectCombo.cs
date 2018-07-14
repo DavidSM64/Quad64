@@ -19,6 +19,14 @@ namespace Quad64.src.Forms
             InitializeComponent();
             textBox.Text = input;
             ClickedSelect = false;
+
+            BackColor = Theme.DEFAULT_BACKGROUND;
+            textBox.BackColor = Theme.DEFAULT_TEXTBOX_BACKGROUND;
+            textBox.ForeColor = Theme.DEFAULT_TEXTBOX_TEXT;
+            buttonOK.BackColor = Theme.DEFAULT_BUTTON_BACKGROUND;
+            buttonOK.ForeColor = Theme.DEFAULT_BUTTON_TEXT;
+            buttonCancel.BackColor = Theme.DEFAULT_BUTTON_BACKGROUND;
+            buttonCancel.ForeColor = Theme.DEFAULT_BUTTON_TEXT;
         }
 
         private void buttonOK_Click(object sender, EventArgs e)

@@ -65,6 +65,7 @@
             // 
             // cancelButton
             // 
+            this.cancelButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.cancelButton.Font = new System.Drawing.Font("Courier New", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.cancelButton.Location = new System.Drawing.Point(225, 192);
             this.cancelButton.Name = "cancelButton";
@@ -76,6 +77,7 @@
             // 
             // selectButton
             // 
+            this.selectButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.selectButton.Font = new System.Drawing.Font("Courier New", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.selectButton.Location = new System.Drawing.Point(82, 193);
             this.selectButton.Name = "selectButton";
@@ -139,6 +141,7 @@
             // w_selectLevel
             // 
             this.w_selectLevel.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.w_selectLevel.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.w_selectLevel.FormattingEnabled = true;
             this.w_selectLevel.Location = new System.Drawing.Point(134, 63);
             this.w_selectLevel.Name = "w_selectLevel";
@@ -259,7 +262,7 @@
             this.label1.TabIndex = 5;
             this.label1.Text = "Trigger ID: ";
             // 
-            // wi_tz
+            // iw_tz
             // 
             this.iw_tz.Location = new System.Drawing.Point(226, 131);
             this.iw_tz.Maximum = new decimal(new int[] {
@@ -272,7 +275,7 @@
             0,
             0,
             -2147483648});
-            this.iw_tz.Name = "wi_tz";
+            this.iw_tz.Name = "iw_tz";
             this.iw_tz.Size = new System.Drawing.Size(99, 20);
             this.iw_tz.TabIndex = 4;
             // 

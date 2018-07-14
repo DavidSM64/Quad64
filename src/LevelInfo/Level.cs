@@ -370,6 +370,7 @@ namespace Quad64.src.LevelInfo
         }
 
         public Level(ushort levelID, ushort startArea) {
+
             ROM.Instance.clearSegments();
             this.levelID = levelID;
             currentAreaID = startArea;

@@ -23,6 +23,14 @@ namespace Quad64.src.Forms
         {
             AddBasicSettings();
             AddAdvancedSettings();
+
+            BackColor = Theme.DEFAULT_BACKGROUND;
+            Basic.BackColor = Theme.DEFAULT_BACKGROUND;
+            Advanced.BackColor = Theme.DEFAULT_BACKGROUND;
+            saveButton.BackColor = Theme.DEFAULT_BUTTON_BACKGROUND;
+            saveButton.ForeColor = Theme.DEFAULT_BUTTON_TEXT;
+            cancelButton.BackColor = Theme.DEFAULT_BUTTON_BACKGROUND;
+            cancelButton.ForeColor = Theme.DEFAULT_BUTTON_TEXT;
         }
 
         private TextBox emuPathTextBox;
@@ -112,12 +120,14 @@ namespace Quad64.src.Forms
         {
             Label tbl = newLabel(label, x, y + 3);
             tbl.Width = 70;
+            updateDisplay.ForeColor = Theme.DEFAULT_TEXT;
+            updateDisplay.BackColor = Theme.DEFAULT_BACKGROUND;
             updateDisplay.Location = new Point(x, y + 20);
             updateDisplay.TextAlign = ContentAlignment.MiddleCenter;
             updateDisplay.Text = currentValue.ToString();
             updateDisplay.Width = 74;
             TrackBar tb = newTrackBar(x + tbl.Width, y, min, max, currentValue);
-            tb.BackColor = page.BackColor;
+            tb.BackColor = Theme.DEFAULT_BACKGROUND;
             tb.Tag = updateDisplay;
             tb.ValueChanged += new EventHandler(trackBar_updateLabelValue);
             page.Controls.Add(tbl);
@@ -142,6 +152,7 @@ namespace Quad64.src.Forms
             label.Width = width;
             label.BorderStyle = BorderStyle.Fixed3D;
             label.Anchor = AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Top;
+            label.BackColor = Theme.DEFAULT_BACKGROUND;
             return label;
         }
 
@@ -153,6 +164,8 @@ namespace Quad64.src.Forms
             label.Text = text;
             label.Left = x;
             label.Top = y;
+            label.ForeColor = Theme.DEFAULT_TEXT;
+            label.BackColor = Theme.DEFAULT_BACKGROUND;
             return label;
         }
 
@@ -165,6 +178,8 @@ namespace Quad64.src.Forms
             label.Left = x;
             label.Top = y;
             label.Font = font;
+            label.ForeColor = Theme.DEFAULT_TEXT;
+            label.BackColor = Theme.DEFAULT_BACKGROUND;
             return label;
         }
 
@@ -176,6 +191,8 @@ namespace Quad64.src.Forms
             button.Left = x;
             button.Top = y;
             button.Click += clickEvent;
+            button.ForeColor = Theme.DEFAULT_BUTTON_TEXT;
+            button.BackColor = Theme.DEFAULT_BUTTON_BACKGROUND;
             return button;
         }
 
@@ -187,6 +204,8 @@ namespace Quad64.src.Forms
             box.Top = y;
             box.ReadOnly = readOnly;
             box.Width = width;
+            box.ForeColor = Theme.DEFAULT_TEXTBOX_TEXT;
+            box.BackColor = Theme.DEFAULT_TEXTBOX_BACKGROUND;
             return box;
         }
 
@@ -200,6 +219,9 @@ namespace Quad64.src.Forms
             box.TabStop = false;
             box.MouseWheel += new MouseEventHandler(comboBox_MouseWheel);
             box.DropDownStyle = ComboBoxStyle.DropDownList;
+            box.FlatStyle = FlatStyle.Flat;
+            box.ForeColor = Theme.DEFAULT_DROPDOWNLIST_TEXT;
+            box.BackColor = Theme.DEFAULT_DROPDOWNLIST_BACKGROUND;
             return box;
         }
 
@@ -212,6 +234,8 @@ namespace Quad64.src.Forms
             box.AutoSize = true;
             box.TabStop = false;
             box.Checked = isChecked;
+            box.ForeColor = Theme.DEFAULT_TEXT;
+            box.BackColor = Theme.DEFAULT_BACKGROUND;
             return box;
         }
 
@@ -224,6 +248,7 @@ namespace Quad64.src.Forms
             bar.TickFrequency = 10;
             bar.Left = x;
             bar.Top = y;
+            bar.BackColor = Theme.DEFAULT_BACKGROUND;
             return bar;
         }
 

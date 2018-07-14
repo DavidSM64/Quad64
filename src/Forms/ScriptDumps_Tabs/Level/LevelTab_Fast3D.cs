@@ -73,6 +73,9 @@ namespace Quad64.src.Forms
                 newButton.Location = new Point(rb_width * i, lt_f3d_radioPanel.Location.Y);
                 newButton.Size = new Size(rb_width, lt_f3d_radioPanel.Height);
                 newButton.CheckedChanged += lt_f3d_areas_CheckedChanged;
+                newButton.BackColor = Theme.SCRIPTDUMPS_LEVELTAB_FAST3D_AREAPANEL_BACKGROUND;
+                newButton.ForeColor = Theme.SCRIPTDUMPS_LEVELTAB_FAST3D_AREAPANEL_TEXT;
+                newButton.FlatStyle = FlatStyle.Flat;
                 //newButton.Anchor = (AnchorStyles.Left | AnchorStyles.Top | AnchorStyles.Right);
                 if (i == 0)
                     newButton.Checked = true;
@@ -143,7 +146,7 @@ namespace Quad64.src.Forms
             currentTextbox.Clear();
             int currentIndent = 0;
             StringBuilder sb = new StringBuilder();
-            sb.Append("{\\rtf1\\ansi\\ansicpg1252\\deff0\\deflang1033{\\fonttbl{\\f0\\fnil\\fcharset0 Courier New;}}{\\colortbl;\\red0\\green0\\blue0;\\red0\\green128\\blue0; }\\viewkind4\\uc1\\pard\\f0\\fs17 ");
+            sb.Append("{\\rtf1\\ansi\\ansicpg1252\\deff0\\deflang1033{\\fonttbl{\\f0\\fnil\\fcharset0 Courier New;}}{\\colortbl;\\red"+Theme.SCRIPTDUMPS_FAST3D_TEXTBOX_TEXT.R+ "\\green" + Theme.SCRIPTDUMPS_FAST3D_TEXTBOX_TEXT.G + "\\blue" + Theme.SCRIPTDUMPS_FAST3D_TEXTBOX_TEXT.B + ";\\red" + Theme.SCRIPTDUMPS_FAST3D_TEXTBOX_COMMENTS.R + "\\green" + Theme.SCRIPTDUMPS_FAST3D_TEXTBOX_COMMENTS.G + "\\blue" + Theme.SCRIPTDUMPS_FAST3D_TEXTBOX_COMMENTS.B + "; }\\viewkind4\\uc1\\pard\\f0\\fs17\\cf1 ");
             for (int i = 0; i < f3dList.Count; i++)
             {
                 ScriptDumpCommandInfo info = f3dList[i];

@@ -52,6 +52,7 @@
             this.table.ColumnCount = 2;
             this.table.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25.73529F));
             this.table.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 74.26471F));
+            this.table.ForeColor = System.Drawing.SystemColors.ControlText;
             this.table.Location = new System.Drawing.Point(12, 35);
             this.table.Name = "table";
             this.table.RowCount = 2;

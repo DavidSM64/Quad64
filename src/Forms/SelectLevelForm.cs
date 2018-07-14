@@ -1,4 +1,5 @@
-﻿using Quad64.src.LevelInfo;
+﻿using Quad64.src;
+using Quad64.src.LevelInfo;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -22,21 +23,29 @@ namespace Quad64
             //comboBox1.Item
             foreach (KeyValuePair<string, ushort> entry in rom.levelIDs)
             {
-                comboBox1.Items.Add(entry.Key + " (0x" + entry.Value.ToString("X2") + ")");
+                level_list.Items.Add(entry.Key + " (0x" + entry.Value.ToString("X2") + ")");
             }
 
             foreach (ushort entry in rom.extra_levelIDs)
             {
-                comboBox1.Items.Add("[EXT] Extra Level (0x" + entry.ToString("X2") + ")");
+                level_list.Items.Add("[EXT] Extra Level (0x" + entry.ToString("X2") + ")");
             }
 
             //comboBox1.Items.Add("Custom ID value");
-            comboBox1.SelectedIndex = rom.getLevelIndexById(levelID);
+            level_list.SelectedIndex = rom.getLevelIndexById(levelID);
+
+            BackColor = Theme.DEFAULT_BACKGROUND;
+            level_list.BackColor = Theme.DEFAULT_DROPDOWNLIST_BACKGROUND;
+            level_list.ForeColor = Theme.DEFAULT_DROPDOWNLIST_TEXT;
+            cancel_button.BackColor = Theme.DEFAULT_BUTTON_BACKGROUND;
+            cancel_button.ForeColor = Theme.DEFAULT_BUTTON_TEXT;
+            load_button.BackColor = Theme.DEFAULT_BUTTON_BACKGROUND;
+            load_button.ForeColor = Theme.DEFAULT_BUTTON_TEXT;
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
-            levelID = ROM.Instance.getLevelIdFromIndex(comboBox1.SelectedIndex);
+            levelID = ROM.Instance.getLevelIdFromIndex(level_list.SelectedIndex);
             changeLevel = true;
             Close();
         }

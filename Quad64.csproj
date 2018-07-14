@@ -170,6 +170,13 @@
     <Compile Include="src\Forms\TextureEditorComponents\TabEditSkyBackground.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="src\Forms\ThemeSelector.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="src\Forms\ThemeSelector.Designer.cs">
+      <DependentUpon>ThemeSelector.cs</DependentUpon>
+    </Compile>
+    <Compile Include="src\Forms\ToolStripRenderer\MenuBarColorTable.cs" />
     <Compile Include="src\Globals.cs" />
     <Compile Include="src\JSON\BehaviorNameEntry.cs" />
     <Compile Include="src\JSON\ModelCombo.cs" />
@@ -193,6 +200,7 @@
     <Compile Include="src\Scripts\ModelBuilder.cs" />
     <Compile Include="src\Scripts\TextureFormats.cs" />
     <Compile Include="src\TestROM\LaunchROM.cs" />
+    <Compile Include="src\Theme.cs" />
     <Compile Include="src\Viewer\BoundingBox.cs" />
     <Compile Include="src\Viewer\Camera.cs" />
     <Compile Include="src\Viewer\ContentPipe.cs" />
@@ -253,6 +261,9 @@
     <EmbeddedResource Include="src\Forms\TextureEditor.resx">
       <DependentUpon>TextureEditor.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="src\Forms\ThemeSelector.resx">
+      <DependentUpon>ThemeSelector.cs</DependentUpon>
+    </EmbeddedResource>
     <None Include="data\BehaviorNames.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -271,6 +282,9 @@
     <None Include="data\OtherTextures_NA.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="data\themes\light.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="OpenTK.dll.config" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
@@ -282,6 +296,9 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <None Include="data\themes\dark.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -305,6 +322,9 @@
     <None Include="images\RotateObject_Y.png" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="data\themes\Making Themes.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="icon_KtQ_icon.ico" />
     <None Include="Resources\icon_Star1_gray.png" />
     <None Include="Resources\icon_Star1.png" />

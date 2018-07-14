@@ -28,8 +28,98 @@ namespace Quad64.src.Forms
             setButtons_lt(true, true, false);
             loadOtherTexturesTab();
             loadBackgroundImage();
+            updateTheme();
         }
         
+        private void updateTheme()
+        {
+            BackColor = Theme.TEXTURES_BACKGROUND;
+
+            layoutTabPanel.BackColor = Theme.TEXTURES_LEVEL_BACKGROUND_LEFT;
+            iconsPanel.BackColor = Theme.TEXTURES_LEVEL_BACKGROUND_MIDDLE;
+            infoTabPanel.BackColor = Theme.TEXTURES_LEVEL_BACKGROUND_RIGHT;
+            lt_category_label.ForeColor = Theme.TEXTURES_LEVEL_TEXT;
+            lt_category_label.BackColor = Theme.TEXTURES_LEVEL_BACKGROUND_LEFT;
+            lt_info_label.ForeColor = Theme.TEXTURES_LEVEL_TEXT;
+            lt_info_label.BackColor = Theme.TEXTURES_LEVEL_BACKGROUND_RIGHT;
+            info_Address.ForeColor = Theme.TEXTURES_LEVEL_TEXT;
+            info_Address.BackColor = Theme.TEXTURES_LEVEL_BACKGROUND_RIGHT;
+            info_SegmentAddress.ForeColor = Theme.TEXTURES_LEVEL_TEXT;
+            info_SegmentAddress.BackColor = Theme.TEXTURES_LEVEL_BACKGROUND_RIGHT;
+            info_Format.ForeColor = Theme.TEXTURES_LEVEL_TEXT;
+            info_Format.BackColor = Theme.TEXTURES_LEVEL_BACKGROUND_RIGHT;
+            info_Width.ForeColor = Theme.TEXTURES_LEVEL_TEXT;
+            info_Width.BackColor = Theme.TEXTURES_LEVEL_BACKGROUND_RIGHT;
+            info_Height.ForeColor = Theme.TEXTURES_LEVEL_TEXT;
+            info_Height.BackColor = Theme.TEXTURES_LEVEL_BACKGROUND_RIGHT;
+            lt_exportImage.BackColor = Theme.TEXTURES_LEVEL_BUTTON_BACKGROUND;
+            lt_exportImage.ForeColor = Theme.TEXTURES_LEVEL_BUTTON_TEXT;
+            lt_importImage.BackColor = Theme.TEXTURES_LEVEL_BUTTON_BACKGROUND;
+            lt_importImage.ForeColor = Theme.TEXTURES_LEVEL_BUTTON_TEXT;
+            lt_rb_all.BackColor = Theme.TEXTURES_LEVEL_BUTTON_BACKGROUND;
+            lt_rb_all.ForeColor = Theme.TEXTURES_LEVEL_BUTTON_TEXT;
+            lt_rb_level.BackColor = Theme.TEXTURES_LEVEL_BUTTON_BACKGROUND;
+            lt_rb_level.ForeColor = Theme.TEXTURES_LEVEL_BUTTON_TEXT;
+            lt_rb_objects.BackColor = Theme.TEXTURES_LEVEL_BUTTON_BACKGROUND;
+            lt_rb_objects.ForeColor = Theme.TEXTURES_LEVEL_BUTTON_TEXT;
+            lt_rb_models.BackColor = Theme.TEXTURES_LEVEL_BUTTON_BACKGROUND;
+            lt_rb_models.ForeColor = Theme.TEXTURES_LEVEL_BUTTON_TEXT;
+
+            ot_pan_groupButtons.BackColor = Theme.TEXTURES_OTHER_BACKGROUND_LEFT;
+            ot_pan_icons.BackColor = Theme.TEXTURES_OTHER_BACKGROUND_MIDDLE;
+            ot_pan_info.BackColor = Theme.TEXTURES_OTHER_BACKGROUND_RIGHT;
+            ot_info_label.ForeColor = Theme.TEXTURES_OTHER_TEXT;
+            ot_info_label.BackColor = Theme.TEXTURES_OTHER_BACKGROUND_RIGHT;
+            ot_name.ForeColor = Theme.TEXTURES_OTHER_TEXT;
+            ot_name.BackColor = Theme.TEXTURES_OTHER_BACKGROUND_RIGHT;
+            ot_info_RomAddress.ForeColor = Theme.TEXTURES_OTHER_TEXT;
+            ot_info_RomAddress.BackColor = Theme.TEXTURES_OTHER_BACKGROUND_RIGHT;
+            ot_info_SegAddress.ForeColor = Theme.TEXTURES_OTHER_TEXT;
+            ot_info_SegAddress.BackColor = Theme.TEXTURES_OTHER_BACKGROUND_RIGHT;
+            ot_info_Format.ForeColor = Theme.TEXTURES_OTHER_TEXT;
+            ot_info_Format.BackColor = Theme.TEXTURES_OTHER_BACKGROUND_RIGHT;
+            ot_info_width.ForeColor = Theme.TEXTURES_OTHER_TEXT;
+            ot_info_width.BackColor = Theme.TEXTURES_OTHER_BACKGROUND_RIGHT;
+            ot_info_height.ForeColor = Theme.TEXTURES_OTHER_TEXT;
+            ot_info_height.BackColor = Theme.TEXTURES_OTHER_BACKGROUND_RIGHT;
+
+            ot_exportImage.BackColor = Theme.TEXTURES_OTHER_BUTTON_BACKGROUND;
+            ot_exportImage.ForeColor = Theme.TEXTURES_OTHER_BUTTON_TEXT;
+            ot_importImage.BackColor = Theme.TEXTURES_OTHER_BUTTON_BACKGROUND;
+            ot_importImage.ForeColor = Theme.TEXTURES_OTHER_BUTTON_TEXT;
+            
+            sb_TextureInfo_label.ForeColor = Theme.TEXTURES_SKY_TEXT;
+            sb_TextureInfo_label.BackColor = Theme.TEXTURES_SKY_BACKGROUND_RIGHT;
+            sb_info_RomAddress.ForeColor = Theme.TEXTURES_SKY_TEXT;
+            sb_info_RomAddress.BackColor = Theme.TEXTURES_SKY_BACKGROUND_RIGHT;
+            sb_info_SegAddress.ForeColor = Theme.TEXTURES_SKY_TEXT;
+            sb_info_SegAddress.BackColor = Theme.TEXTURES_SKY_BACKGROUND_RIGHT;
+            sb_info_Format.ForeColor = Theme.TEXTURES_SKY_TEXT;
+            sb_info_Format.BackColor = Theme.TEXTURES_SKY_BACKGROUND_RIGHT;
+            sb_info_Width.ForeColor = Theme.TEXTURES_SKY_TEXT;
+            sb_info_Width.BackColor = Theme.TEXTURES_SKY_BACKGROUND_RIGHT;
+            sb_info_Height.ForeColor = Theme.TEXTURES_SKY_TEXT;
+            sb_info_Height.BackColor = Theme.TEXTURES_SKY_BACKGROUND_RIGHT;
+            checkBox_matchFogColor.ForeColor = Theme.TEXTURES_SKY_TEXT;
+            checkBox_matchFogColor.BackColor = Theme.TEXTURES_SKY_BACKGROUND_RIGHT;
+            sb_useSolidColor.ForeColor = Theme.TEXTURES_SKY_TEXT;
+            sb_useSolidColor.BackColor = Theme.TEXTURES_SKY_BACKGROUND_RIGHT;
+            red_label.ForeColor = Theme.TEXTURES_SKY_TEXT;
+            red_label.BackColor = Theme.TEXTURES_SKY_BACKGROUND_RIGHT;
+            green_label.ForeColor = Theme.TEXTURES_SKY_TEXT;
+            green_label.BackColor = Theme.TEXTURES_SKY_BACKGROUND_RIGHT;
+            blue_label.ForeColor = Theme.TEXTURES_SKY_TEXT;
+            blue_label.BackColor = Theme.TEXTURES_SKY_BACKGROUND_RIGHT;
+            sb_useTexture.ForeColor = Theme.TEXTURES_SKY_TEXT;
+            sb_useSolidColor.BackColor = Theme.TEXTURES_SKY_BACKGROUND_RIGHT;
+            sb_imageBox.BackColor = Theme.TEXTURES_SKY_BACKGROUND_LEFT;
+            sb_info.BackColor = Theme.TEXTURES_SKY_BACKGROUND_RIGHT;
+            sb_exportImage.BackColor = Theme.TEXTURES_SKY_BUTTON_BACKGROUND;
+            sb_exportImage.ForeColor = Theme.TEXTURES_SKY_BUTTON_TEXT;
+            sb_importImage.BackColor = Theme.TEXTURES_SKY_BUTTON_BACKGROUND;
+            sb_importImage.ForeColor = Theme.TEXTURES_SKY_BUTTON_TEXT;
+        }
+
         private void AddNewImage(ref List<RadioButtonWithInfo> buttons, Bitmap bitmap, uint address, EventHandler click_event)
         {
             RadioButtonWithInfo texButton = new RadioButtonWithInfo();

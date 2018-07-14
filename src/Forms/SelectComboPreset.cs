@@ -29,6 +29,22 @@ namespace Quad64.src.Forms
             this.listType = listType;
             listView1.Columns[0].Text = columnText;
             textBrush = new SolidBrush(columnTextColor);
+            updateTheme();
+        }
+
+        private void updateTheme()
+        {
+            BackColor = Theme.COMBOS_BACKGROUND;
+            label_filter.BackColor = Theme.COMBOS_BACKGROUND;
+            label_filter.ForeColor = Theme.COMBOS_TEXT;
+            selectButton.BackColor = Theme.DEFAULT_BUTTON_BACKGROUND;
+            selectButton.ForeColor = Theme.DEFAULT_BUTTON_TEXT;
+            cancelButton.BackColor = Theme.DEFAULT_BUTTON_BACKGROUND;
+            cancelButton.ForeColor = Theme.DEFAULT_BUTTON_TEXT;
+            textBox_filter.BackColor = Theme.DEFAULT_TEXTBOX_BACKGROUND;
+            textBox_filter.ForeColor = Theme.DEFAULT_TEXTBOX_TEXT;
+            listView1.BackColor = Theme.DEFAULT_BACKGROUND;
+            listView1.ForeColor = Theme.DEFAULT_TEXT;
         }
 
         private void LoadSpecialList(List<PresetMacroEntry> specialList, bool useFilter)
@@ -59,7 +75,11 @@ namespace Quad64.src.Forms
                     presetsTaken.Add(entry.PresetID);
                 }
             }
-            col2 = Color.FromArgb(240, 250, 240);
+
+            col1 = Theme.COMBOS_SPECIAL_MAIN;
+            col2 = Theme.COMBOS_SPECIAL_SECONDARY;
+            col3 = Theme.COMBOS_SPECIAL_HIGHLIGHT_TEXT;
+            col4 = Theme.COMBOS_SPECIAL_HIGHLIGHT;
         }
 
         private void SelectComboPreset_Load(object sender, EventArgs e)
@@ -77,7 +97,10 @@ namespace Quad64.src.Forms
                             };
                         int index = listView1.Items.Count - 1;
                     }
-                    col2 = Color.FromArgb(250, 240, 240);
+                    col1 = Theme.COMBOS_3DOBJECTS_MAIN;
+                    col2 = Theme.COMBOS_3DOBJECTS_SECONDARY;
+                    col3 = Theme.COMBOS_3DOBJECTS_HIGHLIGHT_TEXT;
+                    col4 = Theme.COMBOS_3DOBJECTS_HIGHLIGHT;
                     break;
                 case 1:
                     foreach (PresetMacroEntry entry in level.MacroObjectPresets)
@@ -97,7 +120,11 @@ namespace Quad64.src.Forms
                             }
                         }
                     }
-                    col2 = Color.FromArgb(240, 240, 250);
+                    col1 = Theme.COMBOS_MACRO_MAIN;
+                    col2 = Theme.COMBOS_MACRO_SECONDARY;
+                    col3 = Theme.COMBOS_MACRO_HIGHLIGHT_TEXT;
+                    col4 = Theme.COMBOS_MACRO_HIGHLIGHT;
+                    //col2 = Color.FromArgb(240, 240, 250);
                     break;
                 case 2:
                     LoadSpecialList(level.SpecialObjectPresets_8, false);
@@ -118,16 +145,17 @@ namespace Quad64.src.Forms
             }
         }
         
-        private Color col1 = Color.FromArgb(250, 250, 240);
-        private Color col2 = Color.FromArgb(250, 240, 240);
-        private Color highlight = Color.FromArgb(200, 200, 255);
+        private Color col1 = Theme.DEFAULT_BACKGROUND;
+        private Color col2 = Theme.DEFAULT_PANEL_BACKGROUND;
+        private Color col3 = Theme.DEFAULT_BACKGROUND;
+        private Color col4 = Theme.DEFAULT_PANEL_BACKGROUND;
         private void listView1_DrawItem(object sender, DrawListViewItemEventArgs e)
         {
             // If this item is the selected item
             if (e.Item.Selected)
             {
-                e.Item.ForeColor = Color.Black;
-                e.Item.BackColor = highlight;
+                e.Item.ForeColor = col3;
+                e.Item.BackColor = col4;
             }
             else
             {
@@ -142,8 +170,8 @@ namespace Quad64.src.Forms
         }
 
         private Font textFont = new Font("Courier New", 10, FontStyle.Bold);
-        private Brush textBrush = new SolidBrush(Color.DimGray);
-        private Pen bgPen = new Pen(Color.FromArgb(230, 230, 230), 100.0f);
+        private Brush textBrush = new SolidBrush(Theme.COMBOS_TEXT);
+        private Pen bgPen = new Pen(Theme.COMBOS_BACKGROUND, 100.0f);
         private Rectangle bgRect = new Rectangle(0, 0, 400, 2);
         private void listView1_DrawColumnHeader(object sender, DrawListViewColumnHeaderEventArgs e)
         {
@@ -242,7 +270,7 @@ namespace Quad64.src.Forms
                             };
                         }
                     }
-                    col2 = Color.FromArgb(250, 240, 240);
+                    //col2 = Color.FromArgb(250, 240, 240);
                     break;
                 case 1:
                     foreach (PresetMacroEntry entry in level.MacroObjectPresets)
@@ -264,7 +292,7 @@ namespace Quad64.src.Forms
                             }
                         }
                     }
-                    col2 = Color.FromArgb(240, 240, 250);
+                    //col2 = Color.FromArgb(240, 240, 250);
                     break;
                 case 2:
                     LoadSpecialList(level.SpecialObjectPresets_8, true);

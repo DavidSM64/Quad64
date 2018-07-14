@@ -120,24 +120,27 @@
             this.subTabsLevel.SelectedIndex = 0;
             this.subTabsLevel.Size = new System.Drawing.Size(707, 391);
             this.subTabsLevel.TabIndex = 0;
+            this.subTabsLevel.TabStop = false;
             this.subTabsLevel.SelectedIndexChanged += new System.EventHandler(this.subTabsLevel_SelectedIndexChanged);
             // 
             // lt_lsTab
             // 
+            this.lt_lsTab.BackColor = System.Drawing.Color.Transparent;
             this.lt_lsTab.Controls.Add(this.lt_ls_textbox);
+            this.lt_lsTab.ForeColor = System.Drawing.SystemColors.ControlText;
             this.lt_lsTab.Location = new System.Drawing.Point(4, 22);
             this.lt_lsTab.Name = "lt_lsTab";
             this.lt_lsTab.Padding = new System.Windows.Forms.Padding(3);
             this.lt_lsTab.Size = new System.Drawing.Size(699, 365);
             this.lt_lsTab.TabIndex = 0;
             this.lt_lsTab.Text = "Level script";
-            this.lt_lsTab.UseVisualStyleBackColor = true;
             // 
             // lt_ls_textbox
             // 
             this.lt_ls_textbox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.lt_ls_textbox.BackColor = System.Drawing.SystemColors.Window;
             this.lt_ls_textbox.DetectUrls = false;
             this.lt_ls_textbox.Font = new System.Drawing.Font("Courier New", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lt_ls_textbox.HideSelection = false;
@@ -205,6 +208,7 @@
             this.lt_f3d_listbox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
             this.lt_f3d_listbox.BackColor = System.Drawing.SystemColors.Window;
+            this.lt_f3d_listbox.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawFixed;
             this.lt_f3d_listbox.Font = new System.Drawing.Font("Courier New", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lt_f3d_listbox.FormattingEnabled = true;
             this.lt_f3d_listbox.IntegralHeight = false;
@@ -213,6 +217,7 @@
             this.lt_f3d_listbox.Name = "lt_f3d_listbox";
             this.lt_f3d_listbox.Size = new System.Drawing.Size(88, 341);
             this.lt_f3d_listbox.TabIndex = 10;
+            this.lt_f3d_listbox.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.lt_f3d_listbox_DrawItem);
             this.lt_f3d_listbox.SelectedIndexChanged += new System.EventHandler(this.lt_f3d_listbox_SelectedIndexChanged);
             // 
             // lt_f3d_radioPanel
@@ -257,11 +262,13 @@
             this.splitContainer1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.splitContainer1.BackColor = System.Drawing.Color.Transparent;
             this.splitContainer1.Location = new System.Drawing.Point(0, 0);
             this.splitContainer1.Name = "splitContainer1";
             // 
             // splitContainer1.Panel1
             // 
+            this.splitContainer1.Panel1.BackColor = System.Drawing.Color.Transparent;
             this.splitContainer1.Panel1.Controls.Add(this.listObjectsSortPanel);
             this.splitContainer1.Panel1.Controls.Add(this.listBoxObjects);
             // 
@@ -276,7 +283,7 @@
             // 
             this.listObjectsSortPanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.listObjectsSortPanel.BackColor = System.Drawing.Color.WhiteSmoke;
+            this.listObjectsSortPanel.BackColor = System.Drawing.Color.Transparent;
             this.listObjectsSortPanel.Controls.Add(this.comboBoxObjectSort);
             this.listObjectsSortPanel.Controls.Add(this.ListObjectsSortLabel);
             this.listObjectsSortPanel.Location = new System.Drawing.Point(0, 0);
@@ -289,9 +296,11 @@
             this.comboBoxObjectSort.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.comboBoxObjectSort.BackColor = System.Drawing.SystemColors.Window;
             this.comboBoxObjectSort.DisplayMember = "0";
             this.comboBoxObjectSort.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBoxObjectSort.DropDownWidth = 180;
+            this.comboBoxObjectSort.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.comboBoxObjectSort.FormattingEnabled = true;
             this.comboBoxObjectSort.Items.AddRange(new object[] {
             "Combo Name (Alphabetical)",
@@ -322,12 +331,14 @@
             this.listBoxObjects.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.listBoxObjects.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawFixed;
             this.listBoxObjects.FormattingEnabled = true;
             this.listBoxObjects.IntegralHeight = false;
             this.listBoxObjects.Location = new System.Drawing.Point(0, 25);
             this.listBoxObjects.Name = "listBoxObjects";
             this.listBoxObjects.Size = new System.Drawing.Size(224, 363);
             this.listBoxObjects.TabIndex = 0;
+            this.listBoxObjects.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.listBoxObjects_DrawItem);
             this.listBoxObjects.SelectedIndexChanged += new System.EventHandler(this.listBoxObjects_SelectedIndexChanged);
             // 
             // subTabsObjects
@@ -390,6 +401,7 @@
             this.ot_f3d_listbox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
             this.ot_f3d_listbox.BackColor = System.Drawing.SystemColors.Window;
+            this.ot_f3d_listbox.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawFixed;
             this.ot_f3d_listbox.Font = new System.Drawing.Font("Courier New", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.ot_f3d_listbox.FormattingEnabled = true;
             this.ot_f3d_listbox.IntegralHeight = false;
@@ -398,6 +410,7 @@
             this.ot_f3d_listbox.Name = "ot_f3d_listbox";
             this.ot_f3d_listbox.Size = new System.Drawing.Size(88, 364);
             this.ot_f3d_listbox.TabIndex = 12;
+            this.ot_f3d_listbox.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.ot_f3d_listbox_DrawItem);
             this.ot_f3d_listbox.SelectedIndexChanged += new System.EventHandler(this.ot_f3d_listbox_SelectedIndexChanged);
             // 
             // ot_f3d_textbox
@@ -461,6 +474,7 @@
             // IndentCB
             // 
             this.IndentCB.AutoSize = true;
+            this.IndentCB.BackColor = System.Drawing.Color.Transparent;
             this.IndentCB.Checked = true;
             this.IndentCB.CheckState = System.Windows.Forms.CheckState.Checked;
             this.IndentCB.Location = new System.Drawing.Point(527, 4);
@@ -468,24 +482,27 @@
             this.IndentCB.Size = new System.Drawing.Size(84, 17);
             this.IndentCB.TabIndex = 19;
             this.IndentCB.Text = "Indent bytes";
-            this.IndentCB.UseVisualStyleBackColor = true;
+            this.IndentCB.UseVisualStyleBackColor = false;
             this.IndentCB.CheckedChanged += new System.EventHandler(this.updateScriptDump);
             // 
             // wordWrapCB
             // 
             this.wordWrapCB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.wordWrapCB.AutoSize = true;
+            this.wordWrapCB.BackColor = System.Drawing.Color.Transparent;
+            this.wordWrapCB.ForeColor = System.Drawing.SystemColors.ControlText;
             this.wordWrapCB.Location = new System.Drawing.Point(627, 4);
             this.wordWrapCB.Name = "wordWrapCB";
             this.wordWrapCB.Size = new System.Drawing.Size(78, 17);
             this.wordWrapCB.TabIndex = 18;
             this.wordWrapCB.Text = "Word wrap";
-            this.wordWrapCB.UseVisualStyleBackColor = true;
+            this.wordWrapCB.UseVisualStyleBackColor = false;
             this.wordWrapCB.CheckedChanged += new System.EventHandler(this.updateScriptDumpWordWrap);
             // 
             // FormatCB
             // 
             this.FormatCB.AutoSize = true;
+            this.FormatCB.BackColor = System.Drawing.Color.Transparent;
             this.FormatCB.Checked = true;
             this.FormatCB.CheckState = System.Windows.Forms.CheckState.Checked;
             this.FormatCB.Location = new System.Drawing.Point(435, 4);
@@ -493,12 +510,13 @@
             this.FormatCB.Size = new System.Drawing.Size(86, 17);
             this.FormatCB.TabIndex = 17;
             this.FormatCB.Text = "Format bytes";
-            this.FormatCB.UseVisualStyleBackColor = true;
+            this.FormatCB.UseVisualStyleBackColor = false;
             this.FormatCB.CheckedChanged += new System.EventHandler(this.updateScriptDump);
             // 
             // CommCB
             // 
             this.CommCB.AutoSize = true;
+            this.CommCB.BackColor = System.Drawing.Color.Transparent;
             this.CommCB.Checked = true;
             this.CommCB.CheckState = System.Windows.Forms.CheckState.Checked;
             this.CommCB.Location = new System.Drawing.Point(273, 4);
@@ -506,12 +524,13 @@
             this.CommCB.Size = new System.Drawing.Size(155, 17);
             this.CommCB.TabIndex = 16;
             this.CommCB.Text = "Show generated comments";
-            this.CommCB.UseVisualStyleBackColor = true;
+            this.CommCB.UseVisualStyleBackColor = false;
             this.CommCB.CheckedChanged += new System.EventHandler(this.updateScriptDump);
             // 
             // SegAddrCB
             // 
             this.SegAddrCB.AutoSize = true;
+            this.SegAddrCB.BackColor = System.Drawing.Color.Transparent;
             this.SegAddrCB.Checked = true;
             this.SegAddrCB.CheckState = System.Windows.Forms.CheckState.Checked;
             this.SegAddrCB.Location = new System.Drawing.Point(130, 4);
@@ -519,12 +538,13 @@
             this.SegAddrCB.Size = new System.Drawing.Size(136, 17);
             this.SegAddrCB.TabIndex = 15;
             this.SegAddrCB.Text = "Show segment address";
-            this.SegAddrCB.UseVisualStyleBackColor = true;
+            this.SegAddrCB.UseVisualStyleBackColor = false;
             this.SegAddrCB.CheckedChanged += new System.EventHandler(this.updateScriptDump);
             // 
             // showRomCB
             // 
             this.showRomCB.AutoSize = true;
+            this.showRomCB.BackColor = System.Drawing.Color.Transparent;
             this.showRomCB.Checked = true;
             this.showRomCB.CheckState = System.Windows.Forms.CheckState.Checked;
             this.showRomCB.Location = new System.Drawing.Point(3, 4);
@@ -532,7 +552,7 @@
             this.showRomCB.Size = new System.Drawing.Size(121, 17);
             this.showRomCB.TabIndex = 14;
             this.showRomCB.Text = "Show ROM address";
-            this.showRomCB.UseVisualStyleBackColor = true;
+            this.showRomCB.UseVisualStyleBackColor = false;
             this.showRomCB.CheckedChanged += new System.EventHandler(this.updateScriptDump);
             // 
             // panel1

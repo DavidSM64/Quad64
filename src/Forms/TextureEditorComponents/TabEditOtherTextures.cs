@@ -307,6 +307,9 @@ namespace Quad64.src.Forms
                 {
                     RadioButton rb = new RadioButton();
                     rb.Appearance = Appearance.Button;
+                    rb.FlatStyle = FlatStyle.Flat;
+                    rb.BackColor = Theme.TEXTURES_OTHER_BUTTON_BACKGROUND;
+                    rb.ForeColor = Theme.TEXTURES_OTHER_BUTTON_TEXT;
                     rb.UseVisualStyleBackColor = true;
                     rb.TextAlign = ContentAlignment.MiddleCenter;
                     rb.Text = name;

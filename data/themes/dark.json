@@ -1,0 +1,113 @@
+{
+	"Info" : {
+		"Name" : "Quad64 Dark Theme",
+		"Author" : "Davideesk",
+		"Note" : "This dark theme does not show every possible option you can change, so please look at 'Making Themes.txt' for more information!"
+	},
+	
+	"Defaults" : {
+		"Background" : { "R":40, "G":40, "B":40 },
+		"Text" : { "R":240, "G":240, "B":240 },
+		"Panel-Background" : { "R":70, "G":70, "B":70 },
+		"ListBox-Background" : { "R":40, "G":40, "B":40 },
+		"ListBox-Text" : { "R":240, "G":240, "B":240 },
+		"ListBox-Highlight" : { "R":0, "G":80, "B":140 },
+		"ListBox-HighlightedText" : { "R":240, "G":240, "B":240 },
+		"TextBox-Background" : { "R":40, "G":40, "B":40 },
+		"TextBox-Text" : { "R":240, "G":240, "B":240 },
+		"TextBox-Comments" : { "R":0, "G":240, "B":0 },
+		"DropDown-Background" : { "R":40, "G":40, "B":40 },
+		"DropDown-Text" : { "R":240, "G":240, "B":240 },
+		"Button-Background" : { "R":40, "G":40, "B":40 },
+		"Button-Text" : { "R":240, "G":240, "B":240 },
+		"NumericUpDown-Background" : { "R":40, "G":40, "B":40 },
+		"NumericUpDown-Text" : { "R":240, "G":240, "B":240 }
+	},
+	
+	"Main" : {
+		"Controls-Background" : { "R":70, "G":70, "B":70 },
+		
+		"MenuBar-Item-Border" : { "R":0, "G":0, "B":0 },
+		"MenuBar-Item-Selected" : { "R":0x90, "G":0x90, "B":0x90 },
+		"MenuBar-Item-Highlight" : { "R":0xA9, "G":0xA9, "B":0xA9 },
+	
+		"Properties-Background" : { "R":70, "G":70, "B":70 },
+		"Properties-Text" : { "R":240, "G":240, "B":240 },
+		"Properties-Lines" : { "R":120, "G":120, "B":120 },
+		
+		"TreeView-Highlight" : { "R":110, "G":110, "B":160 },
+		"TreeView-3DObjectsLabel" : { "R":220, "G":140, "B":140 },
+		"TreeView-MacroObjectsLabel" : { "R":140, "G":140, "B":220 },
+		"TreeView-SpecialObjectsLabel" : { "R":140, "G":220, "B":140 },
+		"TreeView-WarpsLabel" : { "R":220, "G":220, "B":220 }
+	},
+	
+	"TextureEditor" : {
+		"LevelTab-Background-Left" : { "R":80, "G":60, "B":60 },
+		"LevelTab-Background-Middle" : { "R":60, "G":80, "B":60 },
+		"LevelTab-Background-Right" : { "R":60, "G":60, "B":80 },
+		"LevelTab-Text" : { "R":240, "G":240, "B": 240 },
+		"LevelTab-Button-Background" : { "R":60, "G":60, "B":60 },
+		"LevelTab-Button-Text" : { "R":240, "G":240, "B":240 },
+		
+		"OtherTab-Background-Left" : { "R":80, "G":60, "B":60 },
+		"OtherTab-Background-Middle" : { "R":60, "G":80, "B":60 },
+		"OtherTab-Background-Right" : { "R":60, "G":60, "B":80 },
+		"OtherTab-Text" : { "R":240, "G":240, "B": 240 },
+		"OtherTab-Button-Background" : { "R":60, "G":60, "B":60 },
+		"OtherTab-Button-Text" : { "R":240, "G":240, "B":240 },
+		
+		"SkyTab-Background-Left" : { "R":20, "G":70, "B":80 },
+		"SkyTab-Background-Right" : { "R":60, "G":60, "B":80 },
+		"SkyTab-Text" : { "R":240, "G":240, "B":240 },
+		"SkyTab-Button-Background" : { "R":60, "G":60, "B":60 },
+		"SkyTab-Button-Text" : { "R":240, "G":240, "B":240 }
+	},
+	
+	"ObjectCombos" : {
+		"Background" : { "R":40, "G":40, "B":40 },
+		"Text" : { "R":240, "G":240, "B":240 },
+		
+		"3DObjects-Title" : { "R":200, "G":170, "B":170 },
+		"3DObjects-Item" : { "R":50, "G":50, "B":50 },
+		"3DObjects-Item-Alt" : { "R":50, "G":40, "B":40 },
+		"3DObjects-Item-Highlight" : { "R":60, "G":100, "B":150 },
+		"3DObjects-Item-Highlight-Text" : { "R":240, "G":240, "B":240 },
+		
+		"MacroObjects-Title" : { "R":170, "G":170, "B":200 },
+		"MacroObjects-Item" : { "R":50, "G":50, "B":50 },
+		"MacroObjects-Item-Alt" : { "R":40, "G":40, "B":50 },
+		"MacroObjects-Item-Highlight" : { "R":60, "G":100, "B":150 },
+		"MacroObjects-Item-Highlight-Text" : { "R":240, "G":240, "B":240 },
+		
+		"SpecialObjects-Title" : { "R":170, "G":200, "B":170 },
+		"SpecialObjects-Item" : { "R":50, "G":50, "B":50 },
+		"SpecialObjects-Item-Alt" : { "R":40, "G":50, "B":40 },
+		"SpecialObjects-Item-Highlight" : { "R":60, "G":100, "B":150 },
+		"SpecialObjects-Item-Highlight-Text" : { "R":240, "G":240, "B":240 },
+		
+		"Other-Title" : { "R":200, "G":200, "B":200 },
+		"Other-Item" : { "R":50, "G":50, "B":50 },
+		"Other-Item-Alt" : { "R":40, "G":40, "B":40 },
+		"Other-Item-Highlight" : { "R":60, "G":100, "B":150 },
+		"Other-Item-Highlight-Text" : { "R":240, "G":240, "B":240 }
+	},
+	
+	"ScriptDumps" : {
+		"LevelScripts-Background" : { "R":40, "G":10, "B":10 },
+		"LevelScripts-Text" : { "R":240, "G":180, "B":180 },
+		"LevelScripts-Comments" : { "R":200, "G":100, "B":0 },
+		
+		"GeoLayoutScripts-Background" : { "R":10, "G":40, "B":10 },
+		"GeoLayoutScripts-Text" : { "R":180, "G":240, "B":180 },
+		"GeoLayoutScripts-Comments" : { "R":0, "G":200, "B":0 },
+		
+		"Fast3DScripts-Background" : { "R":10, "G":10, "B":40 },
+		"Fast3DScripts-Text" : { "R":180, "G":180, "B":240 },
+		"Fast3DScripts-Comments" : { "R":0, "G":100, "B":200 },
+		
+		"BehaviorScripts-Background" : { "R":25, "G":10, "B":40 },
+		"BehaviorScripts-Text" : { "R":200, "G":180, "B":240 },
+		"BehaviorScripts-Comments" : { "R":150, "G":80, "B":200 }
+	}
+}

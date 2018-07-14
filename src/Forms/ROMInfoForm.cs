@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Quad64.src;
+using System;
 using System.Windows.Forms;
 
 namespace Quad64
@@ -16,6 +17,9 @@ namespace Quad64
             addNewRow("Region", rom.getRegionText());
             addNewRow("Endianness", rom.getEndianText());
             addNewRow("Size (MB)", (rom.Bytes.Length / 1024 / 1024).ToString());
+
+            BackColor = Theme.DEFAULT_BACKGROUND;
+            label1.ForeColor = Theme.DEFAULT_TEXT;
         }
 
         private void addNewRow(string rowName, string rowData)
@@ -36,6 +40,8 @@ namespace Quad64
             label.BorderStyle = 0;
             label.BackColor = this.BackColor;
             label.TabStop = false;
+            label.BackColor = Theme.DEFAULT_BACKGROUND;
+            label.ForeColor = Theme.DEFAULT_TEXT;
             return label;
         }
         

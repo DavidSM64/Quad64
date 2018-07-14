@@ -23,6 +23,7 @@ namespace Quad64.src.JSON
             s["EmulatorPath"] = Globals.pathToEmulator;
             s["AutoSaveOnLaunchROM"] = Globals.autoSaveWhenClickEmulator.ToString();
             s["FieldOfView"] = Globals.FOV.ToString();
+            s["Theme"] = Theme.lastThemePath;
 
             string savePath = "./data/profiles/" + profileName + "/";
             Directory.CreateDirectory(savePath); // Create directory if it doesn't exist!
@@ -58,6 +59,8 @@ namespace Quad64.src.JSON
                     Globals.autoSaveWhenClickEmulator = bool.Parse(o["AutoSaveOnLaunchROM"].ToString());
                 if (o["FieldOfView"] != null)
                     Globals.FOV = int.Parse(o["FieldOfView"].ToString());
+                if (o["Theme"] != null)
+                    Theme.LoadColorsFromJSONFile(o["Theme"].ToString());
             }
         }
     }

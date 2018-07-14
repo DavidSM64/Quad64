@@ -23,11 +23,27 @@ namespace Quad64.src.Forms
             {
                 listView1.Items.Add("("+entry.Behavior.ToString("X8") + ") " + entry.Name);
             }
+            updateTheme();
+        }
+
+        private void updateTheme()
+        {
+            BackColor = Theme.COMBOS_BACKGROUND;
+            label_filter.BackColor = Theme.COMBOS_BACKGROUND;
+            label_filter.ForeColor = Theme.COMBOS_TEXT;
+            selectButton.BackColor = Theme.DEFAULT_BUTTON_BACKGROUND;
+            selectButton.ForeColor = Theme.DEFAULT_BUTTON_TEXT;
+            cancelButton.BackColor = Theme.DEFAULT_BUTTON_BACKGROUND;
+            cancelButton.ForeColor = Theme.DEFAULT_BUTTON_TEXT;
+            textBox_filter.BackColor = Theme.DEFAULT_DROPDOWNLIST_BACKGROUND;
+            textBox_filter.ForeColor = Theme.DEFAULT_DROPDOWNLIST_TEXT;
+            listView1.BackColor = Theme.COMBOS_BACKGROUND;
+            listView1.ForeColor = Theme.COMBOS_TEXT;
         }
 
         private Font textFont = new Font("Courier New", 10, FontStyle.Bold);
-        private Brush textBrush = new SolidBrush(Color.DimGray);
-        private Pen bgPen = new Pen(Color.FromArgb(230, 230, 230), 100.0f);
+        private Brush textBrush = new SolidBrush(Theme.COMBOS_OTHER_TITLE);
+        private Pen bgPen = new Pen(Theme.COMBOS_BACKGROUND, 100.0f);
         private Rectangle bgRect = new Rectangle(0, 0, 400, 2);
         private void listView1_DrawColumnHeader(object sender, DrawListViewColumnHeaderEventArgs e)
         {
@@ -61,16 +77,17 @@ namespace Quad64.src.Forms
             Close();
         }
 
-        private Color col1 = Color.FromArgb(250, 250, 240);
-        private Color col2 = Color.FromArgb(250, 240, 240);
-        private Color highlight = Color.FromArgb(200, 200, 255);
+        private Color col1 = Theme.COMBOS_OTHER_MAIN;
+        private Color col2 = Theme.COMBOS_OTHER_SECONDARY;
+        private Color col3 = Theme.COMBOS_OTHER_HIGHLIGHT_TEXT;
+        private Color col4 = Theme.COMBOS_OTHER_HIGHLIGHT;
         private void listView1_DrawItem(object sender, DrawListViewItemEventArgs e)
         {
             // If this item is the selected item
             if (e.Item.Selected)
             {
-                e.Item.ForeColor = Color.Black;
-                e.Item.BackColor = highlight;
+                e.Item.ForeColor = col3;
+                e.Item.BackColor = col4;
             }
             else
             {

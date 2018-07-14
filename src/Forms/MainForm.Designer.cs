@@ -64,6 +64,7 @@
             this.texturesToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.settingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.themesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.rOMInfoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.scriptsDumpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -78,25 +79,25 @@
             this.propertyGrid1 = new System.Windows.Forms.PropertyGrid();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
             this.splitContainer3 = new System.Windows.Forms.SplitContainer();
-            this.panel3 = new System.Windows.Forms.Panel();
+            this.controlsPanel = new System.Windows.Forms.Panel();
             this.gridSize = new System.Windows.Forms.NumericUpDown();
             this.gridButton = new System.Windows.Forms.CheckBox();
-            this.label4 = new System.Windows.Forms.Label();
+            this.cameraModeLabel = new System.Windows.Forms.Label();
             this.cameraMode = new System.Windows.Forms.ComboBox();
             this.keepOnGround = new System.Windows.Forms.CheckBox();
             this.dropToGround = new System.Windows.Forms.Button();
-            this.camSpeedLabel = new System.Windows.Forms.Label();
-            this.label6 = new System.Windows.Forms.Label();
+            this.camSpeedPercentageLabel = new System.Windows.Forms.Label();
+            this.cameraSpeedLabel = new System.Windows.Forms.Label();
             this.trackBar_camSpeed = new System.Windows.Forms.TrackBar();
             this.objSpeedLabel = new System.Windows.Forms.Label();
-            this.label3 = new System.Windows.Forms.Label();
+            this.moveSpeedLabel = new System.Windows.Forms.Label();
             this.trackBar_moveSpeed = new System.Windows.Forms.TrackBar();
             this.moveCamPanel = new System.Windows.Forms.Panel();
-            this.label2 = new System.Windows.Forms.Label();
+            this.moveCameraLabel = new System.Windows.Forms.Label();
             this.moveCam_strafe = new System.Windows.Forms.PictureBox();
             this.moveCam_InOut = new System.Windows.Forms.PictureBox();
             this.rotateObjectPanel = new System.Windows.Forms.Panel();
-            this.label1 = new System.Windows.Forms.Label();
+            this.rotateObjectLabel = new System.Windows.Forms.Label();
             this.rotObj = new System.Windows.Forms.PictureBox();
             this.rotObj_Yaw = new System.Windows.Forms.PictureBox();
             this.moveObjectPanel = new System.Windows.Forms.Panel();
@@ -114,7 +115,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer3)).BeginInit();
             this.splitContainer3.Panel2.SuspendLayout();
             this.splitContainer3.SuspendLayout();
-            this.panel3.SuspendLayout();
+            this.controlsPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.gridSize)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.trackBar_camSpeed)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.trackBar_moveSpeed)).BeginInit();
@@ -140,7 +141,7 @@
             this.helpToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(174, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(266, 24);
             this.menuStrip1.TabIndex = 1;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -179,8 +180,10 @@
             // 
             // toolStripSeparator3
             // 
+            this.toolStripSeparator3.BackColor = System.Drawing.SystemColors.Control;
             this.toolStripSeparator3.Name = "toolStripSeparator3";
             this.toolStripSeparator3.Size = new System.Drawing.Size(148, 6);
+            this.toolStripSeparator3.Paint += new System.Windows.Forms.PaintEventHandler(this.ToolStripSeparator_Paint);
             // 
             // testROMToolStripMenuItem
             // 
@@ -216,6 +219,7 @@
             // 
             this.toolStripSeparator4.Name = "toolStripSeparator4";
             this.toolStripSeparator4.Size = new System.Drawing.Size(186, 6);
+            this.toolStripSeparator4.Paint += new System.Windows.Forms.PaintEventHandler(this.ToolStripSeparator_Paint);
             // 
             // modelIDToolStripMenuItem
             // 
@@ -280,6 +284,7 @@
             // 
             this.toolStripSeparator5.Name = "toolStripSeparator5";
             this.toolStripSeparator5.Size = new System.Drawing.Size(186, 6);
+            this.toolStripSeparator5.Paint += new System.Windows.Forms.PaintEventHandler(this.ToolStripSeparator_Paint);
             // 
             // objectComboNameToolStripMenuItem
             // 
@@ -291,11 +296,14 @@
             // 
             // levelToolStripMenuItem
             // 
+            this.levelToolStripMenuItem.BackColor = System.Drawing.Color.LightGray;
+            this.levelToolStripMenuItem.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.levelToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.selectLeveToolStripMenuItem,
             this.selectAreaToolStripMenuItem,
             this.toolStripSeparator2,
             this.texturesToolStripMenuItem1});
+            this.levelToolStripMenuItem.ForeColor = System.Drawing.SystemColors.ControlText;
             this.levelToolStripMenuItem.Name = "levelToolStripMenuItem";
             this.levelToolStripMenuItem.Size = new System.Drawing.Size(46, 20);
             this.levelToolStripMenuItem.Text = "Level";
@@ -382,6 +390,7 @@
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
             this.toolStripSeparator2.Size = new System.Drawing.Size(132, 6);
+            this.toolStripSeparator2.Paint += new System.Windows.Forms.PaintEventHandler(this.ToolStripSeparator_Paint);
             // 
             // texturesToolStripMenuItem1
             // 
@@ -394,6 +403,7 @@
             // 
             this.helpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.settingsToolStripMenuItem,
+            this.themesToolStripMenuItem,
             this.rOMInfoToolStripMenuItem,
             this.toolStripSeparator1,
             this.scriptsDumpToolStripMenuItem});
@@ -404,26 +414,34 @@
             // settingsToolStripMenuItem
             // 
             this.settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
-            this.settingsToolStripMenuItem.Size = new System.Drawing.Size(145, 22);
+            this.settingsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.settingsToolStripMenuItem.Text = "Settings";
             this.settingsToolStripMenuItem.Click += new System.EventHandler(this.settingsToolStripMenuItem_Click);
+            // 
+            // themesToolStripMenuItem
+            // 
+            this.themesToolStripMenuItem.Name = "themesToolStripMenuItem";
+            this.themesToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.themesToolStripMenuItem.Text = "Themes";
+            this.themesToolStripMenuItem.Click += new System.EventHandler(this.themesToolStripMenuItem_Click);
             // 
             // rOMInfoToolStripMenuItem
             // 
             this.rOMInfoToolStripMenuItem.Name = "rOMInfoToolStripMenuItem";
-            this.rOMInfoToolStripMenuItem.Size = new System.Drawing.Size(145, 22);
+            this.rOMInfoToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.rOMInfoToolStripMenuItem.Text = "ROM Info";
             this.rOMInfoToolStripMenuItem.Click += new System.EventHandler(this.rOMInfoToolStripMenuItem_Click);
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(142, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(149, 6);
+            this.toolStripSeparator1.Paint += new System.Windows.Forms.PaintEventHandler(this.ToolStripSeparator_Paint);
             // 
             // scriptsDumpToolStripMenuItem
             // 
             this.scriptsDumpToolStripMenuItem.Name = "scriptsDumpToolStripMenuItem";
-            this.scriptsDumpToolStripMenuItem.Size = new System.Drawing.Size(145, 22);
+            this.scriptsDumpToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.scriptsDumpToolStripMenuItem.Text = "Script Dumps";
             this.scriptsDumpToolStripMenuItem.Click += new System.EventHandler(this.scriptsDumpToolStripMenuItem_Click);
             // 
@@ -567,15 +585,16 @@
             this.propertyGrid1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.propertyGrid1.BackColor = System.Drawing.Color.White;
             this.propertyGrid1.CommandsBackColor = System.Drawing.SystemColors.Control;
-            this.propertyGrid1.CommandsDisabledLinkColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.propertyGrid1.CommandsDisabledLinkColor = System.Drawing.Color.Gray;
             this.propertyGrid1.Font = new System.Drawing.Font("Courier New", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.propertyGrid1.HelpVisible = false;
-            this.propertyGrid1.LineColor = System.Drawing.Color.LightGray;
+            this.propertyGrid1.LineColor = System.Drawing.Color.DarkGray;
             this.propertyGrid1.Location = new System.Drawing.Point(0, 0);
             this.propertyGrid1.Name = "propertyGrid1";
             this.propertyGrid1.PropertySort = System.Windows.Forms.PropertySort.NoSort;
-            this.propertyGrid1.Size = new System.Drawing.Size(216, 261);
+            this.propertyGrid1.Size = new System.Drawing.Size(219, 261);
             this.propertyGrid1.TabIndex = 0;
             this.propertyGrid1.ToolbarVisible = false;
             this.propertyGrid1.UseCompatibleTextRendering = true;
@@ -596,7 +615,7 @@
             // 
             // splitContainer2.Panel2
             // 
-            this.splitContainer2.Panel2.Controls.Add(this.panel3);
+            this.splitContainer2.Panel2.Controls.Add(this.controlsPanel);
             this.splitContainer2.Panel2.Controls.Add(this.glControl1);
             this.splitContainer2.Panel2MinSize = 600;
             this.splitContainer2.Size = new System.Drawing.Size(879, 456);
@@ -619,38 +638,40 @@
             this.splitContainer3.TabIndex = 0;
             this.splitContainer3.TabStop = false;
             // 
-            // panel3
+            // controlsPanel
             // 
-            this.panel3.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            this.controlsPanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.panel3.BackColor = System.Drawing.Color.Gray;
-            this.panel3.Controls.Add(this.gridSize);
-            this.panel3.Controls.Add(this.gridButton);
-            this.panel3.Controls.Add(this.label4);
-            this.panel3.Controls.Add(this.cameraMode);
-            this.panel3.Controls.Add(this.keepOnGround);
-            this.panel3.Controls.Add(this.dropToGround);
-            this.panel3.Controls.Add(this.camSpeedLabel);
-            this.panel3.Controls.Add(this.label6);
-            this.panel3.Controls.Add(this.trackBar_camSpeed);
-            this.panel3.Controls.Add(this.objSpeedLabel);
-            this.panel3.Controls.Add(this.label3);
-            this.panel3.Controls.Add(this.trackBar_moveSpeed);
-            this.panel3.Controls.Add(this.moveCamPanel);
-            this.panel3.Controls.Add(this.rotateObjectPanel);
-            this.panel3.Controls.Add(this.moveObjectPanel);
-            this.panel3.Location = new System.Drawing.Point(3, 333);
-            this.panel3.MaximumSize = new System.Drawing.Size(10000, 120);
-            this.panel3.MinimumSize = new System.Drawing.Size(600, 120);
-            this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(649, 120);
-            this.panel3.TabIndex = 5;
+            this.controlsPanel.BackColor = System.Drawing.Color.Gray;
+            this.controlsPanel.Controls.Add(this.gridSize);
+            this.controlsPanel.Controls.Add(this.gridButton);
+            this.controlsPanel.Controls.Add(this.cameraModeLabel);
+            this.controlsPanel.Controls.Add(this.cameraMode);
+            this.controlsPanel.Controls.Add(this.keepOnGround);
+            this.controlsPanel.Controls.Add(this.dropToGround);
+            this.controlsPanel.Controls.Add(this.camSpeedPercentageLabel);
+            this.controlsPanel.Controls.Add(this.cameraSpeedLabel);
+            this.controlsPanel.Controls.Add(this.trackBar_camSpeed);
+            this.controlsPanel.Controls.Add(this.objSpeedLabel);
+            this.controlsPanel.Controls.Add(this.moveSpeedLabel);
+            this.controlsPanel.Controls.Add(this.trackBar_moveSpeed);
+            this.controlsPanel.Controls.Add(this.moveCamPanel);
+            this.controlsPanel.Controls.Add(this.rotateObjectPanel);
+            this.controlsPanel.Controls.Add(this.moveObjectPanel);
+            this.controlsPanel.Location = new System.Drawing.Point(3, 333);
+            this.controlsPanel.MaximumSize = new System.Drawing.Size(10000, 120);
+            this.controlsPanel.MinimumSize = new System.Drawing.Size(600, 120);
+            this.controlsPanel.Name = "controlsPanel";
+            this.controlsPanel.Size = new System.Drawing.Size(649, 120);
+            this.controlsPanel.TabIndex = 5;
             // 
             // gridSize
             // 
             this.gridSize.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.gridSize.BackColor = System.Drawing.SystemColors.Window;
             this.gridSize.Enabled = false;
+            this.gridSize.ForeColor = System.Drawing.SystemColors.MenuText;
             this.gridSize.Location = new System.Drawing.Point(603, 94);
             this.gridSize.Minimum = new decimal(new int[] {
             2,
@@ -673,6 +694,8 @@
             this.gridButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.gridButton.Appearance = System.Windows.Forms.Appearance.Button;
+            this.gridButton.BackColor = System.Drawing.Color.Silver;
+            this.gridButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.gridButton.Font = new System.Drawing.Font("Corbel", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.gridButton.Location = new System.Drawing.Point(561, 93);
             this.gridButton.Name = "gridButton";
@@ -681,19 +704,19 @@
             this.gridButton.TabStop = false;
             this.gridButton.Text = "Grid";
             this.gridButton.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.gridButton.UseVisualStyleBackColor = true;
+            this.gridButton.UseVisualStyleBackColor = false;
             this.gridButton.CheckedChanged += new System.EventHandler(this.gridButton_CheckedChanged);
             // 
-            // label4
+            // cameraModeLabel
             // 
-            this.label4.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.cameraModeLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(566, 47);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(76, 13);
-            this.label4.TabIndex = 24;
-            this.label4.Text = "Camera Mode:";
+            this.cameraModeLabel.AutoSize = true;
+            this.cameraModeLabel.Location = new System.Drawing.Point(566, 47);
+            this.cameraModeLabel.Name = "cameraModeLabel";
+            this.cameraModeLabel.Size = new System.Drawing.Size(76, 13);
+            this.cameraModeLabel.TabIndex = 24;
+            this.cameraModeLabel.Text = "Camera Mode:";
             // 
             // cameraMode
             // 
@@ -701,6 +724,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.cameraMode.DisplayMember = "1";
             this.cameraMode.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cameraMode.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.cameraMode.Font = new System.Drawing.Font("Corbel", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.cameraMode.Items.AddRange(new object[] {
             "Fly",
@@ -721,55 +745,59 @@
             // keepOnGround
             // 
             this.keepOnGround.Appearance = System.Windows.Forms.Appearance.Button;
+            this.keepOnGround.BackColor = System.Drawing.Color.Silver;
+            this.keepOnGround.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.keepOnGround.Font = new System.Drawing.Font("Corbel", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.keepOnGround.Location = new System.Drawing.Point(254, 79);
+            this.keepOnGround.Location = new System.Drawing.Point(254, 82);
             this.keepOnGround.Margin = new System.Windows.Forms.Padding(0);
             this.keepOnGround.Name = "keepOnGround";
-            this.keepOnGround.Size = new System.Drawing.Size(95, 21);
+            this.keepOnGround.Size = new System.Drawing.Size(95, 24);
             this.keepOnGround.TabIndex = 0;
             this.keepOnGround.TabStop = false;
             this.keepOnGround.Text = "Keep on ground";
             this.keepOnGround.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.keepOnGround.UseVisualStyleBackColor = true;
+            this.keepOnGround.UseVisualStyleBackColor = false;
             // 
             // dropToGround
             // 
+            this.dropToGround.BackColor = System.Drawing.Color.Silver;
+            this.dropToGround.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.dropToGround.Font = new System.Drawing.Font("Corbel", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.dropToGround.Location = new System.Drawing.Point(254, 57);
             this.dropToGround.Margin = new System.Windows.Forms.Padding(0);
             this.dropToGround.Name = "dropToGround";
-            this.dropToGround.Size = new System.Drawing.Size(95, 21);
+            this.dropToGround.Size = new System.Drawing.Size(95, 24);
             this.dropToGround.TabIndex = 0;
             this.dropToGround.TabStop = false;
             this.dropToGround.Text = "Drop to ground";
-            this.dropToGround.UseVisualStyleBackColor = true;
+            this.dropToGround.UseVisualStyleBackColor = false;
             this.dropToGround.Click += new System.EventHandler(this.dropToGround_Click);
             // 
-            // camSpeedLabel
+            // camSpeedPercentageLabel
             // 
-            this.camSpeedLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.camSpeedPercentageLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.camSpeedLabel.AutoSize = true;
-            this.camSpeedLabel.Font = new System.Drawing.Font("Courier New", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.camSpeedLabel.Location = new System.Drawing.Point(616, 2);
-            this.camSpeedLabel.Name = "camSpeedLabel";
-            this.camSpeedLabel.Size = new System.Drawing.Size(35, 14);
-            this.camSpeedLabel.TabIndex = 12;
-            this.camSpeedLabel.Text = "100%";
-            this.camSpeedLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.camSpeedPercentageLabel.AutoSize = true;
+            this.camSpeedPercentageLabel.Font = new System.Drawing.Font("Courier New", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.camSpeedPercentageLabel.Location = new System.Drawing.Point(616, 2);
+            this.camSpeedPercentageLabel.Name = "camSpeedPercentageLabel";
+            this.camSpeedPercentageLabel.Size = new System.Drawing.Size(35, 14);
+            this.camSpeedPercentageLabel.TabIndex = 12;
+            this.camSpeedPercentageLabel.Text = "100%";
+            this.camSpeedPercentageLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
-            // label6
+            // cameraSpeedLabel
             // 
-            this.label6.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.cameraSpeedLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.label6.AutoSize = true;
-            this.label6.Font = new System.Drawing.Font("Courier New", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label6.Location = new System.Drawing.Point(559, 2);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(63, 14);
-            this.label6.TabIndex = 11;
-            this.label6.Text = "Cam spd:";
-            this.label6.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.cameraSpeedLabel.AutoSize = true;
+            this.cameraSpeedLabel.Font = new System.Drawing.Font("Courier New", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.cameraSpeedLabel.Location = new System.Drawing.Point(559, 2);
+            this.cameraSpeedLabel.Name = "cameraSpeedLabel";
+            this.cameraSpeedLabel.Size = new System.Drawing.Size(63, 14);
+            this.cameraSpeedLabel.TabIndex = 11;
+            this.cameraSpeedLabel.Text = "Cam spd:";
+            this.cameraSpeedLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // trackBar_camSpeed
             // 
@@ -799,17 +827,17 @@
             this.objSpeedLabel.Text = "100%";
             this.objSpeedLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
-            // label3
+            // moveSpeedLabel
             // 
-            this.label3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.label3.AutoSize = true;
-            this.label3.Font = new System.Drawing.Font("Courier New", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label3.Location = new System.Drawing.Point(261, 1);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(84, 14);
-            this.label3.TabIndex = 8;
-            this.label3.Text = "Move speed:";
-            this.label3.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.moveSpeedLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.moveSpeedLabel.AutoSize = true;
+            this.moveSpeedLabel.Font = new System.Drawing.Font("Courier New", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.moveSpeedLabel.Location = new System.Drawing.Point(261, 1);
+            this.moveSpeedLabel.Name = "moveSpeedLabel";
+            this.moveSpeedLabel.Size = new System.Drawing.Size(84, 14);
+            this.moveSpeedLabel.TabIndex = 8;
+            this.moveSpeedLabel.Text = "Move speed:";
+            this.moveSpeedLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // trackBar_moveSpeed
             // 
@@ -829,7 +857,7 @@
             // 
             this.moveCamPanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.moveCamPanel.Controls.Add(this.label2);
+            this.moveCamPanel.Controls.Add(this.moveCameraLabel);
             this.moveCamPanel.Controls.Add(this.moveCam_strafe);
             this.moveCamPanel.Controls.Add(this.moveCam_InOut);
             this.moveCamPanel.Location = new System.Drawing.Point(434, 2);
@@ -838,15 +866,15 @@
             this.moveCamPanel.Size = new System.Drawing.Size(125, 120);
             this.moveCamPanel.TabIndex = 6;
             // 
-            // label2
+            // moveCameraLabel
             // 
-            this.label2.AutoSize = true;
-            this.label2.Font = new System.Drawing.Font("Courier New", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label2.Location = new System.Drawing.Point(8, 99);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(96, 16);
-            this.label2.TabIndex = 4;
-            this.label2.Text = "Move Camera";
+            this.moveCameraLabel.AutoSize = true;
+            this.moveCameraLabel.Font = new System.Drawing.Font("Courier New", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.moveCameraLabel.Location = new System.Drawing.Point(8, 99);
+            this.moveCameraLabel.Name = "moveCameraLabel";
+            this.moveCameraLabel.Size = new System.Drawing.Size(96, 16);
+            this.moveCameraLabel.TabIndex = 4;
+            this.moveCameraLabel.Text = "Move Camera";
             // 
             // moveCam_strafe
             // 
@@ -880,7 +908,7 @@
             // 
             this.rotateObjectPanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
-            this.rotateObjectPanel.Controls.Add(this.label1);
+            this.rotateObjectPanel.Controls.Add(this.rotateObjectLabel);
             this.rotateObjectPanel.Controls.Add(this.rotObj);
             this.rotateObjectPanel.Controls.Add(this.rotObj_Yaw);
             this.rotateObjectPanel.Location = new System.Drawing.Point(127, 2);
@@ -889,15 +917,15 @@
             this.rotateObjectPanel.Size = new System.Drawing.Size(124, 120);
             this.rotateObjectPanel.TabIndex = 5;
             // 
-            // label1
+            // rotateObjectLabel
             // 
-            this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("Courier New", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(8, 99);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(112, 16);
-            this.label1.TabIndex = 4;
-            this.label1.Text = "Rotate Object";
+            this.rotateObjectLabel.AutoSize = true;
+            this.rotateObjectLabel.Font = new System.Drawing.Font("Courier New", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.rotateObjectLabel.Location = new System.Drawing.Point(8, 99);
+            this.rotateObjectLabel.Name = "rotateObjectLabel";
+            this.rotateObjectLabel.Size = new System.Drawing.Size(112, 16);
+            this.rotateObjectLabel.TabIndex = 4;
+            this.rotateObjectLabel.Text = "Rotate Object";
             // 
             // rotObj
             // 
@@ -1014,7 +1042,7 @@
             this.MinimumSize = new System.Drawing.Size(820, 522);
             this.Name = "MainForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Quad64 v0.2 (Beta build 4, Hotfix 1)";
+            this.Text = "Quad64 v0.2 (Beta build 5)";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
             this.Shown += new System.EventHandler(this.Form1_Shown);
             this.menuStrip1.ResumeLayout(false);
@@ -1029,8 +1057,8 @@
             this.splitContainer3.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer3)).EndInit();
             this.splitContainer3.ResumeLayout(false);
-            this.panel3.ResumeLayout(false);
-            this.panel3.PerformLayout();
+            this.controlsPanel.ResumeLayout(false);
+            this.controlsPanel.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.gridSize)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.trackBar_camSpeed)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.trackBar_moveSpeed)).EndInit();
@@ -1065,25 +1093,25 @@
         private System.Windows.Forms.SplitContainer splitContainer2;
         private System.Windows.Forms.SplitContainer splitContainer3;
         private System.Windows.Forms.ToolStripMenuItem saveROMAsToolStripMenuItem;
-        private System.Windows.Forms.Panel panel3;
+        private System.Windows.Forms.Panel controlsPanel;
         private System.Windows.Forms.PictureBox movObj_UpDown;
         private System.Windows.Forms.PictureBox moveObj;
         private OpenTK.GLControl glControl1;
         private System.Windows.Forms.Panel moveObjectPanel;
         private System.Windows.Forms.Label moveObjectLabel;
         private System.Windows.Forms.Panel moveCamPanel;
-        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Label moveCameraLabel;
         private System.Windows.Forms.PictureBox moveCam_strafe;
         private System.Windows.Forms.PictureBox moveCam_InOut;
         private System.Windows.Forms.Panel rotateObjectPanel;
-        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label rotateObjectLabel;
         private System.Windows.Forms.PictureBox rotObj;
         private System.Windows.Forms.PictureBox rotObj_Yaw;
-        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Label moveSpeedLabel;
         private System.Windows.Forms.TrackBar trackBar_moveSpeed;
         private System.Windows.Forms.Label objSpeedLabel;
-        private System.Windows.Forms.Label camSpeedLabel;
-        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.Label camSpeedPercentageLabel;
+        private System.Windows.Forms.Label cameraSpeedLabel;
         private System.Windows.Forms.TrackBar trackBar_camSpeed;
         private System.Windows.Forms.ToolStripMenuItem rOMInfoToolStripMenuItem;
         private System.Windows.Forms.Button dropToGround;
@@ -1123,9 +1151,10 @@
         private System.Windows.Forms.ToolStripMenuItem objectComboNameToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem warpToolStripMenuItem;
         private System.Windows.Forms.ComboBox cameraMode;
-        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Label cameraModeLabel;
         private System.Windows.Forms.CheckBox gridButton;
         private System.Windows.Forms.NumericUpDown gridSize;
+        private System.Windows.Forms.ToolStripMenuItem themesToolStripMenuItem;
     }
 }
 

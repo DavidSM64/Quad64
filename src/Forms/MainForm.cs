@@ -11,12 +11,12 @@ using Quad64.src.TestROM;
 using Quad64.src.Forms;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
+using Quad64.src.Forms.ToolStripRenderer;
 
 namespace Quad64
 {
     partial class MainForm : Form
     {
-        Model3D model1 = new Model3D(), model2 = new Model3D();
         Color bgColor = Color.Black;
         Camera camera = new Camera();
         Vector3 savedCamPos = new Vector3();
@@ -54,12 +54,12 @@ namespace Quad64
             treeView1.Name = "treeView1";
             treeView1.DrawMode = TreeViewDrawMode.OwnerDrawAll;
             treeView1.Font = new Font("Segoe UI", 8.0f, FontStyle.Bold);
-            treeView1.Nodes.Add(makeTreeNode("3D Objects", Color.FromArgb(192, 0, 0)));
-            treeView1.Nodes.Add(makeTreeNode("Macro 3D Objects", Color.FromArgb(0, 0, 192)));
-            treeView1.Nodes.Add(makeTreeNode("Special 3D Objects", Color.FromArgb(0, 192, 0)));
-            treeView1.Nodes.Add(makeTreeNode("Warps", Color.FromArgb(0, 0, 0)));
+            treeView1.Nodes.Add(makeTreeNode("3D Objects", Theme.MAIN_TREEVIEW_3DOBJECTS));
+            treeView1.Nodes.Add(makeTreeNode("Macro 3D Objects", Theme.MAIN_TREEVIEW_MACRO));
+            treeView1.Nodes.Add(makeTreeNode("Special 3D Objects", Theme.MAIN_TREEVIEW_SPECIAL));
+            treeView1.Nodes.Add(makeTreeNode("Warps", Theme.MAIN_TREEVIEW_WARPS));
             treeView1.Anchor = (AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right);
-            treeView1.Size = new Size(217, 206);
+            treeView1.Size = splitContainer3.Panel1.ClientSize;
             treeView1.TabIndex = 0;
             treeView1.TabStop = false;
             treeView1.DrawNode += new DrawTreeNodeEventHandler(treeView1_DrawNode);
@@ -79,6 +79,7 @@ namespace Quad64
             OpenTK.Toolkit.Init();
             glControl1.CreateControl();
             SettingsFile.LoadGlobalSettings("default");
+            updateTheme();
             glControl1.MouseWheel += new MouseEventHandler(glControl1_Wheel);
             ProjMatrix = Matrix4.CreatePerspectiveFieldOfView(
                 Globals.FOV * ((float)Math.PI / 180.0f), 
@@ -94,6 +95,76 @@ namespace Quad64
             myTimer.Interval = 10;
             myTimer.Enabled = false;
             cameraMode.SelectedIndex = 0;
+            menuStrip1.Renderer = new ToolStripProfessionalRenderer(new CustomToolStripColorTable());
+        }
+        
+        // New functions for MainForm.cs
+        private void SetColorsForMenuStripItem(ref ToolStripItemCollection items)
+        {
+            for (int i = 0; i < items.Count; i++)
+            {
+                items[i].BackColor = Theme.MAIN_MENUBAR_BACKGROUND;
+                items[i].ForeColor = Theme.MAIN_MENUBAR_TEXT;
+
+                if (items[i] is ToolStripMenuItem)
+                {
+                    if (((ToolStripMenuItem)items[i]).DropDownItems.Count > 0)
+                    {
+                        ToolStripItemCollection children = ((ToolStripMenuItem)items[i]).DropDownItems;
+                        SetColorsForMenuStripItem(ref children);
+                    }
+                }
+            }
+        }
+
+        private void ToolStripSeparator_Paint(object sender, PaintEventArgs e)
+        {
+            ToolStripSeparator sep = (ToolStripSeparator)sender;
+            e.Graphics.FillRectangle(new SolidBrush(sep.BackColor), 0, 0, sep.Width, sep.Height);
+            e.Graphics.DrawLine(new Pen(sep.ForeColor), 30, sep.Height / 2, sep.Width - 4, sep.Height / 2);
+        }
+
+        private void updateTheme()
+        {
+            BackColor = Theme.MAIN_BACKGROUND;
+            treeView1.BackColor = Theme.MAIN_TREEVIEW_BACKGROUND;
+            treeView1.ForeColor = Theme.MAIN_TREEVIEW_TEXT;
+            treeView1.Nodes[0].ForeColor = Theme.MAIN_TREEVIEW_3DOBJECTS; // "3D Objects" text
+            treeView1.Nodes[1].ForeColor = Theme.MAIN_TREEVIEW_MACRO; // "Macro 3D Objects" text
+            treeView1.Nodes[2].ForeColor = Theme.MAIN_TREEVIEW_SPECIAL; // "Special 3D Objects" text
+            treeView1.Nodes[3].ForeColor = Theme.MAIN_TREEVIEW_WARPS; // "Warps" text
+
+            propertyGrid1.ViewForeColor = Theme.MAIN_PROPERTIES_TEXT;
+            propertyGrid1.ViewBackColor = Theme.MAIN_PROPERTIES_BACKGROUND;
+            propertyGrid1.LineColor = Theme.MAIN_PROPERTIES_LINES;
+
+            controlsPanel.BackColor = Theme.MAIN_CONTROLS_BACKGROUND;
+            moveObjectLabel.ForeColor = Theme.MAIN_CONTROLS_TEXT;
+            moveSpeedLabel.ForeColor = Theme.MAIN_CONTROLS_TEXT;
+            rotateObjectLabel.ForeColor = Theme.MAIN_CONTROLS_TEXT;
+            objSpeedLabel.ForeColor = Theme.MAIN_CONTROLS_TEXT;
+            cameraModeLabel.ForeColor = Theme.MAIN_CONTROLS_TEXT;
+            camSpeedPercentageLabel.ForeColor = Theme.MAIN_CONTROLS_TEXT;
+            cameraSpeedLabel.ForeColor = Theme.MAIN_CONTROLS_TEXT;
+            moveCameraLabel.ForeColor = Theme.MAIN_CONTROLS_TEXT;
+
+            cameraMode.BackColor = Theme.MAIN_CONTROLS_DROPDOWNLIST_BACKGROUND;
+            cameraMode.ForeColor = Theme.MAIN_CONTROLS_DROPDOWNLIST_TEXT;
+
+            dropToGround.BackColor = Theme.MAIN_CONTROLS_BUTTON_BACKGROUND;
+            dropToGround.ForeColor = Theme.MAIN_CONTROLS_BUTTON_TEXT;
+            keepOnGround.BackColor = Theme.MAIN_CONTROLS_BUTTON_BACKGROUND;
+            keepOnGround.ForeColor = Theme.MAIN_CONTROLS_BUTTON_TEXT;
+            gridButton.BackColor = Theme.MAIN_CONTROLS_BUTTON_BACKGROUND;
+            gridButton.ForeColor = Theme.MAIN_CONTROLS_BUTTON_TEXT;
+
+            gridSize.BackColor = Theme.MAIN_CONTROLS_UPDOWN_BACKGROUND;
+            gridSize.ForeColor = Theme.MAIN_CONTROLS_UPDOWN_TEXT;
+
+            menuStrip1.BackColor = Theme.MAIN_MENUBAR_BACKGROUND;
+            menuStrip1.ForeColor = Theme.MAIN_MENUBAR_TEXT;
+            ToolStripItemCollection menuItems = menuStrip1.Items;
+            SetColorsForMenuStripItem(ref menuItems);
         }
 
         private void loadROM(bool startingUp)
@@ -700,7 +771,7 @@ namespace Quad64
             {
                 case 0:
                     comboWindow =
-                        new SelectComboPreset(level, 0, "Select Object Combos", Color.DarkRed);
+                        new SelectComboPreset(level, 0, "Select Object Combos", Theme.COMBOS_3DOBJECTS_TITLE);
                     comboWindow.ShowDialog();
                     if (comboWindow.ClickedSelect)
                     {
@@ -713,7 +784,7 @@ namespace Quad64
                     break;
                 case 1:
                     comboWindow =
-                        new SelectComboPreset(level, 1, "Select Macro Preset", Color.DarkBlue);
+                        new SelectComboPreset(level, 1, "Select Macro Preset", Theme.COMBOS_MACRO_TITLE);
                     comboWindow.ShowDialog();
                     if (comboWindow.ClickedSelect)
                     {
@@ -733,7 +804,7 @@ namespace Quad64
                         else if (obj.isPropertyShown(Object3D.FLAGS.ROTATION_Y))
                             specialListType = 3;
                         comboWindow =
-                            new SelectComboPreset(level, specialListType, "Select Special Preset", Color.DarkGreen);
+                            new SelectComboPreset(level, specialListType, "Select Special Preset", Theme.COMBOS_SPECIAL_TITLE);
                         comboWindow.ShowDialog();
                         if (comboWindow.ClickedSelect)
                         {
@@ -2137,7 +2208,7 @@ namespace Quad64
             else if (newValue > 96f && newValue < 114f)
                 newValue = 100f;
 
-            camSpeedLabel.Text = (int)(newValue) + "%";
+            camSpeedPercentageLabel.Text = (int)(newValue) + "%";
             Globals.camSpeedMultiplier = newValue/100.0f;
         }
 
@@ -2166,6 +2237,19 @@ namespace Quad64
         
 
         private const int WM_USER = 0x0400;
+
+        private void themesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ThemeSelector selector = new ThemeSelector();
+            selector.ShowDialog();
+            if (selector.doUpdate)
+            {
+                Theme.LoadColorsFromJSONFile(selector.themePath);
+                updateTheme();
+                SettingsFile.SaveGlobalSettings("default");
+            }
+        }
+
         private const int EM_SETEVENTMASK = (WM_USER + 69);
         private const int WM_SETREDRAW = 0x0b;
         private IntPtr OldEventMask;

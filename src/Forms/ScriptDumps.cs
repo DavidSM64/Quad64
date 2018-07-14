@@ -25,9 +25,9 @@ namespace Quad64.src.Forms
             currentTextbox = lt_ls_textbox;
             organizeCurrentLevelScript(level.LevelScriptCommands_ForDump);
             initObjectList();
+            setupTheme();
         }
 
-        
         private static uint bytesToInt(byte[] b, int offset, int length)
         {
             switch (length)
@@ -137,6 +137,7 @@ namespace Quad64.src.Forms
                         else
                         {
                             currentTextbox.ResetText();
+                            currentTextbox.ForeColor = Theme.SCRIPTDUMPS_GEOLAYOUT_TEXTBOX_TEXT;
                             currentTextbox.Text = "<No script found>";
                         }
                     }
@@ -158,6 +159,7 @@ namespace Quad64.src.Forms
                         else
                         {
                             currentTextbox.ResetText();
+                            currentTextbox.ForeColor = Theme.SCRIPTDUMPS_FAST3D_TEXTBOX_TEXT;
                             currentTextbox.Text = "<No script found>";
                         }
                     }
@@ -225,6 +227,107 @@ namespace Quad64.src.Forms
                     switchTextBoxes(lastTextBoxForObjectsTab);
                     break;
             }
+        }
+
+        private void setupTheme()
+        {
+            BackColor = Theme.SCRIPTDUMPS_BACKGROUND;
+            splitContainer1.BackColor = Theme.SCRIPTDUMPS_BACKGROUND;
+            tabLevel.BackColor = Theme.SCRIPTDUMPS_BACKGROUND;
+            tabObjects.BackColor = Theme.SCRIPTDUMPS_BACKGROUND;
+            panel1.BackColor = Theme.SCRIPTDUMPS_OPTIONS_BACKGROUND;
+            showRomCB.ForeColor = Theme.SCRIPTDUMPS_TEXT;
+            SegAddrCB.ForeColor = Theme.SCRIPTDUMPS_TEXT;
+            IndentCB.ForeColor = Theme.SCRIPTDUMPS_TEXT;
+            wordWrapCB.ForeColor = Theme.SCRIPTDUMPS_TEXT;
+            FormatCB.ForeColor = Theme.SCRIPTDUMPS_TEXT;
+            CommCB.ForeColor = Theme.SCRIPTDUMPS_TEXT;
+            ListObjectsSortLabel.ForeColor = Theme.SCRIPTDUMPS_TEXT;
+
+            lt_f3d_listbox.BackColor = Theme.SCRIPTDUMPS_FAST3D_LISTBOX_BACKGROUND;
+            listBoxObjects.BackColor = Theme.SCRIPTDUMPS_OBJECTSTAB_LISTBOX_BACKGROUND;
+            ot_f3d_listbox.BackColor = Theme.SCRIPTDUMPS_FAST3D_LISTBOX_BACKGROUND;
+
+            lt_ls_textbox.BackColor = Theme.SCRIPTDUMPS_LEVEL_TEXTBOX_BACKGROUND;
+            lt_gls_textbox.BackColor = Theme.SCRIPTDUMPS_GEOLAYOUT_TEXTBOX_BACKGROUND;
+            lt_f3d_textbox.BackColor = Theme.SCRIPTDUMPS_FAST3D_TEXTBOX_BACKGROUND;
+            
+            ot_gls_textbox.BackColor = Theme.SCRIPTDUMPS_GEOLAYOUT_TEXTBOX_BACKGROUND;
+            ot_f3d_textbox.BackColor = Theme.SCRIPTDUMPS_FAST3D_TEXTBOX_BACKGROUND;
+            ot_beh_textbox.BackColor = Theme.SCRIPTDUMPS_BEHAVIOR_TEXTBOX_BACKGROUND;
+
+            lt_gls_radioPanel.BackColor = Theme.SCRIPTDUMPS_LEVELTAB_GEOLAYOUT_AREAPANEL_BACKGROUND;
+            lt_f3d_radioPanel.BackColor = Theme.SCRIPTDUMPS_LEVELTAB_FAST3D_AREAPANEL_BACKGROUND;
+
+            comboBoxObjectSort.BackColor = Theme.SCRIPTDUMPS_OBJECTSTAB_SORT_DROPDOWNLIST_BACKGROUND;
+            comboBoxObjectSort.ForeColor = Theme.SCRIPTDUMPS_OBJECTSTAB_SORT_DROPDOWNLIST_TEXT;
+        }
+
+        private void listBoxObjects_DrawItem(object sender, DrawItemEventArgs e)
+        {
+            if (e.Index < 0) return;
+            bool isSelected = (e.State & DrawItemState.Selected) == DrawItemState.Selected;
+            SolidBrush textBrush = new SolidBrush(Theme.SCRIPTDUMPS_OBJECTSTAB_LISTBOX_TEXT);
+            if (isSelected)
+            {
+                e = new DrawItemEventArgs(e.Graphics,
+                                          e.Font,
+                                          e.Bounds,
+                                          e.Index,
+                                          e.State ^ DrawItemState.Selected,
+                                          e.ForeColor,
+                                          
+                                          Theme.SCRIPTDUMPS_OBJECTSTAB_LISTBOX_HIGHLIGHT);
+                textBrush = new SolidBrush(Theme.SCRIPTDUMPS_OBJECTSTAB_LISTBOX_HIGHLIGHTEDTEXT);
+            }
+
+            e.DrawBackground();
+            e.Graphics.DrawString(listBoxObjects.Items[e.Index].ToString(), e.Font, textBrush, e.Bounds, StringFormat.GenericDefault);
+            e.DrawFocusRectangle();
+        }
+
+        private void lt_f3d_listbox_DrawItem(object sender, DrawItemEventArgs e)
+        {
+            if (e.Index < 0) return;
+            bool isSelected = (e.State & DrawItemState.Selected) == DrawItemState.Selected;
+            SolidBrush textBrush = new SolidBrush(Theme.SCRIPTDUMPS_FAST3D_LISTBOX_TEXT);
+            if (isSelected)
+            {
+                e = new DrawItemEventArgs(e.Graphics,
+                                          e.Font,
+                                          e.Bounds,
+                                          e.Index,
+                                          e.State ^ DrawItemState.Selected,
+                                          e.ForeColor,
+                                          Theme.SCRIPTDUMPS_FAST3D_LISTBOX_HIGHLIGHT);
+                textBrush = new SolidBrush(Theme.SCRIPTDUMPS_FAST3D_LISTBOX_HIGHLIGHTEDTEXT);
+            }
+            
+            e.DrawBackground();
+            e.Graphics.DrawString(lt_f3d_listbox.Items[e.Index].ToString(), e.Font, textBrush, e.Bounds, StringFormat.GenericDefault);
+            e.DrawFocusRectangle();
+        }
+
+        private void ot_f3d_listbox_DrawItem(object sender, DrawItemEventArgs e)
+        {
+            if (e.Index < 0) return;
+            bool isSelected = (e.State & DrawItemState.Selected) == DrawItemState.Selected;
+            SolidBrush textBrush = new SolidBrush(Theme.SCRIPTDUMPS_FAST3D_LISTBOX_TEXT);
+            if (isSelected)
+            {
+                e = new DrawItemEventArgs(e.Graphics,
+                                          e.Font,
+                                          e.Bounds,
+                                          e.Index,
+                                          e.State ^ DrawItemState.Selected,
+                                          e.ForeColor,
+                                          Theme.SCRIPTDUMPS_FAST3D_LISTBOX_HIGHLIGHT);
+                textBrush = new SolidBrush(Theme.SCRIPTDUMPS_FAST3D_LISTBOX_HIGHLIGHTEDTEXT);
+            }
+
+            e.DrawBackground();
+            e.Graphics.DrawString(ot_f3d_listbox.Items[e.Index].ToString(), e.Font, textBrush, e.Bounds, StringFormat.GenericDefault);
+            e.DrawFocusRectangle();
         }
     }
 }

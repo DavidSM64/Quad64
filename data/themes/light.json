@@ -1,0 +1,13 @@
+{
+	"Info" : {
+		"Name" : "Quad64 Light Theme",
+		"Author" : "Davideesk",
+		"Note" : "The light theme is hard-coded as the default theme, and this file is here to show up in the theme's menu. Make absolutely sure not to remove the 5 categories below, as they are needed."
+	},
+	
+	"Defaults" : {},
+	"Main" : {},
+	"TextureEditor" : {},
+	"ObjectCombos" : {},
+	"ScriptDumps" : {}
+}

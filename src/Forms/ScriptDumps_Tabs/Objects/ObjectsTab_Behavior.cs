@@ -124,7 +124,7 @@ namespace Quad64.src.Forms
             currentTextbox.Clear();
             int currentIndent = 0;
             StringBuilder sb = new StringBuilder();
-            sb.Append("{\\rtf1\\ansi\\ansicpg1252\\deff0\\deflang1033{\\fonttbl{\\f0\\fnil\\fcharset0 Courier New;}}{\\colortbl;\\red0\\green0\\blue0;\\red0\\green128\\blue0; }\\viewkind4\\uc1\\pard\\f0\\fs17 ");
+            sb.Append("{\\rtf1\\ansi\\ansicpg1252\\deff0\\deflang1033{\\fonttbl{\\f0\\fnil\\fcharset0 Courier New;}}{\\colortbl;\\red" + Theme.SCRIPTDUMPS_BEHAVIOR_TEXTBOX_TEXT.R + "\\green" + Theme.SCRIPTDUMPS_BEHAVIOR_TEXTBOX_TEXT.G + "\\blue" + Theme.SCRIPTDUMPS_BEHAVIOR_TEXTBOX_TEXT.B + ";\\red" + Theme.SCRIPTDUMPS_BEHAVIOR_TEXTBOX_COMMENTS.R + "\\green" + Theme.SCRIPTDUMPS_BEHAVIOR_TEXTBOX_COMMENTS.G + "\\blue" + Theme.SCRIPTDUMPS_BEHAVIOR_TEXTBOX_COMMENTS.B + "; }\\viewkind4\\uc1\\pard\\f0\\fs17\\cf1 ");
             for (int i = 0; i < behList.Count; i++)
             {
                 ScriptDumpCommandInfo info = behList[i];

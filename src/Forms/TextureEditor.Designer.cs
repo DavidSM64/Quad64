@@ -35,19 +35,19 @@
             this.infoTabPanel = new System.Windows.Forms.Panel();
             this.info_Format = new System.Windows.Forms.TextBox();
             this.info_SegmentAddress = new System.Windows.Forms.TextBox();
-            this.button2 = new System.Windows.Forms.Button();
+            this.lt_importImage = new System.Windows.Forms.Button();
             this.lt_exportImage = new System.Windows.Forms.Button();
             this.info_Height = new System.Windows.Forms.TextBox();
             this.info_Width = new System.Windows.Forms.TextBox();
             this.info_bitmapImage = new System.Windows.Forms.PictureBox();
             this.info_Address = new System.Windows.Forms.TextBox();
-            this.label2 = new System.Windows.Forms.Label();
+            this.lt_info_label = new System.Windows.Forms.Label();
             this.layoutTabPanel = new System.Windows.Forms.Panel();
-            this.radioButton4 = new System.Windows.Forms.RadioButton();
-            this.radioButton3 = new System.Windows.Forms.RadioButton();
-            this.radioButton2 = new System.Windows.Forms.RadioButton();
-            this.radioButton1 = new System.Windows.Forms.RadioButton();
-            this.label1 = new System.Windows.Forms.Label();
+            this.lt_rb_objects = new System.Windows.Forms.RadioButton();
+            this.lt_rb_models = new System.Windows.Forms.RadioButton();
+            this.lt_rb_level = new System.Windows.Forms.RadioButton();
+            this.lt_rb_all = new System.Windows.Forms.RadioButton();
+            this.lt_category_label = new System.Windows.Forms.Label();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.ot_pan_icons = new System.Windows.Forms.Panel();
             this.ot_pan_info = new System.Windows.Forms.Panel();
@@ -60,14 +60,14 @@
             this.ot_info_width = new System.Windows.Forms.TextBox();
             this.ot_bitmap_preview = new System.Windows.Forms.PictureBox();
             this.ot_info_RomAddress = new System.Windows.Forms.TextBox();
-            this.label3 = new System.Windows.Forms.Label();
+            this.ot_info_label = new System.Windows.Forms.Label();
             this.ot_pan_groups = new System.Windows.Forms.Panel();
             this.ot_pan_groupButtons = new System.Windows.Forms.Panel();
             this.tabPage3 = new System.Windows.Forms.TabPage();
-            this.panel1 = new System.Windows.Forms.Panel();
+            this.sb_info = new System.Windows.Forms.Panel();
             this.checkBox_matchFogColor = new System.Windows.Forms.CheckBox();
-            this.label6 = new System.Windows.Forms.Label();
-            this.label5 = new System.Windows.Forms.Label();
+            this.blue_label = new System.Windows.Forms.Label();
+            this.green_label = new System.Windows.Forms.Label();
             this.red_label = new System.Windows.Forms.Label();
             this.numericUpDown_Blue = new System.Windows.Forms.NumericUpDown();
             this.numericUpDown_Green = new System.Windows.Forms.NumericUpDown();
@@ -81,7 +81,7 @@
             this.sb_info_Height = new System.Windows.Forms.TextBox();
             this.sb_info_Width = new System.Windows.Forms.TextBox();
             this.sb_info_RomAddress = new System.Windows.Forms.TextBox();
-            this.label4 = new System.Windows.Forms.Label();
+            this.sb_TextureInfo_label = new System.Windows.Forms.Label();
             this.sb_imageBox = new System.Windows.Forms.PictureBox();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
@@ -93,7 +93,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.ot_bitmap_preview)).BeginInit();
             this.ot_pan_groups.SuspendLayout();
             this.tabPage3.SuspendLayout();
-            this.panel1.SuspendLayout();
+            this.sb_info.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_Blue)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_Green)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_Red)).BeginInit();
@@ -143,13 +143,13 @@
             this.infoTabPanel.BackColor = System.Drawing.Color.CornflowerBlue;
             this.infoTabPanel.Controls.Add(this.info_Format);
             this.infoTabPanel.Controls.Add(this.info_SegmentAddress);
-            this.infoTabPanel.Controls.Add(this.button2);
+            this.infoTabPanel.Controls.Add(this.lt_importImage);
             this.infoTabPanel.Controls.Add(this.lt_exportImage);
             this.infoTabPanel.Controls.Add(this.info_Height);
             this.infoTabPanel.Controls.Add(this.info_Width);
             this.infoTabPanel.Controls.Add(this.info_bitmapImage);
             this.infoTabPanel.Controls.Add(this.info_Address);
-            this.infoTabPanel.Controls.Add(this.label2);
+            this.infoTabPanel.Controls.Add(this.lt_info_label);
             this.infoTabPanel.Location = new System.Drawing.Point(502, 0);
             this.infoTabPanel.Margin = new System.Windows.Forms.Padding(0);
             this.infoTabPanel.Name = "infoTabPanel";
@@ -186,26 +186,30 @@
             this.info_SegmentAddress.Text = "Seg Addr: N/A";
             this.info_SegmentAddress.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
-            // button2
+            // lt_importImage
             // 
-            this.button2.Location = new System.Drawing.Point(0, 301);
-            this.button2.Margin = new System.Windows.Forms.Padding(0);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(150, 23);
-            this.button2.TabIndex = 11;
-            this.button2.Text = "Import from image file";
-            this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.lt_importImage_Click);
+            this.lt_importImage.BackColor = System.Drawing.Color.LightGray;
+            this.lt_importImage.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.lt_importImage.Location = new System.Drawing.Point(0, 301);
+            this.lt_importImage.Margin = new System.Windows.Forms.Padding(0);
+            this.lt_importImage.Name = "lt_importImage";
+            this.lt_importImage.Size = new System.Drawing.Size(150, 23);
+            this.lt_importImage.TabIndex = 11;
+            this.lt_importImage.Text = "Import from image file";
+            this.lt_importImage.UseVisualStyleBackColor = false;
+            this.lt_importImage.Click += new System.EventHandler(this.lt_importImage_Click);
             // 
             // lt_exportImage
             // 
+            this.lt_exportImage.BackColor = System.Drawing.Color.LightGray;
+            this.lt_exportImage.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.lt_exportImage.Location = new System.Drawing.Point(0, 325);
             this.lt_exportImage.Margin = new System.Windows.Forms.Padding(0);
             this.lt_exportImage.Name = "lt_exportImage";
             this.lt_exportImage.Size = new System.Drawing.Size(150, 23);
             this.lt_exportImage.TabIndex = 10;
             this.lt_exportImage.Text = "Export to image file";
-            this.lt_exportImage.UseVisualStyleBackColor = true;
+            this.lt_exportImage.UseVisualStyleBackColor = false;
             this.lt_exportImage.Click += new System.EventHandler(this.lt_exportImage_Click);
             // 
             // info_Height
@@ -263,93 +267,101 @@
             this.info_Address.Text = "ROM Address: N/A";
             this.info_Address.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
-            // label2
+            // lt_info_label
             // 
-            this.label2.AutoSize = true;
-            this.label2.Font = new System.Drawing.Font("Consolas", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label2.Location = new System.Drawing.Point(55, 6);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(45, 19);
-            this.label2.TabIndex = 5;
-            this.label2.Text = "Info";
+            this.lt_info_label.AutoSize = true;
+            this.lt_info_label.Font = new System.Drawing.Font("Consolas", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lt_info_label.Location = new System.Drawing.Point(55, 6);
+            this.lt_info_label.Name = "lt_info_label";
+            this.lt_info_label.Size = new System.Drawing.Size(45, 19);
+            this.lt_info_label.TabIndex = 5;
+            this.lt_info_label.Text = "Info";
             // 
             // layoutTabPanel
             // 
             this.layoutTabPanel.BackColor = System.Drawing.Color.Firebrick;
-            this.layoutTabPanel.Controls.Add(this.radioButton4);
-            this.layoutTabPanel.Controls.Add(this.radioButton3);
-            this.layoutTabPanel.Controls.Add(this.radioButton2);
-            this.layoutTabPanel.Controls.Add(this.radioButton1);
-            this.layoutTabPanel.Controls.Add(this.label1);
+            this.layoutTabPanel.Controls.Add(this.lt_rb_objects);
+            this.layoutTabPanel.Controls.Add(this.lt_rb_models);
+            this.layoutTabPanel.Controls.Add(this.lt_rb_level);
+            this.layoutTabPanel.Controls.Add(this.lt_rb_all);
+            this.layoutTabPanel.Controls.Add(this.lt_category_label);
             this.layoutTabPanel.Location = new System.Drawing.Point(0, 0);
             this.layoutTabPanel.Margin = new System.Windows.Forms.Padding(0);
             this.layoutTabPanel.Name = "layoutTabPanel";
             this.layoutTabPanel.Size = new System.Drawing.Size(100, 397);
             this.layoutTabPanel.TabIndex = 0;
             // 
-            // radioButton4
+            // lt_rb_objects
             // 
-            this.radioButton4.Appearance = System.Windows.Forms.Appearance.Button;
-            this.radioButton4.Font = new System.Drawing.Font("Courier New", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.radioButton4.Location = new System.Drawing.Point(0, 106);
-            this.radioButton4.Name = "radioButton4";
-            this.radioButton4.Size = new System.Drawing.Size(100, 24);
-            this.radioButton4.TabIndex = 4;
-            this.radioButton4.Text = "Objects Only";
-            this.radioButton4.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.radioButton4.UseVisualStyleBackColor = true;
-            this.radioButton4.Click += new System.EventHandler(this.radioButton4_lt_Click);
+            this.lt_rb_objects.Appearance = System.Windows.Forms.Appearance.Button;
+            this.lt_rb_objects.BackColor = System.Drawing.Color.LightGray;
+            this.lt_rb_objects.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.lt_rb_objects.Font = new System.Drawing.Font("Courier New", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lt_rb_objects.Location = new System.Drawing.Point(0, 106);
+            this.lt_rb_objects.Name = "lt_rb_objects";
+            this.lt_rb_objects.Size = new System.Drawing.Size(100, 24);
+            this.lt_rb_objects.TabIndex = 4;
+            this.lt_rb_objects.Text = "Objects Only";
+            this.lt_rb_objects.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.lt_rb_objects.UseVisualStyleBackColor = false;
+            this.lt_rb_objects.Click += new System.EventHandler(this.radioButton4_lt_Click);
             // 
-            // radioButton3
+            // lt_rb_models
             // 
-            this.radioButton3.Appearance = System.Windows.Forms.Appearance.Button;
-            this.radioButton3.Font = new System.Drawing.Font("Courier New", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.radioButton3.Location = new System.Drawing.Point(0, 82);
-            this.radioButton3.Name = "radioButton3";
-            this.radioButton3.Size = new System.Drawing.Size(100, 24);
-            this.radioButton3.TabIndex = 3;
-            this.radioButton3.Text = "Models Only";
-            this.radioButton3.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.radioButton3.UseVisualStyleBackColor = true;
-            this.radioButton3.Click += new System.EventHandler(this.radioButton3_lt_Click);
+            this.lt_rb_models.Appearance = System.Windows.Forms.Appearance.Button;
+            this.lt_rb_models.BackColor = System.Drawing.Color.LightGray;
+            this.lt_rb_models.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.lt_rb_models.Font = new System.Drawing.Font("Courier New", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lt_rb_models.Location = new System.Drawing.Point(0, 82);
+            this.lt_rb_models.Name = "lt_rb_models";
+            this.lt_rb_models.Size = new System.Drawing.Size(100, 24);
+            this.lt_rb_models.TabIndex = 3;
+            this.lt_rb_models.Text = "Models Only";
+            this.lt_rb_models.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.lt_rb_models.UseVisualStyleBackColor = false;
+            this.lt_rb_models.Click += new System.EventHandler(this.radioButton3_lt_Click);
             // 
-            // radioButton2
+            // lt_rb_level
             // 
-            this.radioButton2.Appearance = System.Windows.Forms.Appearance.Button;
-            this.radioButton2.Font = new System.Drawing.Font("Courier New", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.radioButton2.Location = new System.Drawing.Point(0, 58);
-            this.radioButton2.Name = "radioButton2";
-            this.radioButton2.Size = new System.Drawing.Size(100, 24);
-            this.radioButton2.TabIndex = 2;
-            this.radioButton2.Text = "Level Only";
-            this.radioButton2.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.radioButton2.UseVisualStyleBackColor = true;
-            this.radioButton2.Click += new System.EventHandler(this.radioButton2_lt_Click);
+            this.lt_rb_level.Appearance = System.Windows.Forms.Appearance.Button;
+            this.lt_rb_level.BackColor = System.Drawing.Color.LightGray;
+            this.lt_rb_level.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.lt_rb_level.Font = new System.Drawing.Font("Courier New", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lt_rb_level.Location = new System.Drawing.Point(0, 58);
+            this.lt_rb_level.Name = "lt_rb_level";
+            this.lt_rb_level.Size = new System.Drawing.Size(100, 24);
+            this.lt_rb_level.TabIndex = 2;
+            this.lt_rb_level.Text = "Level Only";
+            this.lt_rb_level.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.lt_rb_level.UseVisualStyleBackColor = false;
+            this.lt_rb_level.Click += new System.EventHandler(this.radioButton2_lt_Click);
             // 
-            // radioButton1
+            // lt_rb_all
             // 
-            this.radioButton1.Appearance = System.Windows.Forms.Appearance.Button;
-            this.radioButton1.Checked = true;
-            this.radioButton1.Font = new System.Drawing.Font("Courier New", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.radioButton1.Location = new System.Drawing.Point(0, 34);
-            this.radioButton1.Name = "radioButton1";
-            this.radioButton1.Size = new System.Drawing.Size(100, 24);
-            this.radioButton1.TabIndex = 1;
-            this.radioButton1.TabStop = true;
-            this.radioButton1.Text = "All";
-            this.radioButton1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.radioButton1.UseVisualStyleBackColor = true;
-            this.radioButton1.Click += new System.EventHandler(this.radioButton1_lt_Click);
+            this.lt_rb_all.Appearance = System.Windows.Forms.Appearance.Button;
+            this.lt_rb_all.BackColor = System.Drawing.Color.LightGray;
+            this.lt_rb_all.Checked = true;
+            this.lt_rb_all.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.lt_rb_all.Font = new System.Drawing.Font("Courier New", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lt_rb_all.Location = new System.Drawing.Point(0, 34);
+            this.lt_rb_all.Name = "lt_rb_all";
+            this.lt_rb_all.Size = new System.Drawing.Size(100, 24);
+            this.lt_rb_all.TabIndex = 1;
+            this.lt_rb_all.TabStop = true;
+            this.lt_rb_all.Text = "All";
+            this.lt_rb_all.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.lt_rb_all.UseVisualStyleBackColor = false;
+            this.lt_rb_all.Click += new System.EventHandler(this.radioButton1_lt_Click);
             // 
-            // label1
+            // lt_category_label
             // 
-            this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("Consolas", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(9, 6);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(81, 19);
-            this.label1.TabIndex = 0;
-            this.label1.Text = "Category";
+            this.lt_category_label.AutoSize = true;
+            this.lt_category_label.Font = new System.Drawing.Font("Consolas", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lt_category_label.Location = new System.Drawing.Point(9, 6);
+            this.lt_category_label.Name = "lt_category_label";
+            this.lt_category_label.Size = new System.Drawing.Size(81, 19);
+            this.lt_category_label.TabIndex = 0;
+            this.lt_category_label.Text = "Category";
             // 
             // tabPage2
             // 
@@ -386,7 +398,7 @@
             this.ot_pan_info.Controls.Add(this.ot_info_width);
             this.ot_pan_info.Controls.Add(this.ot_bitmap_preview);
             this.ot_pan_info.Controls.Add(this.ot_info_RomAddress);
-            this.ot_pan_info.Controls.Add(this.label3);
+            this.ot_pan_info.Controls.Add(this.ot_info_label);
             this.ot_pan_info.Location = new System.Drawing.Point(502, 0);
             this.ot_pan_info.Margin = new System.Windows.Forms.Padding(0);
             this.ot_pan_info.Name = "ot_pan_info";
@@ -440,24 +452,28 @@
             // 
             // ot_importImage
             // 
+            this.ot_importImage.BackColor = System.Drawing.Color.LightGray;
+            this.ot_importImage.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.ot_importImage.Location = new System.Drawing.Point(0, 301);
             this.ot_importImage.Margin = new System.Windows.Forms.Padding(0);
             this.ot_importImage.Name = "ot_importImage";
             this.ot_importImage.Size = new System.Drawing.Size(150, 23);
             this.ot_importImage.TabIndex = 11;
             this.ot_importImage.Text = "Import from image file";
-            this.ot_importImage.UseVisualStyleBackColor = true;
+            this.ot_importImage.UseVisualStyleBackColor = false;
             this.ot_importImage.Click += new System.EventHandler(this.ot_importImage_Click);
             // 
             // ot_exportImage
             // 
+            this.ot_exportImage.BackColor = System.Drawing.Color.LightGray;
+            this.ot_exportImage.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.ot_exportImage.Location = new System.Drawing.Point(0, 325);
             this.ot_exportImage.Margin = new System.Windows.Forms.Padding(0);
             this.ot_exportImage.Name = "ot_exportImage";
             this.ot_exportImage.Size = new System.Drawing.Size(150, 23);
             this.ot_exportImage.TabIndex = 10;
             this.ot_exportImage.Text = "Export to image file";
-            this.ot_exportImage.UseVisualStyleBackColor = true;
+            this.ot_exportImage.UseVisualStyleBackColor = false;
             this.ot_exportImage.Click += new System.EventHandler(this.ot_exportImage_Click);
             // 
             // ot_info_height
@@ -515,15 +531,15 @@
             this.ot_info_RomAddress.Text = "ROM Address: N/A";
             this.ot_info_RomAddress.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
-            // label3
+            // ot_info_label
             // 
-            this.label3.AutoSize = true;
-            this.label3.Font = new System.Drawing.Font("Consolas", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label3.Location = new System.Drawing.Point(55, 6);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(45, 19);
-            this.label3.TabIndex = 5;
-            this.label3.Text = "Info";
+            this.ot_info_label.AutoSize = true;
+            this.ot_info_label.Font = new System.Drawing.Font("Consolas", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.ot_info_label.Location = new System.Drawing.Point(55, 6);
+            this.ot_info_label.Name = "ot_info_label";
+            this.ot_info_label.Size = new System.Drawing.Size(45, 19);
+            this.ot_info_label.TabIndex = 5;
+            this.ot_info_label.Text = "Info";
             // 
             // ot_pan_groups
             // 
@@ -547,7 +563,7 @@
             // 
             // tabPage3
             // 
-            this.tabPage3.Controls.Add(this.panel1);
+            this.tabPage3.Controls.Add(this.sb_info);
             this.tabPage3.Controls.Add(this.sb_imageBox);
             this.tabPage3.Location = new System.Drawing.Point(4, 22);
             this.tabPage3.Name = "tabPage3";
@@ -557,31 +573,31 @@
             this.tabPage3.Text = "Sky Background";
             this.tabPage3.UseVisualStyleBackColor = true;
             // 
-            // panel1
+            // sb_info
             // 
-            this.panel1.BackColor = System.Drawing.Color.CornflowerBlue;
-            this.panel1.Controls.Add(this.checkBox_matchFogColor);
-            this.panel1.Controls.Add(this.label6);
-            this.panel1.Controls.Add(this.label5);
-            this.panel1.Controls.Add(this.red_label);
-            this.panel1.Controls.Add(this.numericUpDown_Blue);
-            this.panel1.Controls.Add(this.numericUpDown_Green);
-            this.panel1.Controls.Add(this.numericUpDown_Red);
-            this.panel1.Controls.Add(this.sb_useSolidColor);
-            this.panel1.Controls.Add(this.sb_useTexture);
-            this.panel1.Controls.Add(this.sb_info_Format);
-            this.panel1.Controls.Add(this.sb_info_SegAddress);
-            this.panel1.Controls.Add(this.sb_importImage);
-            this.panel1.Controls.Add(this.sb_exportImage);
-            this.panel1.Controls.Add(this.sb_info_Height);
-            this.panel1.Controls.Add(this.sb_info_Width);
-            this.panel1.Controls.Add(this.sb_info_RomAddress);
-            this.panel1.Controls.Add(this.label4);
-            this.panel1.Location = new System.Drawing.Point(471, 0);
-            this.panel1.Margin = new System.Windows.Forms.Padding(0);
-            this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(182, 397);
-            this.panel1.TabIndex = 4;
+            this.sb_info.BackColor = System.Drawing.Color.CornflowerBlue;
+            this.sb_info.Controls.Add(this.checkBox_matchFogColor);
+            this.sb_info.Controls.Add(this.blue_label);
+            this.sb_info.Controls.Add(this.green_label);
+            this.sb_info.Controls.Add(this.red_label);
+            this.sb_info.Controls.Add(this.numericUpDown_Blue);
+            this.sb_info.Controls.Add(this.numericUpDown_Green);
+            this.sb_info.Controls.Add(this.numericUpDown_Red);
+            this.sb_info.Controls.Add(this.sb_useSolidColor);
+            this.sb_info.Controls.Add(this.sb_useTexture);
+            this.sb_info.Controls.Add(this.sb_info_Format);
+            this.sb_info.Controls.Add(this.sb_info_SegAddress);
+            this.sb_info.Controls.Add(this.sb_importImage);
+            this.sb_info.Controls.Add(this.sb_exportImage);
+            this.sb_info.Controls.Add(this.sb_info_Height);
+            this.sb_info.Controls.Add(this.sb_info_Width);
+            this.sb_info.Controls.Add(this.sb_info_RomAddress);
+            this.sb_info.Controls.Add(this.sb_TextureInfo_label);
+            this.sb_info.Location = new System.Drawing.Point(471, 0);
+            this.sb_info.Margin = new System.Windows.Forms.Padding(0);
+            this.sb_info.Name = "sb_info";
+            this.sb_info.Size = new System.Drawing.Size(182, 397);
+            this.sb_info.TabIndex = 4;
             // 
             // checkBox_matchFogColor
             // 
@@ -594,25 +610,25 @@
             this.checkBox_matchFogColor.Text = "Match fog color with bg color";
             this.checkBox_matchFogColor.UseVisualStyleBackColor = true;
             // 
-            // label6
+            // blue_label
             // 
-            this.label6.AutoSize = true;
-            this.label6.Font = new System.Drawing.Font("Consolas", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label6.Location = new System.Drawing.Point(128, 37);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(31, 13);
-            this.label6.TabIndex = 22;
-            this.label6.Text = "Blue";
+            this.blue_label.AutoSize = true;
+            this.blue_label.Font = new System.Drawing.Font("Consolas", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.blue_label.Location = new System.Drawing.Point(128, 37);
+            this.blue_label.Name = "blue_label";
+            this.blue_label.Size = new System.Drawing.Size(31, 13);
+            this.blue_label.TabIndex = 22;
+            this.blue_label.Text = "Blue";
             // 
-            // label5
+            // green_label
             // 
-            this.label5.AutoSize = true;
-            this.label5.Font = new System.Drawing.Font("Consolas", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label5.Location = new System.Drawing.Point(73, 37);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(37, 13);
-            this.label5.TabIndex = 21;
-            this.label5.Text = "Green";
+            this.green_label.AutoSize = true;
+            this.green_label.Font = new System.Drawing.Font("Consolas", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.green_label.Location = new System.Drawing.Point(73, 37);
+            this.green_label.Name = "green_label";
+            this.green_label.Size = new System.Drawing.Size(37, 13);
+            this.green_label.TabIndex = 21;
+            this.green_label.Text = "Green";
             // 
             // red_label
             // 
@@ -724,24 +740,28 @@
             // 
             // sb_importImage
             // 
+            this.sb_importImage.BackColor = System.Drawing.Color.LightGray;
+            this.sb_importImage.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.sb_importImage.Location = new System.Drawing.Point(16, 289);
             this.sb_importImage.Margin = new System.Windows.Forms.Padding(0);
             this.sb_importImage.Name = "sb_importImage";
             this.sb_importImage.Size = new System.Drawing.Size(150, 23);
             this.sb_importImage.TabIndex = 11;
             this.sb_importImage.Text = "Import from image file";
-            this.sb_importImage.UseVisualStyleBackColor = true;
+            this.sb_importImage.UseVisualStyleBackColor = false;
             this.sb_importImage.Click += new System.EventHandler(this.sb_importImage_Click);
             // 
             // sb_exportImage
             // 
+            this.sb_exportImage.BackColor = System.Drawing.Color.LightGray;
+            this.sb_exportImage.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.sb_exportImage.Location = new System.Drawing.Point(16, 316);
             this.sb_exportImage.Margin = new System.Windows.Forms.Padding(0);
             this.sb_exportImage.Name = "sb_exportImage";
             this.sb_exportImage.Size = new System.Drawing.Size(150, 23);
             this.sb_exportImage.TabIndex = 10;
             this.sb_exportImage.Text = "Export to image file";
-            this.sb_exportImage.UseVisualStyleBackColor = true;
+            this.sb_exportImage.UseVisualStyleBackColor = false;
             this.sb_exportImage.Click += new System.EventHandler(this.sb_ExportImage_Click);
             // 
             // sb_info_Height
@@ -787,15 +807,15 @@
             this.sb_info_RomAddress.Text = "(no texture found)";
             this.sb_info_RomAddress.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
-            // label4
+            // sb_TextureInfo_label
             // 
-            this.label4.AutoSize = true;
-            this.label4.Font = new System.Drawing.Font("Consolas", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label4.Location = new System.Drawing.Point(32, 147);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(117, 19);
-            this.label4.TabIndex = 5;
-            this.label4.Text = "Texture Info";
+            this.sb_TextureInfo_label.AutoSize = true;
+            this.sb_TextureInfo_label.Font = new System.Drawing.Font("Consolas", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.sb_TextureInfo_label.Location = new System.Drawing.Point(32, 147);
+            this.sb_TextureInfo_label.Name = "sb_TextureInfo_label";
+            this.sb_TextureInfo_label.Size = new System.Drawing.Size(117, 19);
+            this.sb_TextureInfo_label.TabIndex = 5;
+            this.sb_TextureInfo_label.Text = "Texture Info";
             // 
             // sb_imageBox
             // 
@@ -835,8 +855,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.ot_bitmap_preview)).EndInit();
             this.ot_pan_groups.ResumeLayout(false);
             this.tabPage3.ResumeLayout(false);
-            this.panel1.ResumeLayout(false);
-            this.panel1.PerformLayout();
+            this.sb_info.ResumeLayout(false);
+            this.sb_info.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_Blue)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_Green)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown_Red)).EndInit();
@@ -854,17 +874,17 @@
         private System.Windows.Forms.Panel infoTabPanel;
         private System.Windows.Forms.TabPage tabPage3;
         private System.Windows.Forms.Panel iconsPanel;
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.RadioButton radioButton3;
-        private System.Windows.Forms.RadioButton radioButton2;
-        private System.Windows.Forms.RadioButton radioButton1;
-        private System.Windows.Forms.RadioButton radioButton4;
+        private System.Windows.Forms.Label lt_category_label;
+        private System.Windows.Forms.RadioButton lt_rb_models;
+        private System.Windows.Forms.RadioButton lt_rb_level;
+        private System.Windows.Forms.RadioButton lt_rb_all;
+        private System.Windows.Forms.RadioButton lt_rb_objects;
         private System.Windows.Forms.TextBox info_Address;
-        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Label lt_info_label;
         private System.Windows.Forms.PictureBox info_bitmapImage;
         private System.Windows.Forms.TextBox info_Height;
         private System.Windows.Forms.TextBox info_Width;
-        private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.Button lt_importImage;
         private System.Windows.Forms.Button lt_exportImage;
         private System.Windows.Forms.TextBox info_Format;
         private System.Windows.Forms.TextBox info_SegmentAddress;
@@ -878,12 +898,12 @@
         private System.Windows.Forms.TextBox ot_info_width;
         private System.Windows.Forms.PictureBox ot_bitmap_preview;
         private System.Windows.Forms.TextBox ot_info_RomAddress;
-        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Label ot_info_label;
         private System.Windows.Forms.Panel ot_pan_groups;
         private System.Windows.Forms.Panel ot_pan_groupButtons;
         private System.Windows.Forms.TextBox ot_name;
         private System.Windows.Forms.PictureBox sb_imageBox;
-        private System.Windows.Forms.Panel panel1;
+        private System.Windows.Forms.Panel sb_info;
         private System.Windows.Forms.TextBox sb_info_Format;
         private System.Windows.Forms.TextBox sb_info_SegAddress;
         private System.Windows.Forms.Button sb_importImage;
@@ -891,14 +911,14 @@
         private System.Windows.Forms.TextBox sb_info_Height;
         private System.Windows.Forms.TextBox sb_info_Width;
         private System.Windows.Forms.TextBox sb_info_RomAddress;
-        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Label sb_TextureInfo_label;
         private System.Windows.Forms.RadioButton sb_useSolidColor;
         private System.Windows.Forms.RadioButton sb_useTexture;
         private System.Windows.Forms.NumericUpDown numericUpDown_Blue;
         private System.Windows.Forms.NumericUpDown numericUpDown_Green;
         private System.Windows.Forms.NumericUpDown numericUpDown_Red;
-        private System.Windows.Forms.Label label6;
-        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Label blue_label;
+        private System.Windows.Forms.Label green_label;
         private System.Windows.Forms.Label red_label;
         private System.Windows.Forms.CheckBox checkBox_matchFogColor;
     }
