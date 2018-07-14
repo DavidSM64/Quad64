@@ -1,7 +1,7 @@
-# Quad64 v0.2 (Beta build 4, Hotfix 1)
+# Quad64 v0.2 (Beta build 5)
 An open-source SM64 level editor written in C# 4.0, and uses Windows Forms and OpenTK.
 
-<a href="https://i.imgur.com/AaSYonf.png"><img src="https://i.imgur.com/AaSYonf.png"/></a>
+<a href="https://i.imgur.com/NeBlYO2.png"><img src="https://i.imgur.com/NeBlYO2.png"/></a>
 
 ## Features
 
