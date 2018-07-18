@@ -46,6 +46,18 @@ namespace Quad64.src
                             a2 = (uint)inst[i].immediate;
                         else if (inst[i].gp_dest == GP_REGISTER.A3 && inst[i].gp_1 == GP_REGISTER.R0)
                             a3 = (uint)inst[i].immediate;
+                        else
+                        {
+                            if (inst[i].gp_dest == GP_REGISTER.A0)
+                                a0 = (uint)(inst[i].immediate + gp_register_values[(int)inst[i].gp_1]);
+                            else if (inst[i].gp_dest == GP_REGISTER.A1)
+                                a1 = (uint)(inst[i].immediate + gp_register_values[(int)inst[i].gp_1]);
+                            else if (inst[i].gp_dest == GP_REGISTER.A2)
+                                a2 = (uint)(inst[i].immediate + gp_register_values[(int)inst[i].gp_1]);
+                            else if (inst[i].gp_dest == GP_REGISTER.A3)
+                                a3 = (uint)(inst[i].immediate + gp_register_values[(int)inst[i].gp_1]);
+                        }
+
                         break;
                     case OPCODE.ORI:
                         if (inst[i].gp_dest == GP_REGISTER.A0 && inst[i].gp_1 == GP_REGISTER.A0)
@@ -64,6 +76,29 @@ namespace Quad64.src
                             a2 = (uint)inst[i].immediate;
                         else if (inst[i].gp_dest == GP_REGISTER.A3 && inst[i].gp_1 == GP_REGISTER.R0)
                             a3 = (uint)inst[i].immediate;
+                        else
+                        {
+                            if (inst[i].gp_dest == GP_REGISTER.A0)
+                            {
+                                uint immediate_unsigned = (uint)inst[i].immediate;
+                                a0 = (uint)(immediate_unsigned | gp_register_values[(int)inst[i].gp_1]);
+                            }
+                            else if (inst[i].gp_dest == GP_REGISTER.A1)
+                            {
+                                uint immediate_unsigned = (uint)inst[i].immediate;
+                                a1 = (uint)(immediate_unsigned | gp_register_values[(int)inst[i].gp_1]);
+                            }
+                            else if (inst[i].gp_dest == GP_REGISTER.A2)
+                            {
+                                uint immediate_unsigned = (uint)inst[i].immediate;
+                                a2 = (uint)(immediate_unsigned | gp_register_values[(int)inst[i].gp_1]);
+                            }
+                            else if (inst[i].gp_dest == GP_REGISTER.A3)
+                            {
+                                uint immediate_unsigned = (uint)inst[i].immediate;
+                                a3 = (uint)(immediate_unsigned | gp_register_values[(int)inst[i].gp_1]);
+                            }
+                        }
                         break;
                     case OPCODE.JAL:
                         jal_addr = inst[i].jump_to_func;
@@ -141,17 +176,23 @@ namespace Quad64.src
                     inst.gp_dest = (GP_REGISTER)((data >> 16) & 0x1F);
                     inst.gp_1 = (GP_REGISTER)((data >> 21) & 0x1F);
                     inst.immediate = (short)(data & 0xFFFF);
+                    gp_register_values[(int)inst.gp_dest] = 
+                        gp_register_values[(int)inst.gp_1] + inst.immediate;
                     break;
                 case 0x0D:
                     inst.opCode = OPCODE.ORI;
                     inst.gp_dest = (GP_REGISTER)((data >> 16) & 0x1F);
                     inst.gp_1 = (GP_REGISTER)((data >> 21) & 0x1F);
                     inst.immediate = (short)(data & 0xFFFF);
+                    
+                    gp_register_values[(int)inst.gp_dest] = 
+                        gp_register_values[(int)inst.gp_1] | (long)inst.immediate;
                     break;
                 case 0x0F:
                     inst.opCode = OPCODE.LUI;
                     inst.gp_dest = (GP_REGISTER)((data >> 16) & 0x1F);
                     inst.immediate = (short)(data & 0xFFFF);
+                    gp_register_values[(int)inst.gp_dest] = (long)inst.immediate << 16;
                     break;
                 default:
                     inst.opCode = OPCODE.DO_NOT_CARE;
@@ -160,7 +201,9 @@ namespace Quad64.src
 
             return inst;
         }
-        
+
+
+        long[] gp_register_values = new long[0x32];
 
         // General-Purpose Registers
         public enum GP_REGISTER
@@ -217,8 +260,7 @@ namespace Quad64.src
         public class Instruction
         {
             public OPCODE opCode;
-            public GP_REGISTER gp_1, gp_2, gp_dest;
-            public FP_REGISTER fp_1, fp_2, fP_dest;
+            public GP_REGISTER gp_1, gp_dest;
             public short immediate = 0;
             public uint jump_to_func = 0;
 
