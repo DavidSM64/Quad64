@@ -20,6 +20,7 @@ namespace Quad64.Scripts
 
         public static int parse(ref Level lvl, byte seg, uint off)
         {
+            if (seg == 0) return -1;
             ROM rom = ROM.Instance;
             byte[] data = rom.getSegment(seg, null);
             bool end = false;
@@ -490,7 +491,11 @@ namespace Quad64.Scripts
                     GeoScripts.resetNodes();
                     GeoScripts.parse(ref newModel, ref lvl, seg, off, areaID);
                 }
-                catch (Exception) { }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.Message);
+                    Console.WriteLine(e.StackTrace);
+                }
             }
             if (lvl.ModelIDs.ContainsKey(modelID))
                 lvl.ModelIDs.Remove(modelID);

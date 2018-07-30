@@ -147,22 +147,23 @@ namespace Quad64.src.Forms
                 if (sd_tabs.SelectedIndex == 0)
                     organizeCurrentFast3DScript(level.Areas[lt_f3d_areaIndex].
                     AreaModel.Fast3DCommands_ForDump[lt_f3d_listbox.SelectedIndex]);
-                else
-                    if (listBoxObjects.SelectedIndex > -1)
+                else if (listBoxObjects.SelectedIndex > -1)
+                {
+                    ushort key = objectCombos[listBoxObjects.SelectedIndex].ModelID;
+                    if (level.ModelIDs.ContainsKey(key) && ot_f3d_listbox.SelectedIndex > -1)
                     {
-                        ushort key = objectCombos[listBoxObjects.SelectedIndex].ModelID;
-                        if (level.ModelIDs.ContainsKey(key) && ot_f3d_listbox.SelectedIndex > -1)
-                        {
-                            
-                            organizeCurrentFast3DScript(level.ModelIDs[key].Fast3DCommands_ForDump[ot_f3d_listbox.SelectedIndex]);
-                        }
+                        if(ot_f3d_listbox.SelectedItem.ToString().Equals("<Error 80>"))
+                            currentTextbox.Text = "Error: Quad64 cannot read display lists from segment 0.";
                         else
-                        {
-                            currentTextbox.ResetText();
-                            currentTextbox.ForeColor = Theme.SCRIPTDUMPS_FAST3D_TEXTBOX_TEXT;
-                            currentTextbox.Text = "<No script found>";
-                        }
+                            organizeCurrentFast3DScript(level.ModelIDs[key].Fast3DCommands_ForDump[ot_f3d_listbox.SelectedIndex]);
                     }
+                    else
+                    {
+                        currentTextbox.ResetText();
+                        currentTextbox.ForeColor = Theme.SCRIPTDUMPS_FAST3D_TEXTBOX_TEXT;
+                        currentTextbox.Text = "<No script found>";
+                    }
+                }
             }
             else if (currentTextbox.Name.EndsWith("_beh_textbox"))
             {

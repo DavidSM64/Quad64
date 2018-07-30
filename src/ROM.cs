@@ -116,12 +116,12 @@ namespace Quad64
             findAndSetSegment02();
             Console.WriteLine("Segment2 location: 0x" + Globals.seg02_location[0].ToString("X8") +
                 " to 0x" + Globals.seg02_location[1].ToString("X8"));
-
+            
             if (bytes[Globals.seg15_location[0]] == 0x17)
                 type = ROM_Type.EXTENDED;
             else
                 type = ROM_Type.VANILLA;
-
+            
             hasLookedAtLevelIDs = false;
 
             Console.WriteLine("ROM = " + filepath);
@@ -416,6 +416,7 @@ namespace Quad64
         {
             // Console.WriteLine("Decoding segment address: " + segOffset.ToString("X8"));
             byte seg = (byte)(segOffset >> 24);
+
             if (GetSegBank(seg, areaID).IsMIO0)
                 throw new System.ArgumentException("Cannot decode segment address (0x" + segOffset.ToString("X8") + ") from MIO0 data. (decodeSegmentAddress 1)");
             uint off = segOffset & 0x00FFFFFF;
@@ -455,7 +456,7 @@ namespace Quad64
         {
             byte seg = (byte)(segOffset >> 24);
             uint off = segOffset & 0x00FFFFFF;
-
+            
             if (GetSegBank(seg, areaID).Data.Length < off + size)
                 return new byte[size];
 
@@ -466,6 +467,7 @@ namespace Quad64
         {
             byte seg = (byte)(segOffset >> 24);
             uint off = segOffset & 0x00FFFFFF;
+            
             SegBank segBank = GetSegBank(seg, areaID);
             if (segBank != null)
                 return getSubArray_safe(segBank.Data, off, (long)size);
