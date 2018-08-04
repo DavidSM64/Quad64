@@ -287,7 +287,7 @@ namespace Quad64.src.Forms
 
         private void loadOtherTexturesTab()
         {
-            JArray[] arrays = OtherTexturesFile.LoadOtherTextureFile("./data/OtherTextures_NA.json");
+            JArray[] arrays = OtherTexturesFile.LoadOtherTextureFile(Globals.getDefaultOtherTexturesPath());
             if (arrays != null)
             {
                 ot_buttons = new RadioButtonWithInfo[arrays.Length][];

@@ -72,18 +72,15 @@ namespace Quad64
         public static uint RAMtoROM_NA = 0x80245000; // USA 
         public static uint RAMtoROM_EU = 0x80240800; // Europe
         public static uint RAMtoROM_JS = 0x80248000; // Japan (Shindou)
+        public static uint RAMtoROM_IQ = 0x80248000; // Chinese (IQue)
 
         // Function location that initalizes segment 0x02 for each region
         public static uint seg02_init_JP = 0x80248934; // Japan
         public static uint seg02_init_NA = 0x80248964; // USA 
         public static uint seg02_init_EU = 0x80244100; // Europe
         public static uint seg02_init_JS = 0x8024B958; // Japan (Shindou)
-
-        // Actual function (UncIndexCopy) that is used to allocate segment 0x02 for each region
-        public static uint seg02_alloc_JP = 0x80278228; // Japan
-        public static uint seg02_alloc_NA = 0x802787D8; // USA 
-        public static uint seg02_alloc_EU = 0x80269994; // Europe
-        public static uint seg02_alloc_JS = 0x80271EF4; // Japan (Shindou)
+        public static uint seg02_init_IQ = 0x8024B968; // Chinese (IQue)
+        
 
         // Function that draws skybox image:
         public static uint skybox_drawFunc_NA = 0x802763D4;
@@ -131,6 +128,20 @@ namespace Quad64
                     return "./data/ObjectCombos_JP.json";
                 case ROM_Region.JAPAN_SHINDOU:
                     return "./data/ObjectCombos_JS.json";
+                case ROM_Region.CHINESE_IQUE:
+                    return "./data/ObjectCombos_IQ.json";
+            }
+        }
+
+        public static string getDefaultOtherTexturesPath()
+        {
+            // Console.WriteLine("ROM.Instance.Region = " + ROM.Instance.Region.ToString());
+            switch (ROM.Instance.Region)
+            {
+                case ROM_Region.NORTH_AMERICA:
+                    return "./data/OtherTextures_NA.json";
+                default:
+                    return "";
             }
         }
 

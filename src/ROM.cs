@@ -14,7 +14,8 @@ namespace Quad64
         JAPAN,
         JAPAN_SHINDOU,
         NORTH_AMERICA,
-        EUROPE
+        EUROPE,
+        CHINESE_IQUE
     };
 
     enum ROM_Type
@@ -82,6 +83,10 @@ namespace Quad64
                 else
                     region = ROM_Region.JAPAN_SHINDOU;
             }
+            else if (bytes[0x3E] == 0x00)
+            {
+                region = ROM_Region.CHINESE_IQUE;
+            }
 
             // Setup segment 0x02 & segment 0x15 addresses
             if (region == ROM_Region.NORTH_AMERICA)
@@ -111,6 +116,13 @@ namespace Quad64
                 Globals.special_preset_table = 0xC98D0;
                 //Globals.seg02_location = new[] { (uint)0xE42F0, (uint)0xEF770 };
                 Globals.seg15_location = new[] { (uint)0x286AC0, (uint)0x2874D0 };
+            }
+            else if (region == ROM_Region.CHINESE_IQUE)
+            {
+                Globals.macro_preset_table = 0xCB220;
+                Globals.special_preset_table = 0xCBD90;
+                //Globals.seg02_location = new[] { (uint)0xE42F0, (uint)0xEF770 };
+                Globals.seg15_location = new[] { (uint)0x298AE0, (uint)0x2994F0 };
             }
 
             findAndSetSegment02();
@@ -202,6 +214,8 @@ namespace Quad64
                     return "Japan";
                 case ROM_Region.JAPAN_SHINDOU:
                     return "Japan (Shindou edition)";
+                case ROM_Region.CHINESE_IQUE:
+                    return "Chinese (IQue Player)";
                 default:
                     return "Unknown";
             }
