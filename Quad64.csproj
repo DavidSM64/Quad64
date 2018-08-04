@@ -270,6 +270,9 @@
     <None Include="data\ObjectCombos_EU.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="data\ObjectCombos_IQ.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="data\ObjectCombos_JP.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
