@@ -12,6 +12,7 @@ using Quad64.src.Forms;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using Quad64.src.Forms.ToolStripRenderer;
+using System.IO;
 
 namespace Quad64
 {
@@ -165,6 +166,8 @@ namespace Quad64
             menuStrip1.ForeColor = Theme.MAIN_MENUBAR_TEXT;
             ToolStripItemCollection menuItems = menuStrip1.Items;
             SetColorsForMenuStripItem(ref menuItems);
+
+            triangleCount.ForeColor = Theme.DEFAULT_TEXT;
         }
 
         private void loadROM(bool startingUp)
@@ -214,6 +217,7 @@ namespace Quad64
             //stopWatch.Stop();
             //Console.WriteLine("Startup time: " + stopWatch.Elapsed.Milliseconds + "ms");
 
+            updateTriangleCount();
             glControl1.Invalidate();
         }
 
@@ -907,6 +911,11 @@ namespace Quad64
             Area7Button.Enabled = ((areas & 0x80) == 0x80);
         }
 
+        private void updateTriangleCount()
+        {
+            triangleCount.Text = "Area Triangle Count: " + level.getCurrentArea().AreaModel.getNumberOfTrianglesInModel().ToString();
+        }
+
         private void trySwitchArea(ushort toArea)
         {
             if (level.getCurrentArea().AreaID == toArea)
@@ -915,6 +924,7 @@ namespace Quad64
             if (level.hasArea(toArea))
             {
                 level.CurrentAreaID = toArea;
+                updateTriangleCount();
                 refreshObjectsInList();
                 glControl1.Invalidate();
             }
@@ -954,6 +964,7 @@ namespace Quad64
                 level.CurrentAreaID = level.Areas[0].AreaID;
                 resetObjectVariables();
                 refreshObjectsInList();
+                updateTriangleCount();
                 glControl1.Invalidate();
                 updateAreaButtons();
             }

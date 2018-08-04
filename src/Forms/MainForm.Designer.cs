@@ -69,13 +69,7 @@
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.scriptsDumpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.panel1 = new System.Windows.Forms.Panel();
-            this.panel2 = new System.Windows.Forms.Panel();
-            this.act6 = new System.Windows.Forms.RadioButton();
-            this.act5 = new System.Windows.Forms.RadioButton();
-            this.act4 = new System.Windows.Forms.RadioButton();
-            this.act3 = new System.Windows.Forms.RadioButton();
-            this.act2 = new System.Windows.Forms.RadioButton();
-            this.act1 = new System.Windows.Forms.RadioButton();
+            this.triangleCount = new System.Windows.Forms.Label();
             this.propertyGrid1 = new System.Windows.Forms.PropertyGrid();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
             this.splitContainer3 = new System.Windows.Forms.SplitContainer();
@@ -107,7 +101,6 @@
             this.glControl1 = new OpenTK.GLControl();
             this.menuStrip1.SuspendLayout();
             this.panel1.SuspendLayout();
-            this.panel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).BeginInit();
             this.splitContainer2.Panel1.SuspendLayout();
             this.splitContainer2.Panel2.SuspendLayout();
@@ -141,7 +134,7 @@
             this.helpToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(266, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(174, 24);
             this.menuStrip1.TabIndex = 1;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -414,34 +407,34 @@
             // settingsToolStripMenuItem
             // 
             this.settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
-            this.settingsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.settingsToolStripMenuItem.Size = new System.Drawing.Size(145, 22);
             this.settingsToolStripMenuItem.Text = "Settings";
             this.settingsToolStripMenuItem.Click += new System.EventHandler(this.settingsToolStripMenuItem_Click);
             // 
             // themesToolStripMenuItem
             // 
             this.themesToolStripMenuItem.Name = "themesToolStripMenuItem";
-            this.themesToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.themesToolStripMenuItem.Size = new System.Drawing.Size(145, 22);
             this.themesToolStripMenuItem.Text = "Themes";
             this.themesToolStripMenuItem.Click += new System.EventHandler(this.themesToolStripMenuItem_Click);
             // 
             // rOMInfoToolStripMenuItem
             // 
             this.rOMInfoToolStripMenuItem.Name = "rOMInfoToolStripMenuItem";
-            this.rOMInfoToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.rOMInfoToolStripMenuItem.Size = new System.Drawing.Size(145, 22);
             this.rOMInfoToolStripMenuItem.Text = "ROM Info";
             this.rOMInfoToolStripMenuItem.Click += new System.EventHandler(this.rOMInfoToolStripMenuItem_Click);
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(149, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(142, 6);
             this.toolStripSeparator1.Paint += new System.Windows.Forms.PaintEventHandler(this.ToolStripSeparator_Paint);
             // 
             // scriptsDumpToolStripMenuItem
             // 
             this.scriptsDumpToolStripMenuItem.Name = "scriptsDumpToolStripMenuItem";
-            this.scriptsDumpToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.scriptsDumpToolStripMenuItem.Size = new System.Drawing.Size(145, 22);
             this.scriptsDumpToolStripMenuItem.Text = "Script Dumps";
             this.scriptsDumpToolStripMenuItem.Click += new System.EventHandler(this.scriptsDumpToolStripMenuItem_Click);
             // 
@@ -449,136 +442,23 @@
             // 
             this.panel1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.panel1.Controls.Add(this.panel2);
+            this.panel1.Controls.Add(this.triangleCount);
             this.panel1.Controls.Add(this.menuStrip1);
             this.panel1.Location = new System.Drawing.Point(0, 0);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(880, 24);
             this.panel1.TabIndex = 3;
             // 
-            // panel2
+            // triangleCount
             // 
-            this.panel2.Controls.Add(this.act6);
-            this.panel2.Controls.Add(this.act5);
-            this.panel2.Controls.Add(this.act4);
-            this.panel2.Controls.Add(this.act3);
-            this.panel2.Controls.Add(this.act2);
-            this.panel2.Controls.Add(this.act1);
-            this.panel2.Location = new System.Drawing.Point(763, 0);
-            this.panel2.Margin = new System.Windows.Forms.Padding(0);
-            this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(117, 24);
-            this.panel2.TabIndex = 2;
-            // 
-            // act6
-            // 
-            this.act6.Appearance = System.Windows.Forms.Appearance.Button;
-            this.act6.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("act6.BackgroundImage")));
-            this.act6.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
-            this.act6.FlatAppearance.BorderSize = 0;
-            this.act6.FlatAppearance.CheckedBackColor = System.Drawing.SystemColors.Control;
-            this.act6.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Gray;
-            this.act6.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.act6.Location = new System.Drawing.Point(94, 4);
-            this.act6.Margin = new System.Windows.Forms.Padding(0);
-            this.act6.Name = "act6";
-            this.act6.Size = new System.Drawing.Size(16, 16);
-            this.act6.TabIndex = 5;
-            this.act6.UseVisualStyleBackColor = true;
-            this.act6.Visible = false;
-            this.act6.CheckedChanged += new System.EventHandler(this.starAct_CheckedChanged);
-            // 
-            // act5
-            // 
-            this.act5.Appearance = System.Windows.Forms.Appearance.Button;
-            this.act5.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("act5.BackgroundImage")));
-            this.act5.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
-            this.act5.FlatAppearance.BorderSize = 0;
-            this.act5.FlatAppearance.CheckedBackColor = System.Drawing.SystemColors.Control;
-            this.act5.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Gray;
-            this.act5.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.act5.Location = new System.Drawing.Point(76, 4);
-            this.act5.Margin = new System.Windows.Forms.Padding(0);
-            this.act5.Name = "act5";
-            this.act5.Size = new System.Drawing.Size(16, 16);
-            this.act5.TabIndex = 4;
-            this.act5.UseVisualStyleBackColor = true;
-            this.act5.Visible = false;
-            this.act5.CheckedChanged += new System.EventHandler(this.starAct_CheckedChanged);
-            // 
-            // act4
-            // 
-            this.act4.Appearance = System.Windows.Forms.Appearance.Button;
-            this.act4.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("act4.BackgroundImage")));
-            this.act4.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
-            this.act4.FlatAppearance.BorderSize = 0;
-            this.act4.FlatAppearance.CheckedBackColor = System.Drawing.SystemColors.Control;
-            this.act4.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Gray;
-            this.act4.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.act4.Location = new System.Drawing.Point(58, 4);
-            this.act4.Margin = new System.Windows.Forms.Padding(0);
-            this.act4.Name = "act4";
-            this.act4.Size = new System.Drawing.Size(16, 16);
-            this.act4.TabIndex = 3;
-            this.act4.UseVisualStyleBackColor = true;
-            this.act4.Visible = false;
-            this.act4.CheckedChanged += new System.EventHandler(this.starAct_CheckedChanged);
-            // 
-            // act3
-            // 
-            this.act3.Appearance = System.Windows.Forms.Appearance.Button;
-            this.act3.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("act3.BackgroundImage")));
-            this.act3.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
-            this.act3.FlatAppearance.BorderSize = 0;
-            this.act3.FlatAppearance.CheckedBackColor = System.Drawing.SystemColors.Control;
-            this.act3.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Gray;
-            this.act3.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.act3.Location = new System.Drawing.Point(40, 4);
-            this.act3.Margin = new System.Windows.Forms.Padding(0);
-            this.act3.Name = "act3";
-            this.act3.Size = new System.Drawing.Size(16, 16);
-            this.act3.TabIndex = 2;
-            this.act3.UseVisualStyleBackColor = true;
-            this.act3.Visible = false;
-            this.act3.CheckedChanged += new System.EventHandler(this.starAct_CheckedChanged);
-            // 
-            // act2
-            // 
-            this.act2.Appearance = System.Windows.Forms.Appearance.Button;
-            this.act2.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("act2.BackgroundImage")));
-            this.act2.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
-            this.act2.FlatAppearance.BorderSize = 0;
-            this.act2.FlatAppearance.CheckedBackColor = System.Drawing.SystemColors.Control;
-            this.act2.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Gray;
-            this.act2.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.act2.Location = new System.Drawing.Point(22, 4);
-            this.act2.Margin = new System.Windows.Forms.Padding(0);
-            this.act2.Name = "act2";
-            this.act2.Size = new System.Drawing.Size(16, 16);
-            this.act2.TabIndex = 1;
-            this.act2.UseVisualStyleBackColor = true;
-            this.act2.Visible = false;
-            this.act2.CheckedChanged += new System.EventHandler(this.starAct_CheckedChanged);
-            // 
-            // act1
-            // 
-            this.act1.Appearance = System.Windows.Forms.Appearance.Button;
-            this.act1.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("act1.BackgroundImage")));
-            this.act1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
-            this.act1.Checked = true;
-            this.act1.FlatAppearance.BorderSize = 0;
-            this.act1.FlatAppearance.CheckedBackColor = System.Drawing.SystemColors.Control;
-            this.act1.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Gray;
-            this.act1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.act1.Location = new System.Drawing.Point(4, 4);
-            this.act1.Margin = new System.Windows.Forms.Padding(0);
-            this.act1.Name = "act1";
-            this.act1.Size = new System.Drawing.Size(16, 16);
-            this.act1.TabIndex = 0;
-            this.act1.TabStop = true;
-            this.act1.UseVisualStyleBackColor = true;
-            this.act1.Visible = false;
-            this.act1.CheckedChanged += new System.EventHandler(this.starAct_CheckedChanged);
+            this.triangleCount.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.triangleCount.AutoSize = true;
+            this.triangleCount.Location = new System.Drawing.Point(740, 6);
+            this.triangleCount.Name = "triangleCount";
+            this.triangleCount.Size = new System.Drawing.Size(131, 13);
+            this.triangleCount.TabIndex = 2;
+            this.triangleCount.Text = "Area Triangle Count: 1000";
             // 
             // propertyGrid1
             // 
@@ -1049,7 +929,6 @@
             this.menuStrip1.PerformLayout();
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
-            this.panel2.ResumeLayout(false);
             this.splitContainer2.Panel1.ResumeLayout(false);
             this.splitContainer2.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).EndInit();
@@ -1116,13 +995,6 @@
         private System.Windows.Forms.ToolStripMenuItem rOMInfoToolStripMenuItem;
         private System.Windows.Forms.Button dropToGround;
         private System.Windows.Forms.CheckBox keepOnGround;
-        private System.Windows.Forms.Panel panel2;
-        private System.Windows.Forms.RadioButton act1;
-        private System.Windows.Forms.RadioButton act2;
-        private System.Windows.Forms.RadioButton act6;
-        private System.Windows.Forms.RadioButton act5;
-        private System.Windows.Forms.RadioButton act4;
-        private System.Windows.Forms.RadioButton act3;
         private System.Windows.Forms.ToolStripMenuItem editToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem objectComboPresetToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem Area0Button;
@@ -1155,6 +1027,7 @@
         private System.Windows.Forms.CheckBox gridButton;
         private System.Windows.Forms.NumericUpDown gridSize;
         private System.Windows.Forms.ToolStripMenuItem themesToolStripMenuItem;
+        private System.Windows.Forms.Label triangleCount;
     }
 }
 

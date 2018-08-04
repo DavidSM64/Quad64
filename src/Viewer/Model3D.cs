@@ -25,6 +25,7 @@ namespace Quad64
                 return "Texture [ID/W/H]: [" + texture.ID + "/" + texture.Width + "/" + texture.Height + "]";
             }
         }
+
         //Vector3 center = new Vector3(0, 0, 0);
         Vector3 upper = new Vector3(0, 0, 0);
         Vector3 lower = new Vector3(0, 0, 0);
@@ -49,6 +50,19 @@ namespace Quad64
             geoDisplayLists.Add(value);
             Fast3DCommands_ForDump.Add(new List<ScriptDumpCommandInfo>());
             return false;
+        }
+
+        public int getNumberOfTrianglesInModel()
+        {
+            int count = 0;
+
+            for (int i = 0; i < meshes.Count; i++)
+            {
+                if(meshes[i] != null && meshes[i].indices != null)
+                    count += (meshes[i].indices.Length / 3);
+            }
+
+            return count;
         }
 
         private void calculateCenter()
