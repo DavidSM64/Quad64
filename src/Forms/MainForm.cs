@@ -219,6 +219,8 @@ namespace Quad64
 
             updateTriangleCount();
             glControl1.Invalidate();
+
+            forceGC(); // Force garbage collection.
         }
 
         private void refreshObjectsInList()
@@ -967,6 +969,8 @@ namespace Quad64
                 updateTriangleCount();
                 glControl1.Invalidate();
                 updateAreaButtons();
+
+                forceGC(); // Force garbage collection.
             }
             else
             {
@@ -2278,6 +2282,15 @@ namespace Quad64
         {
             SendMessage(c.Handle, WM_SETREDRAW, (IntPtr)1, IntPtr.Zero);
             SendMessage(c.Handle, EM_SETEVENTMASK, IntPtr.Zero, OldEventMask);
+        }
+        
+        [DllImport("kernel32.dll", EntryPoint = "SetProcessWorkingSetSize", ExactSpelling = true, CharSet = CharSet.Ansi, SetLastError = true)]
+        private static extern int SetProcessWorkingSetSize(IntPtr process, int minimumWorkingSetSize, int maximumWorkingSetSize);
+        public static void forceGC()
+        {
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
+            SetProcessWorkingSetSize(System.Diagnostics.Process.GetCurrentProcess().Handle, -1, -1);
         }
     }
 }
