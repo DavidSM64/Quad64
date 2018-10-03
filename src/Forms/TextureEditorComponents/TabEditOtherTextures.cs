@@ -47,6 +47,8 @@ namespace Quad64.src.Forms
         {
             ROM rom = ROM.Instance;
             byte[] data = segments[seg];
+            if (data == null || data.Length < 1)
+                return 2;
             bool end = false;
             int endCmd = 0;
             byte l_seg;
