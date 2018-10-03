@@ -460,7 +460,7 @@ namespace Quad64.Scripts
             lvl.AddObjectCombos(modelID, newModel.GeoDataSegAddress);
 
             if (rom.getSegment(seg, areaID) != null)
-                Fast3DScripts.parse(ref newModel, ref lvl, seg, off, areaID);
+                Fast3DScripts.parse(ref newModel, ref lvl, seg, off, areaID, 0);
 
             if (lvl.ModelIDs.ContainsKey(modelID))
                 lvl.ModelIDs.Remove(modelID);

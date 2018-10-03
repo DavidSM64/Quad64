@@ -288,7 +288,7 @@ namespace Quad64.src.Scripts
             {
                 if (!mdl.hasGeoDisplayList(off))
                 {
-                    Fast3DScripts.parse(ref mdl, ref lvl, seg, off, areaID);
+                    Fast3DScripts.parse(ref mdl, ref lvl, seg, off, areaID, 0);
                 }
                 lvl.temp_bgInfo.usesFog = mdl.builder.UsesFog;
                 lvl.temp_bgInfo.fogColor = mdl.builder.FogColor;
@@ -312,7 +312,7 @@ namespace Quad64.src.Scripts
             // Don't bother processing duplicate display lists.
             if (!mdl.hasGeoDisplayList(off))
             {
-                Fast3DScripts.parse(ref mdl, ref lvl, seg, off, areaID);
+                Fast3DScripts.parse(ref mdl, ref lvl, seg, off, areaID, 0);
             }
 
             lvl.temp_bgInfo.usesFog = mdl.builder.UsesFog;

@@ -82,9 +82,10 @@ namespace Quad64.src.Scripts
         static TempMaterial tempMaterial = new TempMaterial();
         static F3D_Vertex[] vertices = new F3D_Vertex[16];
         
-        public static void parse(ref Model3D mdl, ref Level lvl, byte seg, uint off, byte? areaID)
+        public static void parse(ref Model3D mdl, ref Level lvl, byte seg, uint off, byte? areaID, int current_depth)
         {
-            if (seg == 0) return;
+            if (seg == 0 || current_depth >= 300)
+                return; // depth was added to prevent infinite loops with 0x06 command.
             ROM rom = ROM.Instance;
             byte[] data = rom.getSegment(seg, areaID);
             if (data == null) return;
@@ -127,7 +128,7 @@ namespace Quad64.src.Scripts
                             desc = "Jump to display list at 0x" + bytesToInt(cmd, 4, 4).ToString("X8");
                             
                         addF3DCommandToDump(ref mdl, cmd, seg, off, desc, areaID);
-                        F3D_DL(ref mdl, ref lvl, cmd, areaID);
+                        F3D_DL(ref mdl, ref lvl, cmd, areaID, current_depth);
                         if (cmd[1] == 1)
                             end = true;
                         break;
@@ -296,11 +297,11 @@ namespace Quad64.src.Scripts
             return true;
         }
 
-        private static void F3D_DL(ref Model3D mdl, ref Level lvl, byte[] cmd, byte? areaID)
+        private static void F3D_DL(ref Model3D mdl, ref Level lvl, byte[] cmd, byte? areaID, int current_depth)
         {
             byte seg = cmd[4];
             uint off = bytesToInt(cmd, 5, 3);
-            parse(ref mdl, ref lvl, seg, off, areaID);
+            parse(ref mdl, ref lvl, seg, off, areaID, current_depth + 1);
         }
 
         private static Vector4 getColor(uint color)
