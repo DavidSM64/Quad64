@@ -124,9 +124,15 @@ namespace Quad64.src.Scripts
                 for (int j = 0; j < list.indices.Length; j += 3)
                 {
                     tempTriangle temp;
-                    temp.a = new Vector3(vertices[(int)list.indices[j + 0]]);
-                    temp.b = new Vector3(vertices[(int)list.indices[j + 1]]);
-                    temp.c = new Vector3(vertices[(int)list.indices[j + 2]]);
+                    int index1 = (int)list.indices[j + 0];
+                    int index2 = (int)list.indices[j + 1];
+                    int index3 = (int)list.indices[j + 2];
+                    int numVertices = vertices.Count;
+                    if (index1 >= numVertices || index2 >= numVertices || index3 >= numVertices)
+                        continue;
+                    temp.a = new Vector3(vertices[index1]);
+                    temp.b = new Vector3(vertices[index2]);
+                    temp.c = new Vector3(vertices[index3]);
                     if (PointInTriangle(pos.Xz, temp.a.Xz, temp.b.Xz, temp.c.Xz))
                     {
                         found.Add(barryCentric(temp.a, temp.b, temp.c, pos));
