@@ -88,6 +88,8 @@ namespace Quad64.src.Scripts
                         addGLSCommandToDump(ref mdl, cmd, seg, off, desc, areaID);
                         alreadyAdded = true;
                         CMD_02(ref mdl, ref lvl, cmd, areaID);
+                        if (cmd[1] == 0x01)
+                            end = true;
                         break;
                     case 0x03:
                         desc = "Return from branch";
