@@ -61,6 +61,7 @@ namespace Quad64.src.Scripts
                 byte[] cmd = rom.getSubArray_safe(data, off, cmdLen);
                 string desc = "Unknown command";
                 bool alreadyAdded = false;
+                /*
                 if (cmd[0] != 0x05 && nodeCurrent.isSwitch && nodeCurrent.switchPos != 1)
                 {
                     if (nodeCurrent.switchFunc == 0x8029DB48)
@@ -71,7 +72,7 @@ namespace Quad64.src.Scripts
                     nodeCurrent.switchPos++;
                     off += cmdLen;
                     continue;
-                }
+                }*/
 
                 switch (cmd[0])
                 {
@@ -88,7 +89,7 @@ namespace Quad64.src.Scripts
                         addGLSCommandToDump(ref mdl, cmd, seg, off, desc, areaID);
                         alreadyAdded = true;
                         CMD_02(ref mdl, ref lvl, cmd, areaID);
-                        if (cmd[1] == 0x01)
+                        if (cmd[1] == 0x01 && nodeCurrent.parent.callSwitch == false)
                             end = true;
                         break;
                     case 0x03:
@@ -212,8 +213,10 @@ namespace Quad64.src.Scripts
                 if (!alreadyAdded)
                     addGLSCommandToDump(ref mdl, cmd, seg, off, desc, areaID);
                 off += cmdLen;
+                /*
                 if (nodeCurrent.isSwitch)
                     nodeCurrent.switchPos++;
+                    */
             }
         }
 
@@ -240,23 +243,25 @@ namespace Quad64.src.Scripts
             GeoScriptNode newNode = new GeoScriptNode();
             newNode.ID = nodeCurrent.ID + 1;
             newNode.parent = nodeCurrent;
+            /*
             if (nodeCurrent.callSwitch)
             {
                 newNode.switchPos = 0;
                 newNode.switchCount = nodeCurrent.switchCount;
                 newNode.switchFunc = nodeCurrent.switchFunc;
-                newNode.isSwitch = true;
+                //newNode.isSwitch = true;
             }
+            */
             nodeCurrent = newNode;
         }
 
         private static void CMD_0E(ref Model3D mdl, ref Level lvl, byte[] cmd)
         {
-            nodeCurrent.switchFunc = bytesToInt(cmd, 4, 4);
+            //nodeCurrent.switchFunc = bytesToInt(cmd, 4, 4);
             // Special Ignore cases
             //if (nodeCurrent.switchFunc == 0x8029DBD4) return;
-            nodeCurrent.switchCount = cmd[3];
-            //nodeCurrent.callSwitch = true;
+            //nodeCurrent.switchCount = cmd[3];
+            nodeCurrent.callSwitch = true;
         }
 
         private static void CMD_10(ref Model3D mdl, ref Level lvl, byte[] cmd)
