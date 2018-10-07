@@ -91,8 +91,16 @@ namespace Quad64.src.Scripts
                         CMD_02(ref mdl, ref lvl, cmd, areaID);
 
                         if (cmd[1] == 0x01)
+                        {
                             if (nodeCurrent.parent == null || (nodeCurrent.parent != null && nodeCurrent.parent.callSwitch == false))
-                                end = true;
+                            {
+                                // If the next command is not another 0x02 command...
+                                if (data[off + cmdLen] != 0x02)
+                                {
+                                    end = true;
+                                }
+                            }
+                        }
                         break;
                     case 0x03:
                         desc = "Return from branch";
