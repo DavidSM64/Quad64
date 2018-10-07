@@ -94,8 +94,8 @@ namespace Quad64.src.Scripts
                         {
                             if (nodeCurrent.parent == null || (nodeCurrent.parent != null && nodeCurrent.parent.callSwitch == false))
                             {
-                                // If the next command is not another 0x02 command...
-                                if (data[off + cmdLen] != 0x02)
+                                // If the next command is not another 0x02 command, or a 0x05 command...
+                                if (data[off + cmdLen] != 0x02 && data[off + cmdLen] != 0x05)
                                 {
                                     end = true;
                                 }
