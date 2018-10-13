@@ -94,7 +94,11 @@ namespace Quad64
                 Globals.macro_preset_table = 0xEC7E0;
                 Globals.special_preset_table = 0xED350;
                 // Globals.seg02_location = new[] { (uint)0x108A40, (uint)0x114750 };
-                Globals.seg15_location = new[] { (uint)0x2ABCA0, (uint)0x2AC6B0 };
+                //Globals.seg15_location = new[] { (uint)0x2ABCA0, (uint)0x2AC6B0 };
+                Globals.seg15_location = new[] {
+                    readWordUnsigned(0x2A622C),
+                    readWordUnsigned(0x2A6230)
+                };
             }
             else if (region == ROM_Region.EUROPE)
             {
