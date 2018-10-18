@@ -77,8 +77,10 @@ namespace Quad64.src.Scripts
                 switch (cmd[0])
                 {
                     case 0x00:
-                        desc = "Branch and Store (unused)";
-                        end = true;
+                        desc = "Branch geometry layout to address 0x" + bytesToInt(cmd, 4, 4).ToString("X8");
+                        addGLSCommandToDump(ref mdl, cmd, seg, off, desc, areaID);
+                        alreadyAdded = true;
+                        CMD_00(ref mdl, ref lvl, cmd, areaID);
                         break;
                     case 0x01:
                         desc = "End geometry layout";
@@ -239,6 +241,13 @@ namespace Quad64.src.Scripts
             info.romAddress = ROM.Instance.decodeSegmentAddress_safe(seg, offset, areaID);
             mdl.GeoLayoutCommands_ForDump.Add(info);
         }
+        
+        private static void CMD_00(ref Model3D mdl, ref Level lvl, byte[] cmd, byte? areaID)
+        {
+            byte seg = cmd[4];
+            uint off = bytesToInt(cmd, 5, 3);
+            parse(ref mdl, ref lvl, seg, off, areaID);
+        }
 
         private static void CMD_02(ref Model3D mdl, ref Level lvl, byte[] cmd, byte? areaID)
         {
@@ -370,6 +379,7 @@ namespace Quad64.src.Scripts
         {
             switch (cmd)
             {
+                case 0x00:
                 case 0x02:
                 case 0x0D:
                 case 0x0E:
