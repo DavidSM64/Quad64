@@ -110,6 +110,12 @@ namespace Quad64.src.Scripts
                         if (bytesToInt(cmd, 0, 4) != 0)
                             return;
                         break;
+                    case CMD.F3D_MTX:
+                        desc = "G_MTX";
+                        // Detect if empty data has been found.
+                        if (bytesToLong(cmd, 0) == 0x0101010101010101)
+                            return;
+                        break;
                     case CMD.F3D_MOVEMEM:
                         switchTextureStatus(ref mdl, ref tempMaterial, true, areaID);
                         F3D_MOVEMEM(ref tempMaterial, ref lvl, cmd, ref desc, areaID);
