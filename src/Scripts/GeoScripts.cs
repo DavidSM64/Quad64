@@ -155,6 +155,7 @@ namespace Quad64.src.Scripts
                         break;
                     case 0x11:
                         //rom.printArray(cmd, cmdLen);
+                        desc = "Translate Node";
                         CMD_11(ref mdl, ref lvl, cmd);
                         break;
                     case 0x13:
