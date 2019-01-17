@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using Quad64.src.Forms.ToolStripRenderer;
 using System.IO;
+using Newtonsoft.Json;
 
 namespace Quad64
 {
@@ -97,9 +98,26 @@ namespace Quad64
             myTimer.Enabled = false;
             cameraMode.SelectedIndex = 0;
             menuStrip1.Renderer = new ToolStripProfessionalRenderer(new CustomToolStripColorTable());
+
+            this.KeyDown += Handle_KeyDown;
         }
         
         // New functions for MainForm.cs
+        void Handle_KeyDown( object sender, KeyEventArgs e )
+        {
+            switch (e.KeyCode)
+            {
+                case Keys.F1: SaveSelectedObjectsToFile(1); break;
+                case Keys.F2: SaveSelectedObjectsToFile(2); break;
+                case Keys.F3: SaveSelectedObjectsToFile(3); break;
+                case Keys.F4: SaveSelectedObjectsToFile(4); break;
+                case Keys.F5: LoadObjectsFromFile(1); break;
+                case Keys.F6: LoadObjectsFromFile(2); break;
+                case Keys.F7: LoadObjectsFromFile(3); break;
+                case Keys.F8: LoadObjectsFromFile(4); break;
+            }
+        }
+
         private void SetColorsForMenuStripItem(ref ToolStripItemCollection items)
         {
             for (int i = 0; i < items.Count; i++)
@@ -2290,7 +2308,77 @@ namespace Quad64
         {
             GC.Collect();
             GC.WaitForPendingFinalizers();
-            SetProcessWorkingSetSize(System.Diagnostics.Process.GetCurrentProcess().Handle, -1, -1);
+            //SetProcessWorkingSetSize(System.Diagnostics.Process.GetCurrentProcess().Handle, -1, -1);
         }
+
+        private void SaveSelectedObjectsToFile( int slot ) {
+            List<ObjectData> selectedObjects = new List<ObjectData>();
+
+            if( Globals.isMultiSelected ) {
+                if(
+                    Globals.isMultiSelectedFromMultipleLists ||
+                    Globals.multi_selected_nodes[0].Count < 1
+                ) return;
+
+                foreach( int index in Globals.multi_selected_nodes[0] ) {
+                    selectedObjects.Add(level.getCurrentArea().Objects[index].Data);
+                }
+            } else {
+                if ( Globals.list_selected != 0 || Globals.item_selected < 0 ) return;
+
+                selectedObjects.Add(level.getCurrentArea().Objects[Globals.item_selected].Data);
+            }
+
+            using( StreamWriter tempFile = new StreamWriter( "./data/profiles/default/saved-objects-" + slot.ToString() + ".json" ) ) {
+                tempFile.WriteLine(JsonConvert.SerializeObject(selectedObjects));
+            }
+        }
+
+        private void LoadObjectsFromFile( int slot ) {
+            ObjectData[] objectsToLoad;
+            try {
+                using( StreamReader tempFile = new StreamReader( "./data/profiles/default/saved-objects-" + slot.ToString() + ".json" ) ) {
+                    string json = tempFile.ReadLine();
+                    objectsToLoad = JsonConvert.DeserializeObject<ObjectData[]>( json );
+                }
+            } catch( Exception ex ) {
+                Console.Error.WriteLine( ex );
+                return;
+            }
+
+            List<Object3D> objects = level.getCurrentArea().Objects;
+            if( Globals.isMultiSelected ) {
+                if ( Globals.isMultiSelectedFromMultipleLists ||
+                    Globals.multi_selected_nodes[0].Count != objectsToLoad.Length
+                ) return;
+
+                for( int i = 0; i < objectsToLoad.Length; i++) {
+                    Object3D objectToUpdate = objects[Globals.multi_selected_nodes[0][i]];
+                    objectToUpdate.ReplaceData(objectsToLoad[i]);
+                    objectToUpdate.updateROMData();
+                }
+            } else {
+                if (
+                    Globals.list_selected != 0 ||
+                    Globals.item_selected < 0 ||
+                    objectsToLoad.Length < 1
+                ) return;
+
+                int j = 0;
+                for( int i = Globals.item_selected; i < level.getCurrentArea().Objects.Count && j < objectsToLoad.Length; i++ ) {
+                    objects[i].ReplaceData(objectsToLoad[j]);
+                    objects[i].updateROMData();
+                    j++;
+                }
+
+            }
+            refreshObjectsInList();
+
+            glControl1.Invalidate();
+            propertyGrid1.Refresh();
+            glControl1.Update();
+            Globals.needToSave = true;
+        }
+
     }
 }
