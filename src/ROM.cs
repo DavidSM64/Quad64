@@ -693,6 +693,10 @@ namespace Quad64
                     seg02_init = Globals.seg02_init_JS;
                     RAMtoROM = Globals.RAMtoROM_JS;
                     break;
+                case ROM_Region.CHINESE_IQUE:
+                    seg02_init = Globals.seg02_init_IQ;
+                    RAMtoROM = Globals.RAMtoROM_IQ;
+                    break;
             }
 
             func_calls = ar.findJALsInFunction(seg02_init, RAMtoROM);
