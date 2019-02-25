@@ -672,88 +672,49 @@ namespace Quad64
             AssemblyReader ar = new AssemblyReader();
             List<AssemblyReader.JAL_CALL> func_calls;
             SegBank seg = new SegBank();
+            uint seg02_init;
+            uint RAMtoROM;
             switch (region)
             {
                 default:
                 case ROM_Region.NORTH_AMERICA:
-                    func_calls = ar.findJALsInFunction(Globals.seg02_init_NA, Globals.RAMtoROM_NA);
-                    for (int i = 0; i < func_calls.Count; i++)
-                    {
-                        if (func_calls[i].a0 == 0x2)
-                        {
-                            Globals.seg02_location = new[] { func_calls[i].a1, func_calls[i].a2 };
-                            if (readWordUnsigned(func_calls[i].a1) == 0x4D494F30)
-                            {
-                                seg.IsMIO0 = true;
-                                seg02_isFakeMIO0 = testIfMIO0IsFake(
-                                    func_calls[i].a1,
-                                    readWord(func_calls[i].a1 + 0x8),
-                                    readWord(func_calls[i].a1 + 0xC)
-                                 );
-                                seg.SegStart = func_calls[i].a1;
-                                seg02_uncompressedOffset = readWordUnsigned(func_calls[i].a1 + 0xC);
-                            }
-                        }
-                    }
+                    seg02_init = Globals.seg02_init_NA;
+                    RAMtoROM = Globals.RAMtoROM_NA;
                     break;
                 case ROM_Region.EUROPE:
-                    func_calls = ar.findJALsInFunction(Globals.seg02_init_EU, Globals.RAMtoROM_EU);
-                    for (int i = 0; i < func_calls.Count; i++)
-                        if (func_calls[i].a0 == 0x2)
-                        {
-                            Globals.seg02_location = new[] { func_calls[i].a1, func_calls[i].a2 };
-                            if (readWordUnsigned(func_calls[i].a1) == 0x4D494F30)
-                            {
-                                seg.IsMIO0 = true;
-                                seg02_isFakeMIO0 = testIfMIO0IsFake(
-                                    func_calls[i].a1,
-                                    readWord(func_calls[i].a1 + 0x8),
-                                    readWord(func_calls[i].a1 + 0xC)
-                                 );
-                                seg.SegStart = func_calls[i].a1;
-                                seg02_uncompressedOffset = readWordUnsigned(func_calls[i].a1 + 0xC);
-                            }
-                        }
+                    seg02_init = Globals.seg02_init_EU;
+                    RAMtoROM = Globals.RAMtoROM_EU;
                     break;
                 case ROM_Region.JAPAN:
-                    func_calls = ar.findJALsInFunction(Globals.seg02_init_JP, Globals.RAMtoROM_JP);
-                    for (int i = 0; i < func_calls.Count; i++)
-                        if (func_calls[i].a0 == 0x2)
-                        {
-                            Globals.seg02_location = new[] { func_calls[i].a1, func_calls[i].a2 };
-                            if (readWordUnsigned(func_calls[i].a1) == 0x4D494F30)
-                            {
-                                seg.IsMIO0 = true;
-                                seg02_isFakeMIO0 = testIfMIO0IsFake(
-                                    func_calls[i].a1,
-                                    readWord(func_calls[i].a1 + 0x8),
-                                    readWord(func_calls[i].a1 + 0xC)
-                                 );
-                                seg.SegStart = func_calls[i].a1;
-                                seg02_uncompressedOffset = readWordUnsigned(func_calls[i].a1 + 0xC);
-                            }
-                        }
+                    seg02_init = Globals.seg02_init_JP;
+                    RAMtoROM = Globals.RAMtoROM_JP;
                     break;
                 case ROM_Region.JAPAN_SHINDOU:
-                    func_calls = ar.findJALsInFunction(Globals.seg02_init_JS, Globals.RAMtoROM_JS);
-                    for (int i = 0; i < func_calls.Count; i++)
-                        if (func_calls[i].a0 == 0x2)
-                        {
-                            Globals.seg02_location = new[] { func_calls[i].a1, func_calls[i].a2 };
-                            if (readWordUnsigned(func_calls[i].a1) == 0x4D494F30)
-                            {
-                                seg.IsMIO0 = true;
-                                seg02_isFakeMIO0 = testIfMIO0IsFake(
-                                    func_calls[i].a1,
-                                    readWord(func_calls[i].a1 + 0x8),
-                                    readWord(func_calls[i].a1 + 0xC)
-                                 );
-                                seg.SegStart = func_calls[i].a1;
-                                seg02_uncompressedOffset = readWordUnsigned(func_calls[i].a1 + 0xC);
-                            }
-                        }
+                    seg02_init = Globals.seg02_init_JS;
+                    RAMtoROM = Globals.RAMtoROM_JS;
                     break;
             }
+
+            func_calls = ar.findJALsInFunction(seg02_init, RAMtoROM);
+            for (int i = 0; i < func_calls.Count; i++)
+            {
+                if (func_calls[i].a0 == 0x2)
+                {
+                    Globals.seg02_location = new[] { func_calls[i].a1, func_calls[i].a2 };
+                    if (readWordUnsigned(func_calls[i].a1) == 0x4D494F30)
+                    {
+                        seg.IsMIO0 = true;
+                        seg02_isFakeMIO0 = testIfMIO0IsFake(
+                            func_calls[i].a1,
+                            readWord(func_calls[i].a1 + 0x8),
+                            readWord(func_calls[i].a1 + 0xC)
+                         );
+                        seg.SegStart = func_calls[i].a1;
+                        seg02_uncompressedOffset = readWordUnsigned(func_calls[i].a1 + 0xC);
+                    }
+                }
+            }
+
             setSegment(0x2, seg, null);
         }
 
