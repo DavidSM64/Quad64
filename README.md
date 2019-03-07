@@ -1,7 +1,13 @@
-# Quad64 v0.2 (Beta build 5)
+# Quad64 v0.2 (Beta build 5) [Dead]
 An open-source SM64 level editor written in C# 4.0, and uses Windows Forms and OpenTK.
 
 <a href="https://i.imgur.com/NeBlYO2.png"><img src="https://i.imgur.com/NeBlYO2.png"/></a>
+
+## This project is no longer being offically worked on.
+
+I do not have any kind of motivation to work on this project anymore, so this branch will no longer recieve any updates. The source code will still always be avaliable and open source for anyone to look at and use for any reason. 
+
+If you want an alternative to Quad64, then I'd recommend using Pilzinsel64's SM64 ROM Manager. It is an all-in-one tool that has both a level importer and an object editor. You can find a thread about it here on Hack64: https://hack64.net/Thread-SM64-ROM-Manager-Brand-new-all-in-one-tool-for-SM64-Hacking-Public-Beta
 
 ## Features
 
