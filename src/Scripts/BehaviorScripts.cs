@@ -91,10 +91,10 @@ namespace Quad64.src.Scripts
                         desc = "(Set value) obj->_0x" + (cmd[1] * 4 + 0x88).ToString("X2") + " = (float)" + bytesToInt(cmd, 2, 2);
                         break;
                     case 0x0F:
-                        desc = "(Set value) obj->_0x" + (cmd[1] * 4 + 0x88).ToString("X2") + " = " + (short)(bytesToInt(cmd, 2, 2) & 0xFFFF);
+                        desc = "Add " + (short)(bytesToInt(cmd, 2, 2) & 0xFFFF) + " to the value at obj->_0x" + (cmd[1] * 4 + 0x88).ToString("X2");
                         break;
                     case 0x10:
-                        desc = "Add " + (short)(bytesToInt(cmd, 2, 2) & 0xFFFF) + " to the value at obj->_0x" + (cmd[1] * 4 + 0x88).ToString("X2");
+                        desc = "(Set value) obj->_0x" + (cmd[1] * 4 + 0x88).ToString("X2") + " = " + (short)(bytesToInt(cmd, 2, 2) & 0xFFFF);
                         break;
                     case 0x11:
                         desc = "(Set bits) obj->_0x" + (cmd[1] * 4 + 0x88).ToString("X2")+ " |= 0x" + bytesToInt(cmd, 2, 2).ToString("X4");
