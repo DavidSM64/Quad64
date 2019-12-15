@@ -393,6 +393,7 @@ namespace Quad64.src.Scripts
                 case 0x19:
                 case 0x1A:
                 case 0x1D:
+                case 0x1E:
                     return 0x08;
                 case 0x08:
                 case 0x0A:
