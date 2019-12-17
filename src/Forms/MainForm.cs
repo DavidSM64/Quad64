@@ -2311,53 +2311,64 @@ namespace Quad64
             //SetProcessWorkingSetSize(System.Diagnostics.Process.GetCurrentProcess().Handle, -1, -1);
         }
 
-        private void SaveSelectedObjectsToFile( int slot ) {
+        private void SaveSelectedObjectsToFile( int slot )
+        {
             List<ObjectData> selectedObjects = new List<ObjectData>();
 
-            if( Globals.isMultiSelected ) {
+            if( Globals.isMultiSelected )
+            {
                 if(
                     Globals.isMultiSelectedFromMultipleLists ||
                     Globals.multi_selected_nodes[0].Count < 1
                 ) return;
 
-                foreach( int index in Globals.multi_selected_nodes[0] ) {
+                foreach( int index in Globals.multi_selected_nodes[0] )
+                {
                     selectedObjects.Add(level.getCurrentArea().Objects[index].Data);
                 }
-            } else {
+            } else
+            {
                 if ( Globals.list_selected != 0 || Globals.item_selected < 0 ) return;
 
                 selectedObjects.Add(level.getCurrentArea().Objects[Globals.item_selected].Data);
             }
 
-            using( StreamWriter tempFile = new StreamWriter( "./data/profiles/default/saved-objects-" + slot.ToString() + ".json" ) ) {
+            using( StreamWriter tempFile = new StreamWriter( "./data/profiles/default/saved-objects-" + slot.ToString() + ".json" ) )
+            {
                 tempFile.WriteLine(JsonConvert.SerializeObject(selectedObjects));
             }
         }
 
-        private void LoadObjectsFromFile( int slot ) {
+        private void LoadObjectsFromFile( int slot )
+        {
             ObjectData[] objectsToLoad;
             try {
-                using( StreamReader tempFile = new StreamReader( "./data/profiles/default/saved-objects-" + slot.ToString() + ".json" ) ) {
+                using( StreamReader tempFile = new StreamReader( "./data/profiles/default/saved-objects-" + slot.ToString() + ".json" ) )
+                {
                     string json = tempFile.ReadLine();
                     objectsToLoad = JsonConvert.DeserializeObject<ObjectData[]>( json );
                 }
-            } catch( Exception ex ) {
+            } catch( Exception ex )
+            {
                 Console.Error.WriteLine( ex );
                 return;
             }
 
             List<Object3D> objects = level.getCurrentArea().Objects;
-            if( Globals.isMultiSelected ) {
+            if( Globals.isMultiSelected )
+            {
                 if ( Globals.isMultiSelectedFromMultipleLists ||
                     Globals.multi_selected_nodes[0].Count != objectsToLoad.Length
                 ) return;
 
-                for( int i = 0; i < objectsToLoad.Length; i++) {
+                for( int i = 0; i < objectsToLoad.Length; i++)
+                {
                     Object3D objectToUpdate = objects[Globals.multi_selected_nodes[0][i]];
                     objectToUpdate.ReplaceData(objectsToLoad[i]);
                     objectToUpdate.updateROMData();
                 }
-            } else {
+            } else
+            {
                 if (
                     Globals.list_selected != 0 ||
                     Globals.item_selected < 0 ||
@@ -2365,7 +2376,8 @@ namespace Quad64
                 ) return;
 
                 int j = 0;
-                for( int i = Globals.item_selected; i < level.getCurrentArea().Objects.Count && j < objectsToLoad.Length; i++ ) {
+                for( int i = Globals.item_selected; i < level.getCurrentArea().Objects.Count && j < objectsToLoad.Length; i++ )
+                {
                     objects[i].ReplaceData(objectsToLoad[j]);
                     objects[i].updateROMData();
                     j++;
