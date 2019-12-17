@@ -167,7 +167,8 @@ namespace Quad64
         [DisplayName(BP1DNAME)]
         [TypeConverter(typeof(HexNumberTypeConverter))]
         [Description("")]
-        public byte BehaviorParameter1 {
+        public byte BehaviorParameter1
+        {
             get { return m_data.BehaviourArgs[0]; }
             set { m_data.BehaviourArgs[0] = value; }
         }
@@ -177,7 +178,8 @@ namespace Quad64
         [DisplayName(BP2DNAME)]
         [TypeConverter(typeof(HexNumberTypeConverter))]
         [Description("")]
-        public byte BehaviorParameter2 {
+        public byte BehaviorParameter2
+        {
             get { return m_data.BehaviourArgs[1]; }
             set { m_data.BehaviourArgs[1] = value; }
         }
@@ -187,7 +189,8 @@ namespace Quad64
         [DisplayName(BP3DNAME)]
         [TypeConverter(typeof(HexNumberTypeConverter))]
         [Description("")]
-        public byte BehaviorParameter3 {
+        public byte BehaviorParameter3
+        {
             get { return m_data.BehaviourArgs[2]; }
             set { m_data.BehaviourArgs[2] = value; }
         }
@@ -197,7 +200,8 @@ namespace Quad64
         [DisplayName(BP4DNAME)]
         [TypeConverter(typeof(HexNumberTypeConverter))]
         [Description("")]
-        public byte BehaviorParameter4 {
+        public byte BehaviorParameter4
+        {
             get { return m_data.BehaviourArgs[3]; }
             set { m_data.BehaviourArgs[3] = value; }
         }
