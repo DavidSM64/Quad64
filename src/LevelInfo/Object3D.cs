@@ -35,12 +35,37 @@ namespace Quad64
         public enum FROM_LS_CMD {
             CMD_24, CMD_39, CMD_2E_8, CMD_2E_10, CMD_2E_12
         }
-        
+
         private const ushort NUM_OF_CATERGORIES = 7;
 
         bool isBehaviorReadOnly = false;
         bool isModelIDReadOnly = false;
         bool isTempHidden = false;
+
+        public Object3D(){
+            m_data = new ObjectData();
+        }
+
+        public Object3D(
+            string address,
+            ObjectData objectData
+        )
+        {
+            m_data = objectData;
+            Address = address;
+            UpdateProperties();
+        }
+
+        public void ReplaceData( ObjectData newData )
+        {
+            m_data = newData;
+            UpdateProperties();
+        }
+
+        private ObjectData m_data = new ObjectData();
+
+        [Browsable(false)]
+        public ObjectData Data { get => m_data; }
 
         [Browsable(false)]
         public bool canEditModelID { get { return !isModelIDReadOnly; } }
@@ -63,14 +88,13 @@ namespace Quad64
         [DisplayName("Address")]
         [ReadOnly(true)]
         public string Address { get; set; }
-        
-        private byte modelID = 0;
+
         [CustomSortedCategory("Model", 2, NUM_OF_CATERGORIES)]
         [Browsable(true)]
         [Description("Model identifer used by the object")]
         [DisplayName("Model ID")]
         [TypeConverter(typeof(HexNumberTypeConverter))]
-        public byte ModelID { get { return modelID; } set { modelID = value; } }
+        public byte ModelID { get { return m_data.ModelId; } set { m_data.ModelId = value; } }
 
         [CustomSortedCategory("Model", 2, NUM_OF_CATERGORIES)]
         [Browsable(false)]
@@ -78,59 +102,59 @@ namespace Quad64
         [DisplayName("Model ID")]
         [TypeConverter(typeof(HexNumberTypeConverter))]
         [ReadOnly(true)]
-        public byte ModelID_ReadOnly { get { return modelID; } }
+        public byte ModelID_ReadOnly { get { return m_data.ModelId; } }
 
-        private short _xPos, _yPos, _zPos;
         [CustomSortedCategory("Position", 3, NUM_OF_CATERGORIES)]
         [Browsable(true)]
         [DisplayName("X")]
         [TypeConverter(typeof(HexNumberTypeConverter))]
-        public short xPos { get { return _xPos; } set { _xPos = value; } }
+        public short xPos { get { return m_data.X; } set { m_data.X = value; } }
         [CustomSortedCategory("Position", 3, NUM_OF_CATERGORIES)]
         [Browsable(true)]
         [DisplayName("Y")]
         [TypeConverter(typeof(HexNumberTypeConverter))]
-        public short yPos { get { return _yPos; } set { _yPos = value; } }
+        public short yPos { get { return m_data.Y; } set { m_data.Y = value; } }
         [CustomSortedCategory("Position", 3, NUM_OF_CATERGORIES)]
         [Browsable(true)]
         [DisplayName("Z")]
         [TypeConverter(typeof(HexNumberTypeConverter))]
-        public short zPos { get { return _zPos; } set { _zPos = value; } }
-        
-        private short _xRot, _yRot, _zRot;
+        public short zPos { get { return m_data.Z; } set { m_data.Z = value; } }
+
         [CustomSortedCategory("Rotation", 4, NUM_OF_CATERGORIES)]
         [Browsable(true)]
         [DisplayName("RX")]
         [TypeConverter(typeof(HexNumberTypeConverter))]
-        public short xRot { get { return _xRot; } set { _xRot = value; } }
+        public short xRot { get { return m_data.RX; } set { m_data.RX = value; } }
         [CustomSortedCategory("Rotation", 4, NUM_OF_CATERGORIES)]
         [Browsable(true)]
         [DisplayName("RY")]
         [TypeConverter(typeof(HexNumberTypeConverter))]
-        public short yRot { get { return _yRot; } set { _yRot = value; } }
+        public short yRot { get { return m_data.RY; } set { m_data.RY = value; } }
         [CustomSortedCategory("Rotation", 4, NUM_OF_CATERGORIES)]
         [Browsable(true)]
         [DisplayName("RZ")]
         [TypeConverter(typeof(HexNumberTypeConverter))]
-        public short zRot { get { return _zRot; } set { _zRot = value; } }
+        public short zRot { get { return m_data.RZ; } set { m_data.RZ = value; } }
 
         [CustomSortedCategory("Behavior", 5, NUM_OF_CATERGORIES)]
         [Browsable(true)]
         [DisplayName("Behavior")]
-        //[ReadOnly(true)]
-        public string Behavior { get; set; }
+        public string Behavior {
+            get => "0x" + m_data.Behaviour.ToString("X8");
+            set { m_data.Behaviour = uint.Parse(value.Substring(2), NumberStyles.HexNumber); }
+        }
 
         [CustomSortedCategory("Behavior", 5, NUM_OF_CATERGORIES)]
         [Browsable(false)]
         [DisplayName("Behavior")]
         [ReadOnly(true)]
-        public string Behavior_ReadOnly { get; set; }
-        
+        public string Behavior_ReadOnly => this.Behavior;
+
         [CustomSortedCategory("Behavior", 5, NUM_OF_CATERGORIES)]
         [Browsable(true)]
         [DisplayName("Beh. Name")]
         [ReadOnly(true)]
-        public string Behavior_Name { get; set; }
+        public string Behavior_Name => Globals.getBehaviorNameEntryFromSegAddress(m_data.Behaviour).Name;
 
         // default names
         private const string BP1DNAME = "B.Param 1";
@@ -143,57 +167,106 @@ namespace Quad64
         [DisplayName(BP1DNAME)]
         [TypeConverter(typeof(HexNumberTypeConverter))]
         [Description("")]
-        public byte BehaviorParameter1 { get; set; }
+        public byte BehaviorParameter1
+        {
+            get { return m_data.BehaviourArgs[0]; }
+            set { m_data.BehaviourArgs[0] = value; }
+        }
 
         [CustomSortedCategory("Behavior", 5, NUM_OF_CATERGORIES)]
         [Browsable(true)]
         [DisplayName(BP2DNAME)]
         [TypeConverter(typeof(HexNumberTypeConverter))]
         [Description("")]
-        public byte BehaviorParameter2 { get; set; }
+        public byte BehaviorParameter2
+        {
+            get { return m_data.BehaviourArgs[1]; }
+            set { m_data.BehaviourArgs[1] = value; }
+        }
 
         [CustomSortedCategory("Behavior", 5, NUM_OF_CATERGORIES)]
         [Browsable(true)]
         [DisplayName(BP3DNAME)]
         [TypeConverter(typeof(HexNumberTypeConverter))]
         [Description("")]
-        public byte BehaviorParameter3 { get; set; }
+        public byte BehaviorParameter3
+        {
+            get { return m_data.BehaviourArgs[2]; }
+            set { m_data.BehaviourArgs[2] = value; }
+        }
 
         [CustomSortedCategory("Behavior", 5, NUM_OF_CATERGORIES)]
         [Browsable(true)]
         [DisplayName(BP4DNAME)]
         [TypeConverter(typeof(HexNumberTypeConverter))]
         [Description("")]
-        public byte BehaviorParameter4 { get; set; }
+        public byte BehaviorParameter4
+        {
+            get { return m_data.BehaviourArgs[3]; }
+            set { m_data.BehaviourArgs[3] = value; }
+        }
 
         [CustomSortedCategory("Acts", 6, NUM_OF_CATERGORIES)]
         [Browsable(true)]
         [DisplayName("All Acts")]
-        public bool AllActs { get; set; }
+        public bool AllActs
+        {
+            get { return m_data.AllActs; }
+            set { m_data.AllActs = value; }
+        }
         [CustomSortedCategory("Acts", 6, NUM_OF_CATERGORIES)]
         [Browsable(true)]
         [DisplayName("Act 1")]
-        public bool Act1 { get; set; }
+        public bool Act1
+        {
+            get { return m_data.Acts[0]; }
+            set { m_data.Acts[0] = value; }
+        }
+
         [CustomSortedCategory("Acts", 6, NUM_OF_CATERGORIES)]
         [Browsable(true)]
         [DisplayName("Act 2")]
-        public bool Act2 { get; set; }
+        public bool Act2
+        {
+            get { return m_data.Acts[1]; }
+            set { m_data.Acts[1] = value; }
+        }
+
         [CustomSortedCategory("Acts", 6, NUM_OF_CATERGORIES)]
         [Browsable(true)]
         [DisplayName("Act 3")]
-        public bool Act3 { get; set; }
+        public bool Act3
+        {
+            get { return m_data.Acts[2]; }
+            set { m_data.Acts[2] = value; }
+        }
+
         [CustomSortedCategory("Acts", 6, NUM_OF_CATERGORIES)]
         [Browsable(true)]
         [DisplayName("Act 4")]
-        public bool Act4 { get; set; }
+        public bool Act4
+        {
+            get { return m_data.Acts[3]; }
+            set { m_data.Acts[3] = value; }
+        }
+
         [CustomSortedCategory("Acts", 6, NUM_OF_CATERGORIES)]
         [Browsable(true)]
         [DisplayName("Act 5")]
-        public bool Act5 { get; set; }
+        public bool Act5
+        {
+            get { return m_data.Acts[4]; }
+            set { m_data.Acts[4] = value; }
+        }
+
         [CustomSortedCategory("Acts", 6, NUM_OF_CATERGORIES)]
         [Browsable(true)]
         [DisplayName("Act 6")]
-        public bool Act6 { get; set; }
+        public bool Act6
+        {
+            get { return m_data.Acts[5]; }
+            set { m_data.Acts[5] = value; }
+        }
 
         private ulong Flags = 0;
 
@@ -239,27 +312,10 @@ namespace Quad64
 
         public void setBehaviorFromAddress(uint address)
         {
-            Behavior = "0x"+address.ToString("X8");
-            Behavior_ReadOnly = Behavior;
-            Behavior_Name = Globals.getBehaviorNameEntryFromSegAddress(address).Name;
+            m_data.Behaviour = address;
         }
 
-        public uint getBehaviorAddress()
-        {
-            uint value = 0;
-            bool succeded = false;
-            if(Behavior.ToUpper().StartsWith("0X"))
-                succeded = uint.TryParse(Behavior.Substring(2), NumberStyles.HexNumber, new CultureInfo("en-US"), out value);
-            else if (Behavior.ToUpper().StartsWith("$"))
-                succeded = uint.TryParse(Behavior.Substring(1), NumberStyles.HexNumber, new CultureInfo("en-US"), out value);
-            else
-                succeded = uint.TryParse(Behavior, out value);
-
-            if (succeded)
-                return value;
-            else
-                return 0;
-        }
+        public uint getBehaviorAddress() => m_data.Behaviour;
 
         public void updateROMData()
         {
@@ -619,7 +675,7 @@ namespace Quad64
             }
 
             objectComboEntry = null;
-            Title = "Undefined Combo (0x" + modelID.ToString("X2") + ", 0x" + behaviorAddr.ToString("X8") + ")";
+            Title = "Undefined Combo (0x" + m_data.ModelId.ToString("X2") + ", 0x" + behaviorAddr.ToString("X8") + ")";
             return Title;
         }
 

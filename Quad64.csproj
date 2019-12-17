@@ -302,6 +302,7 @@
     <None Include="data\themes\dark.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <Compile Include="src\JSON\ObjectData.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
